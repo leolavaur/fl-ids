@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "PCA-FL",
+            "type": "python",
+            "request": "launch",
+            "module": "pcafl",
+            "justMyCode": true
+        },
+        {
+            "name": "Eiffel experiment",
+            "type": "python",
+            "request": "launch",
+            "module": "${input:module}",
+            "justMyCode": true
+        }
+    ],
+    "inputs": [
+        {
+            "id": "module",
+            "type": "pickString",
+            "description": "Select the module to run",
+            "options": [
+                {
+                    "label": "PCA-FL",
+                    "value": "pcafl"
+                }
+            ]
+        }
+    ]
+}

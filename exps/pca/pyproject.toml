@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "pcafl"
+version = "0.1.0"
+description = "Experiments for PCAFL"
+authors = ["l20lavau <leo.lavaur@imt-atlantique.fr>"]
+license = "MIT"
+readme = "README.md"
+packages = [ { include = "pcafl" } ]
+
+[tool.poetry.dependencies]
+python = "~3.10"
+eiffel-framework = {path = "../../libs/eiffel", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+black = "^23.3.0"
+isort = "^5.12.0"
+autoflake = "^2.1.1"
+
+# [tool.poetry.group.darwin.dependencies]
+# eiffel-framework = {path = "../../libs/eiffel", develop = true, extras = ["darwin"], platform = "darwin"}
+
+# [tool.poetry.group.linux.dependencies]
+# eiffel-framework = {path = "../../libs/eiffel", develop = true, extras = ["linux"], platform = "linux"}
+
+[tool.poetry.scripts]
+pcafl = "pcafl:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

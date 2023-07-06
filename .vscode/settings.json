@@ -1,0 +1,20 @@
+{
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+    "python.formatting.provider": "none",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.defaultInterpreterPath": "${env:EIFFEL_INTERPRETER_PATH}",
+
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": false,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
+}
