@@ -5,7 +5,7 @@ description = "Experiments for PCAFL"
 authors = ["l20lavau <leo.lavaur@imt-atlantique.fr>"]
 license = "MIT"
 readme = "README.md"
-packages = [ { include = "pcafl" } ]
+#packages = [ { include = "pcafl", from = "src" } ]
 
 [tool.poetry.dependencies]
 python = "~3.10"
@@ -23,8 +23,8 @@ autoflake = "^2.1.1"
 # [tool.poetry.group.linux.dependencies]
 # eiffel-framework = {path = "../../libs/eiffel", develop = true, extras = ["linux"], platform = "linux"}
 
-[tool.poetry.scripts]
-pcafl = "pcafl:main"
+#[tool.poetry.scripts]
+#pcafl = "pcafl:main"
 
 [build-system]
 requires = ["poetry-core"]

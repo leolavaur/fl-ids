@@ -1,29 +1,34 @@
 {
     "configurations": [
-        {
-            "name": "PCA-FL",
-            "type": "python",
-            "request": "launch",
-            "module": "pcafl",
-            "justMyCode": true
-        },
+    
         {
             "name": "Eiffel experiment",
             "type": "python",
             "request": "launch",
-            "module": "${input:module}",
+            "module": "eiffel",
+            "args": [
+                "--config-dir",
+                "${workspaceFolder}/exps/${input:experiment}/src/",
+            ],
             "justMyCode": true
-        }
+        },
+        {
+                "name": "Eiffel",
+                "type": "python",
+                "request": "launch",
+                "module": "eiffel",
+                "justMyCode": true
+            },
     ],
     "inputs": [
         {
-            "id": "module",
+            "id": "experiment",
             "type": "pickString",
-            "description": "Select the module to run",
+            "description": "Select the experiment to run",
             "options": [
                 {
                     "label": "PCA-FL",
-                    "value": "pcafl"
+                    "value": "pca"
                 }
             ]
         }
