@@ -100,6 +100,13 @@
                     gpustat = super.gpustat.overrideAttrs (old: {
                       buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools super.setuptools-scm ];
                     });
+                    opencensus = super.opencensus.overrideAttrs (old: {
+                      # See: https://github.com/DavHau/mach-nix/issues/255#issuecomment-812984772
+                      postInstall = ''
+                        rm $out/lib/python3.10/site-packages/opencensus/common/__pycache__/__init__.cpython-310.pyc
+                        rm $out/lib/python3.10/site-packages/opencensus/__pycache__/__init__.cpython-310.pyc
+                      '';
+                    });
                   });
                 }) expList; # ++ [ eiffel ];
 
