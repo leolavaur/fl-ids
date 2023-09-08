@@ -1,16 +1,20 @@
+import os
 from logging import getLogger
 from pathlib import Path
 
 from omegaconf import OmegaConf
 
-logger = getLogger(__name__)
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
+
+log = getLogger("eiffel")
 
 
 def gitdir():
     for p in (Path.cwd(), *Path.cwd().parents):
         if (p / ".git").exists():
             return str(p)
-    logger.warning("No git directory found.")
+    log.warning("No git directory found.")
     return str(Path.cwd())
 
 

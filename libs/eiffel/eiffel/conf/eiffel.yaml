@@ -1,10 +1,31 @@
-# Eiffel configuration file with Hydra
+# eiffel -- Evaluation framework for FL-based intrusion detection using Flower. 
+# ---------
+# 
+# Configuration for eiffel.
+# 
+# We use Hydra to pass parameters to eiffel. Hydra's configuration is composable and
+# overridable. This file is the main entrypoint that is distributed with Eiffel. It
+# contains default values for most parameters, and is meant to be overriden by users.
+# 
+# Users SHOULD create a `config.yaml` file in their project directory, and use the
+# `--config-dir` option to add their working directory to Hydra's search path.
+# Otherwise, users can also override parameters on the command line using the
+# `<config>=<option>` syntax.
+#
+# See:
+# - https://hydra.cc/docs/advanced/override_grammar/basic/
+
 
 defaults:
   - _self_
-  - dataset: 
-  - optional src: config
 
+  # Available datasets.
+  - datasets:
+    - cicids
+  
+  - optional .@_global_: config  # Optional user configuration file.
+  - override hydra/job_logging: eiffel
+  
 
 hydra:
   # TODO: add overrides in the output path
@@ -14,3 +35,4 @@ hydra:
   sweep:
     dir: ${gitdir:}/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${hydra.job.override_dirname}
+

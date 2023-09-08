@@ -73,6 +73,18 @@
       devShells = forAllSystems (pkgs:
         let
 
+          eiffel = pkgs.poetry2nix.mkPoetryEnv {
+                  projectDir = ./libs/eiffel;
+                  editablePackageSources = { eiffel = ./libs/eiffel; };
+                  preferWheels = true;
+                  python = pkgs.${pythonVer};
+                  overrides = pkgs.poetry2nix.defaultPoetryOverrides.extend (self: super: {
+                    tensorflow-io-gcs-filesystem = super.tensorflow-io-gcs-filesystem.overrideAttrs (old: {
+                      buildInputs = old.buildInputs ++ [ pkgs.libtensorflow ];
+                    });
+                  });
+                };
+
           env = pkgs.buildEnv  {
               name = "env";
               paths = builtins.map (exp:
@@ -83,11 +95,18 @@
                   python = pkgs.${pythonVer};
                   overrides = pkgs.poetry2nix.defaultPoetryOverrides.extend (self: super: {
                     tensorflow-io-gcs-filesystem = super.tensorflow-io-gcs-filesystem.overrideAttrs (old: {
-                      buildInputs = old.buildInputs ++ [ pkgs.libtensorflow ];
+                      buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.libtensorflow ];
+                    });
+                    gpustat = super.gpustat.overrideAttrs (old: {
+                      buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools super.setuptools-scm ];
                     });
                   });
-                }) expList;
+                }) expList; # ++ [ eiffel ];
+
+              ignoreCollisions = true; # 
+
             };
+
         in
         with pkgs; {
           default = mkShellNoCC {
@@ -95,6 +114,9 @@
             packages = [
               # this environment
               env
+
+              # tools
+              poetry
             ];
 
             shellHook = ''
@@ -108,9 +130,11 @@
                 "${cudaPackages.cudatoolkit}/lib"
                 "${cudaPackages.cudatoolkit.lib}/lib"
                 "${cudaPackages.cudnn}/lib"
-              ]}
-            '' else "") + ":$LD_LIBRARY_PATH";
+              ]} 
+            '' + ":$LD_LIBRARY_PATH" else "");
           };
+
+          eiffel = eiffel;
 
         });
 

@@ -1,5 +1,15 @@
-# @package _global_
-toto: 12
+
+
+hardware:
+  # Per-client ressources. These fields are passed as-is to Flower, which gives them
+  # then to Ray. See: https://flower.dev/docs/framework/how-to-run-simulations.html.
+  num_gpu: 0
+  num_cpu: 0
+
+distribution:
+  - data: ${datasets.nfv2.botiot}
 
 defaults:
-  - strategy: somestrategy
+  - datasets:
+    - nb15
+    - nfv2/botiot

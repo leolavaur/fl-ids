@@ -1,20 +1,14 @@
 {
-    "isort.args": [
-        "--profile",
-        "black"
-    ],
-    "python.formatting.provider": "none",
-    "python.analysis.typeCheckingMode": "basic",
-    "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.defaultInterpreterPath": "${env:EIFFEL_INTERPRETER_PATH}",
-
+    "python.formatting.provider": "black",
+    
     "[python]": {
         "editor.formatOnSave": true,
-        "editor.formatOnPaste": false,
         "editor.codeActionsOnSave": {
+            "source.fixAll": true,
             "source.organizeImports": true
         },
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+        "editor.formatOnPaste": false,
+    },
 }
