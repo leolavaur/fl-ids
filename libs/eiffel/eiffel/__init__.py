@@ -7,10 +7,11 @@ from omegaconf import OmegaConf
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-log = getLogger("eiffel")
+log = getLogger(__name__)
 
 
 def gitdir():
+    """OmegaConf resolver to get the git directory."""
     for p in (Path.cwd(), *Path.cwd().parents):
         if (p / ".git").exists():
             return str(p)

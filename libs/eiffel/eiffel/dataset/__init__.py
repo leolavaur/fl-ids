@@ -4,4 +4,9 @@ Each dataset submodule must implement the `load_data` function, which loads a gi
 dataset in memory, and optionally a `download` function, which downloads the dataset.
 """
 
-from .common import BatchLoader, Dataset
+from pathlib import Path
+from tempfile import gettempdir
+
+from .common import Dataset, DatasetHolder
+
+DEFAULT_SEARCH_PATH = Path(gettempdir()) / "eiffel-data"

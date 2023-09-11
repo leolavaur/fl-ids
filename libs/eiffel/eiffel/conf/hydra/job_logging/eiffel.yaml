@@ -21,7 +21,7 @@ version: 1
 
 formatters:
   colored:
-    (): eiffel.engine.logging.ColoredFormatter
+    (): eiffel.utils.logging.ColoredFormatter
     verbose_loggers: ${hydra.verbose}
   simple:
     format: '%(asctime)s [%(levelname)s] %(name)s:%(filename)s:%(lineno)d > %(message)s'

@@ -7,7 +7,7 @@ from hydra.utils import instantiate
 from omegaconf import DictConfig
 
 from ..dataset.common import Dataset
-from .poisoning import PoisonIns
+from ..utils.poisoning import PoisonIns
 
 
 class Experiment:

@@ -3,9 +3,10 @@
 import logging
 
 import hydra
+from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
-from .engine.logging import logged
+from .utils.logging import logged
 
 
 @logged
@@ -26,6 +27,9 @@ def main(cfg: DictConfig):
         exit(1)
 
     print(OmegaConf.to_yaml(cfg, resolve=True))
+
+    facade = instantiate(cfg.datasets.nfv2.sampled.botiot)
+    print(facade)
 
 
 if __name__ == "__main__":

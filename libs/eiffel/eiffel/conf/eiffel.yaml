@@ -18,11 +18,16 @@
 
 defaults:
   - _self_
-
-  # Available datasets.
   - datasets:
-    - cicids
+    # Available datasets.
+    - nfv2/sampled/cicids
+    - nfv2/sampled/nb15
+    - nfv2/sampled/botiot
+    - nfv2/sampled/toniot
+
+
   
+
   - optional .@_global_: config  # Optional user configuration file.
   - override hydra/job_logging: eiffel
   

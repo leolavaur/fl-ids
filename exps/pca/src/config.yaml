@@ -1,15 +1,31 @@
 
 
-hardware:
-  # Per-client ressources. These fields are passed as-is to Flower, which gives them
-  # then to Ray. See: https://flower.dev/docs/framework/how-to-run-simulations.html.
-  num_gpu: 0
-  num_cpu: 0
+experiment:
+  # Experiment confirguration
 
-distribution:
-  - data: ${datasets.nfv2.botiot}
+  hardware:
+    # Per-client ressources. These fields are passed as-is to Flower, which gives them
+    # then to Ray. See: https://flower.dev/docs/framework/how-to-run-simulations.html.
+    num_gpu: 0
+    num_cpu: 0
+
+  distribution:
+    # Client distribution and types.
+    - bundle:
+        benign: 7
+        malicious: 3
+      data: ${datasets.nfv2.sampled.botiot}
+      attack:
+        target: [ DoS ]
+      target: [ Reconnaissance ]
+    - clients: 10
+      data: ${datasets.nfv2.sampled.cicids}
+    - clients: 10
+      data: ${datasets.nfv2.sampled.nb15}
+    - clients: 10
+      data: ${datasets.nfv2.sampled.toniot}
 
 defaults:
-  - datasets:
-    - nb15
-    - nfv2/botiot
+  - _self_
+
+

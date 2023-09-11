@@ -112,8 +112,8 @@ def parse_poisoning_selector(
         decrement at each round. It is up to the implementation to decide whether to
         raise an error, warn the user, or fail silently.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     selector : str
         Fraction of the data set to poison. Implementations SHOULD support the format
         "(o)x(s)" where `x` is a float between 0 and 1, `s` is a round selector, and `o`
@@ -122,8 +122,8 @@ def parse_poisoning_selector(
     n_rounds : int
         Number of rounds in the experiment.
 
-    Returns:
-    --------
+    Returns
+    -------
     float
         Base fraction of the data set to poison.
     Optional[PoisonTasks]

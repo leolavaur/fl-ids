@@ -5,262 +5,21 @@ framework. It provides a unified interface for loading datasets, regardless of t
 format.
 """
 
-# Required for type annotations to work with Python 3.7+, and especially forward
-# references:
-# class C:
-#     def foo(self) -> "C":
-#         return self
-from __future__ import annotations
 
 import math
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import gettempdir
-from typing import List, Optional, Tuple, overload, Hashable
+from typing import Hashable, List, Optional, Tuple, overload
 
-import ray
 import numpy as np
 import pandas as pd
+import ray
 from keras.utils import Sequence
 from sklearn.model_selection import train_test_split
 
-from ..engine.logging import logged
-from ..engine.poisoning import PoisonOp
-
-@ray.remote
-class DatasetHolder(dict):
-
-    def poison(self, key: Hashable) -> None:
-
-
-
-class DatasetFacade(metaclass=ABCMeta):
-    """Abstract class for a dataset management "Facade".
-
-    A Facade is a design pattern that provides a unified interface to a set of
-    interfaces in a subsystem. It defines a higher-level interface that makes the
-    subsystem easier to use.
-
-    This class provides a unified interface for managing datasets. To provide a dataset
-    to the Eiffel framework, a child class of DatasetFacade must be implemented. Its
-    `load_data` method MUST be implemented, and refered to in the configuration file.
-
-    The other methods are optional, and can be implemented if needed. Especially, the
-    `poison` is required the use case involves poisoning the dataset.
-    """
-
-    # Default path to the datasets.
-    # -----------------------------
-    # The dataset is downloaded to this path if it is not found.
-    # On Linux, the default path is `/tmp/eiffel-data/`.
-    # In the directory, datasets are organised as follows:
-    #   /tmp/trustfids-data/nfv2
-    #   ├── dataset_name
-    #   │   └── dataset_file.csv.gz
-    #   ├── dataset_collection
-    #   │   ├── dataset_name
-    #   │   │   └── dataset_file.csv.gz
-    #   │   ├── dataset_name_2
-    #   │   │   └── dataset_file_2.csv.gz
-    #   │   └── ...
-    #   └── ...
-    DEFAULT_BASE_PATH = Path(gettempdir()) / "eiffel-data"
-
-    @overload
-    def load_data(
-        cls,
-        key: str,
-        test_ratio: None = None,
-        n_partitions: None = None,
-        common_test: bool = False,
-        base_path: str | Path | None = None,
-        seed: Optional[int] = None,
-        shuffle: bool = True,
-    ) -> Dataset:
-        ...
-
-    @overload
-    def load_data(
-        cls,
-        key: str,
-        test_ratio: float,
-        n_partitions: None = None,
-        common_test: bool = False,
-        base_path: str | Path | None = None,
-        seed: Optional[int] = None,
-        shuffle: bool = True,
-    ) -> Tuple[Dataset, Dataset]:
-        ...
-
-    @overload
-    def load_data(
-        cls,
-        key: str,
-        test_ratio: None = None,
-        n_partitions: int = 0,
-        common_test: bool = False,
-        base_path: str | Path | None = None,
-        seed: Optional[int] = None,
-        shuffle: bool = True,
-    ) -> List[Dataset]:
-        ...
-
-    @overload
-    def load_data(
-        cls,
-        key: str,
-        test_ratio: float,
-        n_partitions: int,
-        common_test: bool = False,
-        base_path: str | Path | None = None,
-        seed: Optional[int] = None,
-        shuffle: bool = True,
-    ) -> List[Tuple[Dataset, Dataset]]:
-        ...
-
-    @abstractmethod
-    @classmethod
-    def load_data(
-        cls,
-        key: str,
-        test_ratio: Optional[float] = None,
-        n_partitions: Optional[int] = None,
-        common_test: bool = False,
-        base_path: str | Path | None = None,
-        seed: Optional[int] = None,
-        shuffle: bool = True,
-    ) -> (
-        Dataset
-        | Tuple[Dataset, Dataset]
-        | List[Dataset]
-        | List[Tuple[Dataset, Dataset]]
-    ):
-        """Load a dataset.
-
-        This function is overloaded to allow different output types depending on the
-        given parameters. The following output types are possible:
-
-        - `Dataset` if no split is performed.
-        - `Tuple[Dataset, Dataset]` if `test_ratio` is given. The first element is the
-            training set, the second element is the testing set.
-        - `List[Dataset]` if `n_partition` is given. The dataset is split into
-            `n_partition`.
-        - `List[Tuple[Dataset, Dataset]]` if `test_ratio` and `n_partition` are given.
-            The dataset is split into training and testing sets, which are then split
-            into `n_partition` depending on the `common_test` parameter.
-
-        Parameters
-        ----------
-        key : str
-            Key of the dataset to load. Can be a shortcut key or a path to a CSV file.
-        test_ratio : float, optional
-            Ratio of the testing set. If given, the dataset is split into a training and
-            a testing set.
-        n_partitions : int, optional
-            Number of partitions to split the dataset into. If given, the dataset is
-            split into `n_partition` partitions.
-        common_test : bool, optional
-            If `True`, `test_ratio` is given and `n_partition` is greater than 1, the
-            testing set is the same for all partitions.
-        base_path : str or Path, optional
-            Path to the directory containing the dataset. If not given, the dataset is
-            loaded from the default path.
-        seed : int, optional
-            Seed for shuffling the dataset.
-        shuffle : bool, optional
-            If `True`, the dataset is shuffled before being split.
-
-        Returns
-        -------
-        Union
-            Depending on the parameters, the function returns a single dataset, a tuple
-            of two datasets, a list of datasets or a list of tuples of two datasets.
-
-        Raises
-        ------
-        NotImplementedError
-            If the function is not implemented by the child class.
-        FileNotFoundError
-            If the dataset is not found at the given path.
-        """
-        raise NotImplementedError(f"{cls}: Load function not implemented.")
-
-    def _preprocess(cls, df: pd.DataFrame, shuffle) -> Dataset:
-        """Preprocess a dataset.
-
-        This function is called after loading the dataset, and before optionally
-        splitting it into partitions, or training and testing sets. This function MUST
-        be implemented by the child class.
-
-        Parameters
-        ----------
-        df : pd.DataFrame
-            The dataset to preprocess.
-
-        Returns
-        -------
-        Dataset
-            The preprocessed dataset.
-
-        Raises
-        ------
-        NotImplementedError
-            If the function is not implemented by the child class.
-        """
-        raise NotImplementedError(f"{cls}: Preprocess function not implemented.")
-
-    def download(cls, path: Optional[str] = None) -> None:
-        """Download the dataset to a given path.
-
-        If no path is given, the dataset is downloaded to the default path.
-        If the dataset is already present at the given path, no action is taken.
-
-        Parameters
-        ----------
-        path : str, optional
-            Path to the directory where to download the dataset, by default None.
-
-        Raises
-        ------
-        NotImplementedError
-            If the function is not implemented by the child class.
-        FileNotFoundError
-            If the given path does not exist.
-        """
-        raise NotImplementedError(f"{cls}: Download function not implemented.")
-
-    def poison(
-        cls,
-        dataset: Dataset,
-        ratio: float,
-        op: PoisonOp,
-        target_classes: Optional[List[str]] = None,
-        seed: Optional[int] = None,
-    ) -> Tuple[Dataset, int]:
-        """Poison a dataset.
-
-        Parameters
-        ----------
-        dataset : Dataset
-            Dataset to poison.
-        ratio : float
-            Ratio of the dataset to poison.
-        op : PoisonOp
-            Poisoning operation to apply.
-        target_classes : List[str], optional
-            List of target classes to poison. If None, all classes are poisoned.
-        seed : int, optional
-            Seed for shuffling the dataset.
-
-        Returns
-        -------
-        Dataset
-            The poisoned dataset.
-        int
-            Number of samples poisoned.
-        """
-        raise NotImplementedError(f"{cls}: Poison function not implemented.")
+from ..utils.poisoning import PoisonOp
 
 
 class BatchLoader(Sequence):
@@ -344,7 +103,7 @@ class Dataset:
             self.X.equals(other.X) and self.y.equals(other.y) and self.m.equals(other.m)
         )
 
-    def __getitem__(self, key: int | slice | list):
+    def __getitem__(self, key: int | slice | list) -> "Dataset":
         """Return the given slice of X, y and m.
 
         Parameters
@@ -358,7 +117,7 @@ class Dataset:
             Dataset containing the given slice.
         """
         assert isinstance(key, int) or isinstance(key, slice) or isinstance(key, list)
-        return Dataset(self.X[key], self.y[key], self.m[key])
+        return self.__class__(self.X[key], self.y[key], self.m[key])
 
     def to_sequence(
         self,
@@ -395,7 +154,7 @@ class Dataset:
         at: float,
         seed: int | None = None,
         stratify: Optional[pd.Series] = None,
-    ) -> Tuple[Dataset, Dataset]:
+    ) -> Tuple["Dataset", "Dataset"]:
         """Split the dataset into a training and a test set.
 
         Parameters
@@ -421,15 +180,26 @@ class Dataset:
         )
 
         return (
-            Dataset(X_train, y_train, m_train),
-            Dataset(X_test, y_test, m_test),
+            self.__class__(X_train, y_train, m_train),
+            self.__class__(X_test, y_test, m_test),
         )
 
-    def copy(self):
+    def copy(self) -> "Dataset":
         """Return a copy of the dataset."""
-        return Dataset(self.X.copy(), self.y.copy(), self.m.copy())
+        return self.__class__(self.X.copy(), self.y.copy(), self.m.copy())
 
-    def partition(self, n_partition: int) -> List[Dataset]:
+    def shuffle(self, seed: int | None = None):
+        """Shuffle the dataset."""
+        indices = np.arange(len(self.X))
+        if seed is not None:
+            np.random.seed(seed)
+        np.random.shuffle(indices)
+
+        self.X = self.X.iloc[indices]
+        self.y = self.y.iloc[indices]
+        self.m = self.m.iloc[indices]
+
+    def partition(self, n_partition: int) -> List["Dataset"]:
         """Partition the dataset into n partitions.
 
         Parameters
@@ -449,3 +219,65 @@ class Dataset:
             partitions.append(self[idx_from:idx_to].copy())
 
         return partitions
+
+    def poison(
+        self,
+        ratio: float,
+        op: PoisonOp,
+        target_classes: Optional[List[str]] = None,
+        seed: Optional[int] = None,
+    ) -> int:
+        """Increase or decrease the proportion of poisoned samples in the dataset.
+
+        This function MUST be implemented by the child class to allow poisoning.
+
+        Parameters
+        ----------
+        n: int
+            Number of samples to poison in the target. If `target` is None, the whole
+            dataset is poisoned.
+        op: PoisonOp
+            Poisoning operation to apply. Either PoisonOp.INC or PoisonOp.DEC.
+        target_classes: Optional[List[str]]
+            List of classes to poison. If None, all classes are poisoned, including
+            benign samples.
+        seed: Optional[int]
+            Seed for reproducibility.
+
+        Returns
+        -------
+        int
+            The number of samples that have been modified.
+
+        Raises
+        ------
+        NotImplementedError
+            If the function is not implemented by the child class.
+        """
+        raise NotImplementedError(
+            f"{self.__class__}.poison():  function not implemented."
+        )
+
+
+@ray.remote
+class DatasetHolder(dict[Hashable, Dataset]):
+    """Dataset holder to store datasets in the Ray object store.
+
+    This class is used to store stateful datasets in the Ray object store. It is used to
+    preserve the state of the dataset between the different steps of the pipeline, as
+    Flower clients (up tp 1.5.0 at least) are ephemeral and do not preserve their state.
+
+    The class is a subclass of `dict`, and can be used as such. Datasets are stored
+    using the dict API (e.g. `dataset_holder["cicids"]` externally, and using
+    `self["cicids"]` inside the object).
+
+    Attributes
+    ----------
+    facade : DatasetFacade
+        The facade used to manage the datasets.
+    """
+
+    def poison(self, key: Hashable, *args, **kwargs) -> int:
+        """Poison the held dataset."""
+        n = self[key].poison(*args, **kwargs)
+        return n
