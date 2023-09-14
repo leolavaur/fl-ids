@@ -1,16 +1,21 @@
 """Module for poisoning-related data structures and helpers."""
 
 import re
+from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 
 class PoisonOp(str, Enum):
+    """Poisoning operation."""
+
     INC = "+"
     DEC = "-"
 
 
 class PoisonTask(NamedTuple):
+    """Poisoning task."""
+
     fraction: float
     operation: PoisonOp = PoisonOp.INC
 
@@ -18,66 +23,42 @@ class PoisonTask(NamedTuple):
 PoisonTasks = Dict[int, Optional[PoisonTask]]
 
 
-# Version with immutable value
-# -----------------------------
-class PoisonIns(NamedTuple):
-    target: List[str]
-    base: PoisonTask
-    tasks: Optional[PoisonTasks] = None
-    poison_eval: bool = False
+# @dataclass(frozen=True)
+# class PoisonIns:
+#     """Poisoning instructions."""
 
+#     target: List[str]
+#     base: PoisonTask
+#     tasks: Optional[PoisonTasks] = None
+#     poison_eval: bool = False
 
-#     # ensure that base.operation is Op.INC
-#     # TODO: find a way to do this on NamedTuple
 #     def __post_init__(self):
+#         """Validate the PoisonIns object."""
 #         if self.base.operation != PoisonOp.INC:
 #             raise ValueError(
 #                 f"PoisonIns.base.operation must be {PoisonOp.INC}, got {self.base.operation}"
 #             )
 
-# Version with input validation
-# -----------------------------
-# class PoisonIns:
-#     def __init__(
-#         self,
-#         target: List[str],
-#         base: PoisonTask,
-#         tasks: Optional[PoisonTasks] = None,
-#         poison_eval: bool = False,
-#     ) -> None:
-#         self._target = target
-#         self._base = base
-#         self._tasks = tasks
-#         self._poison_eval = poison_eval
 
-#     def __new__(
-#         cls,
-#         target: List[str],
-#         base: PoisonTask,
-#         tasks: Optional[PoisonTasks] = None,
-#         poison_eval: bool = False,
-#     ) -> "PoisonIns":
-#         if base.operation != PoisonOp.INC:
-#             raise ValueError(
-#                 f"PoisonIns.base.operation must be {PoisonOp.INC}, got {base.operation}"
-#             )
-#         return super().__new__(cls)
+class PoisonIns:
+    """Poisoning instructions."""
 
-#     @property
-#     def target(self) -> List[str]:
-#         return self._target
+    target: list[str]
+    base: PoisonTask
+    tasks: Optional[PoisonTasks] = None
+    poison_eval: bool = False
 
-#     @property
-#     def base(self) -> PoisonTask:
-#         return self._base
-
-#     @property
-#     def tasks(self) -> Optional[PoisonTasks]:
-#         return self._tasks
-
-#     @property
-#     def poison_eval(self) -> bool:
-#         return self._poison_eval
+    def __init__(
+        self,
+        target: list[str],
+        selector: str,
+        n_rounds: int,
+        poison_eval: bool = False,
+    ):
+        """Initialize the PoisonIns object."""
+        self.target = target
+        self.base, self.tasks = parse_poisoning_selector(selector, n_rounds)
+        self.poison_eval = poison_eval
 
 
 def parse_poisoning_selector(

@@ -28,9 +28,6 @@ def main(cfg: DictConfig):
 
     print(OmegaConf.to_yaml(cfg, resolve=True))
 
-    facade = instantiate(cfg.datasets.nfv2.sampled.botiot)
-    print(facade)
-
 
 if __name__ == "__main__":
     main()

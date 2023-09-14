@@ -10,22 +10,23 @@ experiment:
     num_cpu: 0
 
   distribution:
-    # Client distribution and types.
-    - bundle:
+    # Client pools.
+    - dataset: ${datasets.${data}}
+      clients:
         benign: 7
         malicious: 3
-      data: ${datasets.nfv2.sampled.botiot}
-      attack:
-        target: [ DoS ]
       target: [ Reconnaissance ]
-    - clients: 10
-      data: ${datasets.nfv2.sampled.cicids}
-    - clients: 10
-      data: ${datasets.nfv2.sampled.nb15}
-    - clients: 10
-      data: ${datasets.nfv2.sampled.toniot}
+      target_ref: ${.target}
+      attack: ${attacks.profile}
+        # profile: ${attack.poisoning.profile}
+        # type: ${attack.poisoning.type}
+
+  attack:
+    type: str
+    profile: str
 
 defaults:
   - _self_
 
-
+  - attacks/type: targeted
+  - attacks/profile: decrement

@@ -1,8 +1,8 @@
 """NF-V2 Dataset utilities.
 
-This module contains functions to load and prepare the NF-V2 dataset for
-Deep Learning applications. The NF-V2 dataset is a collection of 4 datasets
-with a standardised set of features. The datasets are:
+This module contains functions to load and prepare the NF-V2 dataset for Deep Learning
+applications. The NF-V2 dataset is a collection of 4 datasets with a standardised set of
+features. The datasets are:
     * CSE-CIC-IDS-2018
     * UNSW-NB15
     * ToN-IoT
@@ -11,24 +11,22 @@ with a standardised set of features. The datasets are:
 The NF-V2 dataset is available at:
     https://staff.itee.uq.edu.au/marius/NIDS_datasets/
 
-Part of the code in this module is based on the code from Bertoli et al. (2022),
-who tested Federated Learning on the NF-V2 dataset.
-
-The code is available at:
-    https://github.com/c2dc/fl-unsup-nids
+Part of the code in this module is inspired on the code from Bertoli et al. (2022), who
+tested Federated Learning on the NF-V2 dataset. See:
+https://github.com/c2dc/fl-unsup-nids
 
 References
 ----------
-    * Sarhan, M., Layeghy, S. & Portmann, M., Towards a Standard Feature Set for
-      Network Intrusion Detection System Datasets. Mobile Netw Appl (2021).
+    * Sarhan, M., Layeghy, S. & Portmann, M., Towards a Standard Feature Set for Network
+      Intrusion Detection System Datasets. Mobile Netw Appl (2021).
       https://doi.org/10.1007/s11036-021-01843-0 
     * Bertoli, G., Junior, L., Santos, A., & Saotome, O., Generalizing intrusion
-      detection for heterogeneous networks: A stacked-unsupervised federated
-      learning approach. arXiv preprint arxiv:2209.00721 (2022).
-      https://arxiv.org/abs/2209.00721
+      detection for heterogeneous networks: A stacked-unsupervised federated learning
+      approach. arXiv preprint arxiv:2209.00721 (2022). https://arxiv.org/abs/2209.00721
 """
 
 import operator
+import tempfile
 from pathlib import Path
 from tempfile import gettempdir
 from typing import List, Optional, Tuple, overload
@@ -39,10 +37,10 @@ from omegaconf import ListConfig
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
-from eiffel.dataset import DEFAULT_SEARCH_PATH, Dataset
+from eiffel.datasets import DEFAULT_SEARCH_PATH, Dataset
 from eiffel.utils.logging import logged
 
-from ..utils.poisoning import PoisonOp
+from .poisoning import PoisonOp
 
 # Shortcuts names for dataset paths.
 # ----------------------------------
@@ -90,7 +88,7 @@ RM_COLS = [
 ]
 
 
-class NFV2(Dataset):
+class NFV2Dataset(Dataset):
     """NF-V2 Dataset."""
 
     def poison(
@@ -192,7 +190,7 @@ def load_data(
     search_path: str | Path | None = None,
     seed: Optional[int] = None,
     shuffle: bool = True,
-) -> NFV2:
+) -> NFV2Dataset:
     """Load a dataset.
 
     This function is overloaded to allow different output types depending on the
@@ -263,6 +261,7 @@ def load_data(
         elif key in DATASET_KEYS:
             # if the path is not reachable, check if it is a shortcut key
             base = Path(DEFAULT_SEARCH_PATH)
+            path = base / Path(DATASET_KEYS[key])
         else:
             # Else, assume the path is relative to the default base path
             base = Path(DEFAULT_SEARCH_PATH)
@@ -310,4 +309,35 @@ def load_data(
     scaler.fit(X)
     X[X.columns] = scaler.transform(X)
 
-    return NFV2(X, y, m)
+    return NFV2Dataset(X, y, m)
+
+
+def mk_nfv2_mockset(size: int, iid: bool, seed=None) -> NFV2Dataset:
+    """Create a mock NF-V2 dataset."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        data_path = f"{tmpdir}/nfv2.csv"
+
+        cols = RM_COLS + ["col1", "col2"]
+        mock_df = pd.DataFrame(np.random.rand(size, len(cols)), columns=cols)
+
+        # fill the "Attack" column with random values in {"Benign", "Botnet", "Dos",
+        # "DDoS"}
+        if iid:
+            if size % 4 != 0:
+                # if the dataset is not divisible by 4, the classes will not be balanced
+                raise ValueError(
+                    "Cannot create an IID dataset with a size that is not divisible by 4.",
+                    size,
+                )
+            mock_df["Attack"] = np.array(
+                ["Benign", "Botnet", "Dos", "DDoS"] * (size // 4)
+            )
+        else:
+            mock_df["Attack"] = np.random.choice(
+                ["Benign", "Botnet", "Dos", "DDoS"], size=len(mock_df)
+            )
+        mock_df = mock_df.astype({"Attack": "category"})
+        mock_df["Label"] = mock_df["Attack"] == "Benign"
+        mock_df.to_csv(data_path, index=False)
+
+        return load_data(data_path, seed=seed, shuffle=True)

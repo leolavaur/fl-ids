@@ -2,7 +2,8 @@
 
 import pandas as pd
 import pytest
-from trustfids.dataset.poisoning import (
+
+from eiffel.datasets.poisoning import (
     PoisonIns,
     PoisonOp,
     PoisonTask,
@@ -11,6 +12,7 @@ from trustfids.dataset.poisoning import (
 
 
 def test_parse_poisoning_selector():
+    """Test parse_poisoning_selector()."""
     assert parse_poisoning_selector("0.5", 10) == (PoisonTask(0.5), None)
     assert parse_poisoning_selector("1", 10) == (PoisonTask(1.0), None)
     assert parse_poisoning_selector("0.0+0.1[:5]", 10) == (
@@ -81,12 +83,12 @@ def test_parse_poisoning_selector():
         _ = parse_poisoning_selector("toto", 1)
 
 
-# TODO: see poioning.py
 # ensure that `PoisonIns.base`'s operator is always `PoisonOp.INC`
-# def test_PoisonIns():
-#   with pytest.raises(ValueError):
-#       _ = PoisonIns(
-#           target=["DoS"],
-#           base=PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
-#           tasks=None,
-#       )
+def test_PoisonIns():
+    """Test PoisonIns."""
+    with pytest.raises(ValueError):
+        _ = PoisonIns(
+            target=["DoS"],
+            base=PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
+            tasks=None,
+        )

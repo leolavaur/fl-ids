@@ -8,7 +8,7 @@ format.
 
 import math
 from abc import ABCMeta, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Hashable, List, Optional, Tuple, overload
@@ -19,7 +19,9 @@ import ray
 from keras.utils import Sequence
 from sklearn.model_selection import train_test_split
 
-from ..utils.poisoning import PoisonOp
+from eiffel.utils.typing import ConfigDict
+
+from .poisoning import PoisonOp
 
 
 class BatchLoader(Sequence):
@@ -173,7 +175,7 @@ class Dataset:
             Tuple of the training and test sets.
         """
         X_train, X_test, y_train, y_test, m_train, m_test = train_test_split(
-            *self,
+            *self.to_tuple(),
             train_size=at,
             random_state=seed,
             stratify=np.array(stratify) if stratify is not None else None,
@@ -199,26 +201,11 @@ class Dataset:
         self.y = self.y.iloc[indices]
         self.m = self.m.iloc[indices]
 
-    def partition(self, n_partition: int) -> List["Dataset"]:
-        """Partition the dataset into n partitions.
-
-        Parameters
-        ----------
-        n_partition : int
-            Number of partitions.
-
-        Returns
-        -------
-            List of Datasets.
-        """
-        partition_size = math.floor(len(self.X) / n_partition)
-        partitions = []
-        for i in range(n_partition):
-            idx_from, idx_to = i * partition_size, (i + 1) * partition_size
-
-            partitions.append(self[idx_from:idx_to].copy())
-
-        return partitions
+    def drop(self, indices: list[int]):
+        """Drop the given indices from the dataset."""
+        self.X = self.X.drop(indices)
+        self.y = self.y.drop(indices)
+        self.m = self.m.drop(indices)
 
     def poison(
         self,
@@ -255,7 +242,7 @@ class Dataset:
             If the function is not implemented by the child class.
         """
         raise NotImplementedError(
-            f"{self.__class__}.poison():  function not implemented."
+            f"{self.__class__}.poison(): function not implemented."
         )
 
 

@@ -16,17 +16,26 @@
 # - https://hydra.cc/docs/advanced/override_grammar/basic/
 
 
+# Override schema.
+dataset:
+attack-type:
+attack-profile:
+num_clients:
+num_rounds:
+num_epochs:
+batch_size:
+
+
+# Loaded configuration for CLI overrides.
 defaults:
   - _self_
-  - datasets:
+
+  - eiffel/datasets@_datasets:
     # Available datasets.
     - nfv2/sampled/cicids
     - nfv2/sampled/nb15
     - nfv2/sampled/botiot
     - nfv2/sampled/toniot
-
-
-  
 
   - optional .@_global_: config  # Optional user configuration file.
   - override hydra/job_logging: eiffel
@@ -40,4 +49,5 @@ hydra:
   sweep:
     dir: ${gitdir:}/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${hydra.job.override_dirname}
+
 

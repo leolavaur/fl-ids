@@ -6,8 +6,8 @@ from flwr.server.history import History
 from hydra.utils import instantiate
 from omegaconf import DictConfig
 
-from ..dataset.common import Dataset
-from ..utils.poisoning import PoisonIns
+from ..datasets.dataset import Dataset
+from ..datasets.poisoning import PoisonIns
 
 
 class Experiment:
