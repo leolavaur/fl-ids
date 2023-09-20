@@ -8,12 +8,32 @@ features. The datasets are:
     * ToN-IoT
     * Bot-IoT
 
-The NF-V2 dataset is available at:
-    https://staff.itee.uq.edu.au/marius/NIDS_datasets/
+The NF-V2 dataset is available at: https://staff.itee.uq.edu.au/marius/NIDS_datasets/
 
 Part of the code in this module is inspired on the code from Bertoli et al. (2022), who
 tested Federated Learning on the NF-V2 dataset. See:
 https://github.com/c2dc/fl-unsup-nids
+
+
+File structure
+--------------
+
+Wether it is downloaded using Eiffel or not, the NF-V2 dataset is expected to follow the
+following file structure. You should rename the files to match the structure if you
+download the dataset manually.
+```
+.../nfv2
+    ├── origin
+    │   ├── botiot.csv.gz
+    │   ├── cicids.csv.gz
+    │   ├── toniot.csv.gz
+    │   └── nb15.csv.gz
+    ├── sampled
+    │   ├── botiot.csv.gz
+    │   └── ...
+    └── reduced
+        └── ...
+```
 
 References
 ----------
@@ -42,36 +62,8 @@ from eiffel.utils.logging import logged
 
 from .poisoning import PoisonOp
 
-# Shortcuts names for dataset paths.
-# ----------------------------------
-# In the data directory, datasets are organised as follows:
-#   .../nfv2
-#       ├── origin
-#       │   ├── NF-BoT-IoT-v2.csv.gz
-#       │   ├── NF-CSE-CIC-IDS2018-v2.csv.gz
-#       │   ├── NF-ToN-IoT-v2.csv.gz
-#       │   └── NF-UNSW-NB15-v2.csv.gz
-#       ├── reduced
-#       │   ├── botiot_reduced.csv.gz
-#       │   ├── cicids_reduced.csv.gz
-#       │   ├── toniot_reduced.csv.gz
-#       │   └── nb15_reduced.csv.gz
-#       └── sampled
-#           └── ...
-DATASET_KEYS = {
-    "origin/botiot": "origin/NF-BoT-IoT-v2.csv.gz",
-    "origin/cicids": "origin/NF-CSE-CIC-IDS2018-v2.csv.gz",
-    "origin/toniot": "origin/NF-ToN-IoT-v2.csv.gz",
-    "origin/nb15": "origin/NF-UNSW-NB15-v2.csv.gz",
-    "reduced/botiot": "reduced/botiot_reduced.csv.gz",
-    "reduced/cicids": "reduced/cicids_reduced.csv.gz",
-    "reduced/toniot": "reduced/toniot_reduced.csv.gz",
-    "reduced/nb15": "reduced/nb15_reduced.csv.gz",
-    "sampled/botiot": "sampled/botiot_sampled.csv.gz",
-    "sampled/cicids": "sampled/cicids_sampled.csv.gz",
-    "sampled/toniot": "sampled/toniot_sampled.csv.gz",
-    "sampled/nb15": "sampled/nb15_sampled.csv.gz",
-}
+DEFAULT_SEARCH_PATH = DEFAULT_SEARCH_PATH / "nfv2"
+
 
 # Columns to drop from the dataset.
 # ---------------------------------
@@ -90,6 +82,8 @@ RM_COLS = [
 
 class NFV2Dataset(Dataset):
     """NF-V2 Dataset."""
+
+    _stratify_column = "Attack"
 
     def poison(
         self: Dataset,
@@ -186,39 +180,19 @@ class NFV2Dataset(Dataset):
 
 
 def load_data(
-    key: str,
+    path: str,
     search_path: str | Path | None = None,
     seed: Optional[int] = None,
     shuffle: bool = True,
+    **kwargs,
 ) -> NFV2Dataset:
     """Load a dataset.
 
-    This function is overloaded to allow different output types depending on the
-    given parameters. The following output types are possible:
-
-    - `Dataset` if no split is performed.
-    - `Tuple[Dataset, Dataset]` if `test_ratio` is given. The first element is the
-        training set, the second element is the testing set.
-    - `List[Dataset]` if `n_partition` is given. The dataset is split into
-        `n_partition`.
-    - `List[Tuple[Dataset, Dataset]]` if `test_ratio` and `n_partition` are given.
-        The dataset is split into training and testing sets, which are then split
-        into `n_partition` depending on the `common_test` parameter.
-
     Parameters
     ----------
-    key : str
+    path : str
         Key of the dataset to load. Can be a shortcut key or a path to a CSV file.
-    test_ratio : float, optional
-        Ratio of the testing set. If given, the dataset is split into a training and
-        a testing set.
-    n_partitions : int, optional
-        Number of partitions to split the dataset into. If given, the dataset is
-        split into `n_partition` partitions.
-    common_test : bool, optional
-        If `True`, `test_ratio` is given and `n_partition` is greater than 1, the
-        testing set is the same for all partitions.
-    base_path : str or Path, optional
+    search_path : str or Path, optional
         Path to the directory containing the dataset. If not given, the dataset is
         loaded from the default path.
     seed : int, optional
@@ -228,63 +202,40 @@ def load_data(
 
     Returns
     -------
-    Union
-        Depending on the parameters, the function returns a single dataset, a tuple
-        of two datasets, a list of datasets or a list of tuples of two datasets.
+    NFV2Dataset
+        The loaded dataset.
 
     Raises
     ------
-    NotImplementedError
-        If the function is not implemented by the child class.
     FileNotFoundError
         If the dataset is not found at the given path.
     """
     # PATH MANAGEMENT
     # ---------------
 
-    # Assume key is a path to a CSV file
-    # Allow not to specify the extension
-    if search_path is None:
-        if (
-            Path(key).exists()
-            or Path(key + ".csv").exists()
-            or Path(key + ".csv.gz").exists()
-        ):
-            # If the path is reachable, use it
-            if Path(key).is_absolute():
-                base = Path("/")
-            else:
-                base = Path(".")
+    path = Path(path)
 
-            path = base / Path(key)
-
-        elif key in DATASET_KEYS:
-            # if the path is not reachable, check if it is a shortcut key
-            base = Path(DEFAULT_SEARCH_PATH)
-            path = base / Path(DATASET_KEYS[key])
-        else:
-            # Else, assume the path is relative to the default base path
-            base = Path(DEFAULT_SEARCH_PATH)
-            path = base / Path(key)
+    if path.exists() and path.is_file():
+        csv_path = path
 
     else:
-        # Assume the path is relative to the given base path
-        base = Path(search_path)
-        path = base / Path(key)
+        if search_path is None:
+            search_path = DEFAULT_SEARCH_PATH
+        else:
+            search_path = Path(search_path)
 
-    if not path.exists():
-        raise FileNotFoundError(
-            f"Dataset '{key}' not found."
-            " Either check your inputs, or download the dataset first.",
-            {
-                "key": key,
-                "base": base,
-                "current": Path(".").absolute(),
-                "path": path.resolve().absolute(),
-            },
-        )
+        if not search_path.exists():
+            raise FileNotFoundError(f"Search path does not exist: {search_path}")
 
-    df = pd.read_csv(path, low_memory=True)
+        csv_path = search_path / path
+
+        if not csv_path.exists():
+            raise FileNotFoundError(
+                f"Dataset not found: '{path}'",
+                {"search_path": search_path, "csv_path": csv_path},
+            )
+
+    df = pd.read_csv(csv_path, low_memory=True)
 
     # DATA PREPROCESSING
     # ------------------
@@ -309,7 +260,7 @@ def load_data(
     scaler.fit(X)
     X[X.columns] = scaler.transform(X)
 
-    return NFV2Dataset(X, y, m)
+    return NFV2Dataset(X, y, m, **kwargs)
 
 
 def mk_nfv2_mockset(size: int, iid: bool, seed=None) -> NFV2Dataset:

@@ -16,26 +16,49 @@
 # - https://hydra.cc/docs/advanced/override_grammar/basic/
 
 
-# Override schema.
-dataset:
-attack-type:
-attack-profile:
-num_clients:
-num_rounds:
-num_epochs:
-batch_size:
+# User API.
+# ---------
+
+# Optional parameters.
+num_attackers: 0
+num_clients: 10
+num_rounds: 10
+num_epochs: 10
+batch_size: 512
+
+# Attack parameters.
+attacks:
+  - type: untargeted  # untargeted or targeted
+    profile: ${poisoning/profile}
+
+# Distribution parameters.
+pools:
+  - n_clients: ${num_clients}
+    n_malicious: ${num_attackers}
+
+# Runtime configuration.
+experiment:
+  num_rounds: ${num_rounds}
+  num_epochs: ${num_epochs}
+  batch_size: ${batch_size}
+  strategy: ${strategy}
+
+  pools: "${pools}"
+
+  attacks: "${attacks}"
+
+  datasets: "${oc.dict.values: datasets}"
 
 
 # Loaded configuration for CLI overrides.
 defaults:
   - _self_
 
-  - eiffel/datasets@_datasets:
-    # Available datasets.
-    - nfv2/sampled/cicids
-    - nfv2/sampled/nb15
-    - nfv2/sampled/botiot
-    - nfv2/sampled/toniot
+  - datasets: ???
+
+  - strategy: fedavg
+
+  - poisoning/profile: loud
 
   - optional .@_global_: config  # Optional user configuration file.
   - override hydra/job_logging: eiffel

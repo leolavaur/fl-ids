@@ -17,6 +17,9 @@
             "type": "python",
             "request": "launch",
             "module": "eiffel",
+            "args": [
+                "dataset=${input:dataset}",
+            ],
             "justMyCode": true
         },
     ],
@@ -30,6 +33,17 @@
                     "label": "PCA-FL",
                     "value": "pca"
                 }
+            ]
+        },
+        {
+            "id": "dataset",
+            "type": "pickString",
+            "description": "Select the dataset to run",
+            "options": [
+                {
+                    "label": "BoT-IoT",
+                    "value": "nfv2.sampled.botiot"
+                },
             ]
         }
     ]

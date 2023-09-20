@@ -8,6 +8,7 @@ format.
 
 import math
 from abc import ABCMeta, abstractmethod
+from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import gettempdir
@@ -85,15 +86,21 @@ class Dataset:
     y: pd.Series
     m: pd.DataFrame
 
-    def to_tuple(self):
-        """Return the dataset as a tuple.
+    key: str | None = None
 
-        Returns
-        -------
-        Tuple[pd.DataFrame, pd.Series, pd.DataFrame]
-            Tuple of the dataset.
-        """
-        return self.X, self.y, self.m
+    _default_target: list[str] | None = None
+    _stratify_column: str | None = None
+    _stratify_df: str = "m"
+
+    def __post_init__(self):
+        """Check the validity of the stratify options."""
+        if self._stratify_column and self._stratify_column not in getattr(
+            self, self._stratify_df
+        ):
+            raise ValueError(
+                f"Stratify column {self._stratify_column} not found in DataFrame "
+                f"{self._stratify_df}"
+            )
 
     def __len__(self):
         """Return the length of the dataset."""
@@ -151,6 +158,16 @@ class Dataset:
             )
         raise IndexError("If not None, parameter `target` must be in [0, 2]")
 
+    def to_tuple(self):
+        """Return the dataset as a tuple.
+
+        Returns
+        -------
+        Tuple[pd.DataFrame, pd.Series, pd.DataFrame]
+            Tuple of the dataset.
+        """
+        return self.X, self.y, self.m
+
     def split(
         self,
         at: float,
@@ -181,14 +198,18 @@ class Dataset:
             stratify=np.array(stratify) if stratify is not None else None,
         )
 
-        return (
-            self.__class__(X_train, y_train, m_train),
-            self.__class__(X_test, y_test, m_test),
-        )
+        train_d = deepcopy(self.__dict__)
+        train_d["X"], train_d["y"], train_d["m"] = X_train, y_train, m_train
+        test_d = deepcopy(self.__dict__)
+        test_d["X"], test_d["y"], test_d["m"] = X_test, y_test, m_test
+
+        return (self.__class__(**train_d), self.__class__(**test_d))
 
     def copy(self) -> "Dataset":
         """Return a copy of the dataset."""
-        return self.__class__(self.X.copy(), self.y.copy(), self.m.copy())
+        return self.__class__(
+            **deepcopy(self.__dict__),
+        )
 
     def shuffle(self, seed: int | None = None):
         """Shuffle the dataset."""
@@ -244,6 +265,13 @@ class Dataset:
         raise NotImplementedError(
             f"{self.__class__}.poison(): function not implemented."
         )
+
+    @property
+    def default_target(self) -> list[str] | None:
+        """Return the default target for poisoning."""
+        if self._default_target is None:
+            raise ValueError("No default target set for this dataset.")
+        return self._default_target
 
 
 @ray.remote

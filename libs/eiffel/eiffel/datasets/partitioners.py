@@ -1,32 +1,22 @@
 """Dataset partitioners."""
 import math
-from abc import ABCMeta
-from dataclasses import dataclass, field
+from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
 from .dataset import Dataset
 
 
-@dataclass
 class Partitioner(metaclass=ABCMeta):
     """Abstract partitioner class."""
 
-    dataset: Dataset
     n_partitions: int
-    partitions: list[Dataset] = field(init=False)
+    partitions: list[Dataset]
 
-    def __post_init__(self) -> None:
-        """Check if __init__ has been correclty overridden."""
-        if (
-            not self.partitions
-            or not isinstance(self.partitions, list)
-            or not all(isinstance(p, Dataset) for p in self.partitions)
-        ):
-            raise NotImplementedError(
-                f"{self.__class__}.__init__(): "
-                "function not implemented, or not implemented correctly."
-            )
+    def __init__(self, n_partitions: int) -> None:
+        """Initialize the partitioner."""
+        self.n_partitions = n_partitions
+        self.partitions = []
 
     def __len__(self) -> int:
         """Return the number of partitions."""
@@ -36,9 +26,29 @@ class Partitioner(metaclass=ABCMeta):
         """Return the dataset at the given index."""
         return self.partitions[idx]
 
-    def all(self) -> Dataset:
+    @abstractmethod
+    def _partition(self, dataset: Dataset) -> None:
+        """Partition the dataset.
+
+        This function should be implemented by the subclasses.
+        """
+        raise NotImplementedError
+
+    def load(self, dataset: Dataset) -> None:
+        """Load and partition the dataset."""
+        self.dataset = dataset
+
+    def all(self) -> list[Dataset]:
         """Return all the partitions."""
         return self.partitions
+
+    def one(self, n: int) -> Dataset:
+        """Return one partition."""
+        return self.partitions[n]
+
+    def pop(self) -> Dataset:
+        """Return and remove the last partition."""
+        return self.partitions.pop()
 
 
 class DumbPartitioner(Partitioner):
@@ -48,16 +58,14 @@ class DumbPartitioner(Partitioner):
     based on their indices. There is no guarantee that the partitions will be balanced.
     """
 
-    def __init__(self, dataset: Dataset, n_partitions: int) -> None:
-        """Initialize the IID partitioner."""
-        partition_size = math.floor(len(dataset.X) / n_partitions)
+    def _partition(self, dataset: Dataset) -> None:
+        """Partition the dataset."""
+        partition_size = math.floor(len(dataset.X) / self.n_partitions)
         self.partitions = []
-        for i in range(n_partitions):
+        for i in range(self.n_partitions):
             idx_from, idx_to = i * partition_size, (i + 1) * partition_size
 
             self.partitions.append(dataset[idx_from:idx_to])
-
-        super().__init__(dataset, n_partitions)
 
 
 class IIDPartitioner(Partitioner):
@@ -67,54 +75,72 @@ class IIDPartitioner(Partitioner):
     `train_test_split()` from scikit-learn.
     """
 
-    def __init__(
-        self, dataset: Dataset, n_partitions: int, class_column: str, df_key: str = "m"
-    ) -> None:
-        """Initialize the IID partitioner."""
-        if not hasattr(dataset, df_key):
-            raise KeyError(f"Dataset does not contain a DataFrame with key {df_key}")
+    class_column: str
+    df_key: str
 
-        if class_column not in getattr(dataset, df_key).columns:
-            raise KeyError(f"Dataset does not contain a column named {class_column}")
+    def __init__(self, *args, class_column: str, df_key: str = "m", **kwargs) -> None:
+        """Initialize the IID partitioner."""
+        self.class_column = class_column
+        self.df_key = df_key
+        super().__init__(*args, **kwargs)
+
+    def _partition(self, dataset: Dataset) -> None:
+        """Partition the dataset."""
+        if not hasattr(dataset, self.df_key):
+            raise KeyError(
+                f"Dataset does not contain a DataFrame with key {self.df_key}"
+            )
+
+        if self.class_column not in getattr(dataset, self.df_key).columns:
+            raise KeyError(
+                f"Dataset does not contain a column named {self.class_column}"
+            )
 
         self.partitions = []
 
-        for _ in range(n_partitions):
-            if n_partitions == 1:
+        for _ in range(self.n_partitions):
+            if self.n_partitions == 1:
                 self.partitions.append(dataset)
                 break
 
-            ratio = 1 / n_partitions
-            n_partitions -= 1
+            ratio = 1 / self.n_partitions
+            self.n_partitions -= 1
 
             d, rest = dataset.split(
-                at=ratio, stratify=getattr(dataset, df_key)[class_column]
+                at=ratio, stratify=getattr(dataset, self.df_key)[self.class_column]
             )
 
             self.partitions.append(d)
             dataset = rest
 
-        super().__init__(dataset, n_partitions)
-
 
 class NIIDClassPartitioner(Partitioner):
-    """NIID partitioner class."""
+    """NIID partitioner class.
+
+    This partitioner will select `n_drop` classes from each partition, except for the
+    ones that are identified in `preserved_classes`, and drop all the samples that
+    belong to these classes. Note that droping samples means that partitions will be
+    smaller than `len(dataset) / n_partitions`.
+    """
 
     def __init__(
         self,
-        dataset: Dataset,
-        n_partitions: int,
+        *args,
         class_column: str,
         preserved_classes: list[str],
         n_drop: int = 1,
         df_key: str = "m",
+        **kwargs,
     ) -> None:
-        """Initialize the NIID partitioner.
+        """Initialize the NIID partitioner."""
+        self.class_column = class_column
+        self.preserved_classes = preserved_classes
+        self.n_drop = n_drop
+        self.df_key = df_key
+        super().__init__(*args, **kwargs)
 
-        This partitioner will select `n_drop` classes from each partition, except for
-        the ones that are identified in `preserved_classes`, and drop all the samples
-        that belong to these classes. Note that droping samples means that partitions
-        will be smaller than `len(dataset) / n_partitions`.
+    def _partition(self, dataset: Dataset) -> None:
+        """Partition the dataset.
 
         Parameters
         ----------
@@ -143,37 +169,41 @@ class NIIDClassPartitioner(Partitioner):
             not a column of the DataFrame, or if the class values are not present in the
             dataset.
         """
-        if not hasattr(dataset, df_key):
-            raise KeyError(f"Dataset does not contain a DataFrame with key {df_key}")
-
-        if class_column not in getattr(dataset, df_key).columns:
-            raise KeyError(f"Dataset does not contain a column named {class_column}")
-
-        available_classes = getattr(dataset, df_key)[class_column].unique()
-
-        if not preserved_classes or any(
-            c not in available_classes for c in preserved_classes
-        ):
+        if not hasattr(dataset, self.df_key):
             raise KeyError(
-                f"Dataset does not contain all the class values in {preserved_classes}"
+                f"Dataset does not contain a DataFrame with key {self.df_key}"
             )
 
-        if n_drop > (len(available_classes) - len(preserved_classes)):
+        if self.class_column not in getattr(dataset, self.df_key).columns:
+            raise KeyError(
+                f"Dataset does not contain a column named {self.class_column}"
+            )
+
+        available_classes = getattr(dataset, self.df_key)[self.class_column].unique()
+
+        if not self.preserved_classes or any(
+            c not in available_classes for c in self.preserved_classes
+        ):
+            raise KeyError(
+                f"Dataset does not contain all the class values in {self.preserved_classes}"
+            )
+
+        if self.n_drop > (len(available_classes) - len(self.preserved_classes)):
             raise ValueError(
-                f"Cannot drop {n_drop} classes, only "
-                f"{len(available_classes) - len(preserved_classes)} "
+                f"Cannot drop {self.n_drop} classes, only "
+                f"{len(available_classes) - len(self.preserved_classes)} "
                 "classes are available."
             )
 
-        dropable = [c for c in available_classes if c not in preserved_classes]
+        dropable = [c for c in available_classes if c not in self.preserved_classes]
 
         self.partitions = []
-        pt = IIDPartitioner(dataset, n_partitions, class_column, df_key=df_key)
+        pt = IIDPartitioner(
+            dataset, self.n_partitions, self.class_column, df_key=self.df_key
+        )
         parts = pt.all()
         for p in parts:
-            drop = np.random.choice(dropable, n_drop, replace=False)
-            mask = getattr(p, df_key)[class_column].isin(drop)
+            drop = np.random.choice(dropable, self.n_drop, replace=False)
+            mask = getattr(p, self.df_key)[self.class_column].isin(drop)
             p.drop(mask[mask].index)
             self.partitions.append(p)
-
-        super().__init__(dataset, n_partitions)

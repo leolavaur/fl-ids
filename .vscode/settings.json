@@ -1,10 +1,17 @@
 {
     "python.testing.pytestEnabled": true,
     "python.defaultInterpreterPath": "${env:EIFFEL_INTERPRETER_PATH}",
-    "python.formatting.provider": "black",
-    
+    "python.terminal.launchArgs": [
+        "-m",
+        "IPython",
+        "--no-autoindent",
+    ],
+    "black-formatter.args": [
+        "--experimental-string-processing"
+    ],
     "[python]": {
         "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.codeActionsOnSave": {
             "source.fixAll": true,
             "source.organizeImports": true

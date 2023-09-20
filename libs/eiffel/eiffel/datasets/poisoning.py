@@ -5,6 +5,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
+from libs.eiffel.eiffel.core.errors import ConfigError
+from omegaconf import DictConfig
+
 
 class PoisonOp(str, Enum):
     """Poisoning operation."""
@@ -43,22 +46,57 @@ PoisonTasks = Dict[int, Optional[PoisonTask]]
 class PoisonIns:
     """Poisoning instructions."""
 
-    target: list[str]
+    target: list[str] | None
     base: PoisonTask
     tasks: Optional[PoisonTasks] = None
     poison_eval: bool = False
 
     def __init__(
         self,
-        target: list[str],
-        selector: str,
+        profile: str,
         n_rounds: int,
+        target: list[str] | None,
         poison_eval: bool = False,
     ):
         """Initialize the PoisonIns object."""
         self.target = target
-        self.base, self.tasks = parse_poisoning_selector(selector, n_rounds)
+        self.base, self.tasks = parse_poisoning_selector(profile, n_rounds)
         self.poison_eval = poison_eval
+
+    @classmethod
+    def from_dict(cls, d: dict, default_target: list[str]) -> "PoisonIns":
+        """Initialize the PoisonIns object from a dictionary."""
+        if isinstance(d, dict | DictConfig):
+            if not (
+                hasattr(d, "type")
+                and hasattr(d, "profile")
+                and hasattr(d, "n_rounds")
+                # and hasattr(d, "target")
+            ):
+                raise ConfigError(
+                    "Invalid configuration for `d`, missing one of the "
+                    "following fields: `type`, `profile`, `n_rounds`, `target`."
+                )
+
+            match d["type"]:
+                case "untargeted":
+                    d["target"] = None
+                case "targeted":
+                    d["target"] = d.get("target", default_target)
+                case _:
+                    raise ConfigError(
+                        f"Invalid value for `d.type`: {d['type']}. "
+                        "Must be either `untargeted` or `targeted`."
+                    )
+
+            d.pop("type")
+            return PoisonIns(**d)
+
+        else:
+            raise TypeError(
+                "`pool.d` must be a PoisonIns or a valid PoisonIns "
+                f"configuration dictionary, got {type(d)}."
+            )
 
 
 def parse_poisoning_selector(
@@ -66,7 +104,7 @@ def parse_poisoning_selector(
 ) -> Tuple[PoisonTask, Optional[PoisonTasks]]:
     """Parse poisoning selector.
 
-    The following selectors are be supported:
+    The following selectors are supported:
         * `*`: select all rounds (eg. "0.5*", half of the dataset is poisoned),
             equivalent to "0.5" and "0.5[:]". This is the default selector.
         * `[m:n]`: select rounds from `m` to `n` (inclusive, eg.
@@ -76,7 +114,7 @@ def parse_poisoning_selector(
             half of dataset is poisoned in rounds 0 and 2)
     The default selector is "*" (eg. "0.5" is equivalent to "0.5*").
 
-    Implementations SHOULD also support the increment operator `+`, which allow to
+    Implementations MUST also support the increment operator `+`, which allow to
     increment the fraction of poisoned data set by `x` each selected round. For
     example, "0.5+0.1[0:2]" poisons 50% of the data in round 0, 60% in round 1, and
     70% in round 2. The starting value is 0 if not specified otherwise.
