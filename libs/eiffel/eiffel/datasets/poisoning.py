@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
-from libs.eiffel.eiffel.core.errors import ConfigError
 from omegaconf import DictConfig
+
+from eiffel.core.errors import ConfigError
 
 
 class PoisonOp(str, Enum):
@@ -48,7 +49,7 @@ class PoisonIns:
 
     target: list[str] | None
     base: PoisonTask
-    tasks: Optional[PoisonTasks] = None
+    tasks: Optional[PoisonTasks] = {}
     poison_eval: bool = False
 
     def __init__(
@@ -67,15 +68,10 @@ class PoisonIns:
     def from_dict(cls, d: dict, default_target: list[str]) -> "PoisonIns":
         """Initialize the PoisonIns object from a dictionary."""
         if isinstance(d, dict | DictConfig):
-            if not (
-                hasattr(d, "type")
-                and hasattr(d, "profile")
-                and hasattr(d, "n_rounds")
-                # and hasattr(d, "target")
-            ):
+            if not ("type" in d and "profile" in d and "n_rounds" in d):
                 raise ConfigError(
                     "Invalid configuration for `d`, missing one of the "
-                    "following fields: `type`, `profile`, `n_rounds`, `target`."
+                    "following fields: `type`, `profile`, `n_rounds`."
                 )
 
             match d["type"]:
@@ -203,4 +199,4 @@ def parse_poisoning_selector(
             for r in rounds:
                 tasks[r] = PoisonTask(fraction=inc, operation=op)
 
-    return PoisonTask(base), tasks or None
+    return PoisonTask(base), tasks

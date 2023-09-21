@@ -75,26 +75,26 @@
         let
 
         eiffel = pkgs.poetry2nix.mkPoetryEnv {
-              projectDir = ./libs/eiffel;
-              editablePackageSources = { eiffel = ./libs/eiffel; };
-              preferWheels = true;
-              python = pkgs.${pythonVer};
-              overrides = pkgs.poetry2nix.defaultPoetryOverrides.extend (self: super: {
-                tensorflow-io-gcs-filesystem = super.tensorflow-io-gcs-filesystem.overrideAttrs (old: {
-                  buildInputs = old.buildInputs ++ [ pkgs.libtensorflow ];
-                });
-                gpustat = super.gpustat.overrideAttrs (old: {
-                  buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools super.setuptools-scm ];
-                });
-                opencensus = super.opencensus.overrideAttrs (old: {
-                  # See: https://github.com/DavHau/mach-nix/issues/255#issuecomment-812984772
-                  postInstall = ''
-                    rm $out/lib/python3.10/site-packages/opencensus/common/__pycache__/__init__.cpython-310.pyc
-                    rm $out/lib/python3.10/site-packages/opencensus/__pycache__/__init__.cpython-310.pyc
-                  '';
-                });
-              });
-            };
+          projectDir = "${self}/libs/eiffel";
+          editablePackageSources = { eiffel = "${self}/libs/eiffel/"; };
+          preferWheels = true;
+          python = pkgs.${pythonVer};
+          overrides = pkgs.poetry2nix.defaultPoetryOverrides.extend (self: super: {
+            tensorflow-io-gcs-filesystem = super.tensorflow-io-gcs-filesystem.overrideAttrs (old: {
+              buildInputs = old.buildInputs ++ [ pkgs.libtensorflow ];
+            });
+            gpustat = super.gpustat.overrideAttrs (old: {
+              buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools super.setuptools-scm ];
+            });
+            opencensus = super.opencensus.overrideAttrs (old: {
+              # See: https://github.com/DavHau/mach-nix/issues/255#issuecomment-812984772
+              postInstall = ''
+                rm $out/lib/python3.10/site-packages/opencensus/common/__pycache__/__init__.cpython-310.pyc
+                rm $out/lib/python3.10/site-packages/opencensus/__pycache__/__init__.cpython-310.pyc
+              '';
+            });
+          });
+        };
 
         #   env = pkgs.buildEnv  {
         #       name = "env";
@@ -137,13 +137,13 @@
               poetry
             ];
 
-            #shellHook = ''
-            #  export PYTHONPATH=$(realpath ./libs/eiffel):${
+            # shellHook = ''
+            #   export PYTHONPATH=${
+            #     lib.strings.concatStringsSep ":"
+            #       (map (p: "$(realpath ./exps/${p}/src/)") expList)
+            #   }
             shellHook = ''
-              export PYTHONPATH=${
-                lib.strings.concatStringsSep ":"
-                  (map (p: "$(realpath ./exps/${p}/src/)") expList)
-              }
+              export PYTHONPATH=$(realpath ./libs/eiffel)
               export EIFFEL_INTERPRETER_PATH=${eiffel} 
             '' + (if stdenv.isLinux then ''
               export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [

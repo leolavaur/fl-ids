@@ -25,15 +25,16 @@ num_clients: 10
 num_rounds: 10
 num_epochs: 10
 batch_size: 512
+seed: 1138
 
 # Attack parameters.
 attacks:
   - type: untargeted  # untargeted or targeted
-    profile: ${poisoning/profile}
+    profile: ${poisoning.profile}
 
 # Distribution parameters.
 pools:
-  - n_clients: ${num_clients}
+  - n_benign: ${num_clients}
     n_malicious: ${num_attackers}
 
 # Runtime configuration.
@@ -42,6 +43,8 @@ experiment:
   num_epochs: ${num_epochs}
   batch_size: ${batch_size}
   strategy: ${strategy}
+  model: ${model}
+  seed: ${seed}
 
   pools: "${pools}"
 
@@ -57,6 +60,7 @@ defaults:
   - datasets: ???
 
   - strategy: fedavg
+  - model: popoola
 
   - poisoning/profile: loud
 

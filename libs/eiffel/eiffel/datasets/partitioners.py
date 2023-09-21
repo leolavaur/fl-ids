@@ -37,6 +37,7 @@ class Partitioner(metaclass=ABCMeta):
     def load(self, dataset: Dataset) -> None:
         """Load and partition the dataset."""
         self.dataset = dataset
+        self._partition(dataset)
 
     def all(self) -> list[Dataset]:
         """Return all the partitions."""
@@ -185,7 +186,8 @@ class NIIDClassPartitioner(Partitioner):
             c not in available_classes for c in self.preserved_classes
         ):
             raise KeyError(
-                f"Dataset does not contain all the class values in {self.preserved_classes}"
+                "Dataset does not contain all the class values in"
+                f" {self.preserved_classes}"
             )
 
         if self.n_drop > (len(available_classes) - len(self.preserved_classes)):

@@ -1,9 +1,12 @@
 """Eiffel engine."""
 
+import functools
+from copy import deepcopy
 from functools import reduce
 from typing import Callable
 
 import psutil
+import ray
 import tensorflow as tf
 from flwr.client import ClientLike
 from flwr.server import Server, ServerConfig
@@ -12,12 +15,12 @@ from flwr.server.strategy import Strategy
 from flwr.simulation import start_simulation
 from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
 from hydra.utils import instantiate
-from libs.eiffel.eiffel.core.errors import ConfigError
-from omegaconf import DictConfig, ListConfig
+from omegaconf import DictConfig, ListConfig, open_dict
 
+from eiffel.core.errors import ConfigError
 from eiffel.utils.typing import ConfigDict
 
-from .client import mk_client_fn
+from .client import get_client, mk_client_fn
 from .pool import Pool
 
 
@@ -40,12 +43,14 @@ class Experiment:
         The total number of clients in the experiment.
     """
 
-    server: Server
-    strategy: Strategy
-    pools: list[Pool] = []
     n_clients: int
     n_rounds: int
     n_concurrent: int
+    seed: int
+
+    server: Server = None
+    strategy: Strategy = None
+    pools: list[Pool] = []
 
     def __init__(self, config: DictConfig):
         """Initialize the experiment.
@@ -74,21 +79,39 @@ class Experiment:
             The configuration of the experiment. This is the configuration aggregated by
             Hydra from the command line arguments and the configuration files.
         """
+        self.seed = config.seed
+        self.n_rounds = config.num_rounds
+
         pools = obj_to_list(config.pools)
         attacks = obj_to_list(config.attacks, expected_length=len(config.pools))
         datasets = obj_to_list(config.datasets, expected_length=len(config.pools))
 
         pools_mapping = zip(pools, attacks, datasets)
 
-        self.pools = [instantiate(p, attack=a, dataset=d) for p, a, d in pools_mapping]
+        for pool, attack, dataset in pools_mapping:
+            if isinstance(attack, DictConfig):
+                attack = dict(attack)
+            if not hasattr(attack, "n_rounds"):
+                attack["n_rounds"] = config.num_rounds
+
+            if hasattr(pool, "_target_"):
+                pool = instantiate(pool, dataset=dataset, attack=attack)
+            else:
+                pool = Pool(
+                    dataset=dataset,
+                    model_fn=instantiate(config.model),
+                    attack=attack,
+                    **pool,
+                )
+            self.pools.append(pool)
 
         self.n_clients = sum([len(p) for p in self.pools])
         self.n_concurrent = config.get("n_concurrent", self.n_clients)
 
         self.strategy = instantiate(
             config.strategy,
-            num_fit_clients=self.n_clients,
-            num_evaluate_clients=self.n_clients,
+            min_fit_clients=self.n_clients,
+            min_evaluate_clients=self.n_clients,
             on_fit_config_fn=mk_config_fn(
                 {
                     "batch_size": config.batch_size,
@@ -98,19 +121,34 @@ class Experiment:
             on_evaluate_config_fn=mk_config_fn({"batch_size": config.batch_size}),
         )
 
-        if config.server is not None:
+        if "server" in config and config.server is not None:
             self.server = instantiate(config.server)
 
-        self.n_rounds = config.num_rounds
-
-    def run(self) -> History:
+    def run(self, **ray_kwargs) -> History:
         """Run the experiment."""
+        init_kwargs = (ray_kwargs or {}) | {
+            "ignore_reinit_error": True,
+            # "local_mode": True,
+        }
+        ray.init(**init_kwargs)
+
+        for pool in self.pools:
+            pool.deploy()
+
+        mappings = reduce(lambda a, b: a | b, [p.gen_mappings() for p in self.pools])
+
+        fn = functools.partial(
+            get_client,
+            mappings=mappings,
+            seed=self.seed,
+        )
+
         return start_simulation(
-            client_fn=mk_client_fn(self.pools),
+            client_fn=fn,
             num_clients=self.n_clients,
             config=ServerConfig(num_rounds=self.n_rounds),
             strategy=self.strategy,
-            client_resources=compute_client_resources(self.n_concurrent),
+            # client_resources=compute_client_resources(self.n_concurrent),
             actor_kwargs={
                 # Enable GPU growth upon actor init
                 # does nothing if `num_gpus` in client_resources is 0.0
@@ -131,11 +169,10 @@ def compute_client_resources(n_concurrent: int) -> tuple[float, float]:
     """Compute the number of CPUs and GPUs to allocate to each client."""
     available_cpus = psutil.cpu_count()
     available_gpus = len(tf.config.list_physical_devices("GPU"))
-
-    return (
-        available_cpus / n_concurrent,
-        available_gpus / n_concurrent,
-    )
+    return {
+        "num_cpus": max(1, available_cpus / n_concurrent),
+        "num_gpus": available_gpus / n_concurrent,
+    }
 
 
 def obj_to_list(
@@ -159,6 +196,6 @@ def obj_to_list(
             )
 
         elif len(config_obj) == 1:
-            config_obj = config_obj * expected_length
+            config_obj = list(config_obj) * expected_length
 
     return config_obj

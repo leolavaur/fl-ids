@@ -4,6 +4,7 @@
 import random
 from typing import Callable, Optional
 
+import keras
 import tensorflow as tf
 from flwr.client import ClientLike
 from hydra.utils import call
@@ -12,7 +13,7 @@ from ray import ObjectRef
 from ray.actor import ActorHandle
 
 from eiffel.core.errors import ConfigError
-from eiffel.datasets.dataset import Dataset, DatasetHolder
+from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.partitioners import DumbPartitioner, Partitioner
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 
@@ -80,13 +81,15 @@ class Pool:
         self.pool_id = pool_id
 
         benign_cids = [f"{pool_id}_benign_{i}" for i in range(n_benign)]
-        if (n_malicious > 0) != (attack is not None):
+        if n_malicious > 0 and attack is None:
             raise ValueError(
                 "Invalid conditions for attack scenarios: "
-                f"`{(n_malicious > 0) = }` and `{(attack is None) = }`."
+                f"`{n_malicious = }`, yet attack is `None`."
             )
         malicious_cids = [f"{pool_id}_malicious_{i}" for i in range(n_malicious)]
 
+        if not isinstance(dataset, Dataset):
+            dataset = call(dataset)
         _test, _train = dataset.split(at=test_ratio, seed=self.seed)
 
         if not partitioner:
@@ -123,14 +126,42 @@ class Pool:
         """Return the number of clients in the pool."""
         return len(self.shards)
 
+    def __contains__(self, cid: EiffelCID) -> bool:
+        """Return whether the pool contains the client."""
+        return cid in self.shards
+
     def deploy(self) -> None:
         """Deploy the dataset onto the Ray object store."""
         for cid, (train, test) in self.shards.items():
             if cid in self.holders:
                 raise ValueError(f"Client `{cid}` already deployed.")
 
-            self.holders[cid] = DatasetHolder.remote({"train": train, "test": test})
+            self.holders[cid] = DatasetHandle.remote({"train": train, "test": test})
 
     def deployed(self) -> bool:
         """Return whether the pool is deployed."""
         return len(self.holders) == len(self.shards)
+
+    def gen_mappings(self) -> dict[EiffelCID, tuple[ObjectRef, PoisonIns, keras.Model]]:
+        """Generate mappings between CIDs, and their handle and poisoning instructions.
+
+        Returns
+        -------
+        dict[EiffelCID, tuple[ObjectRef, PoisonIns]]
+            The mappings. Keys are the client IDs, and values are tuples of each
+            client's dataset handle and poisoning instructions.
+        """
+        if not self.deployed():
+            raise RuntimeError(
+                "Attempting to access the handles of an undeployed pool."
+            )
+
+        mappings = {}
+        for cid, handle in self.holders.items():
+            mappings[cid] = (handle, self.attack, self.model_fn)
+        return mappings
+
+    @property
+    def ids(self) -> list[EiffelCID]:
+        """Return the list of client IDs."""
+        return list(self.shards.keys())

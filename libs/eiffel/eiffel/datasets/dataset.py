@@ -154,7 +154,7 @@ class Dataset:
             return BatchLoader(batch_size, self.X, seed=seed, shuffle=shuffle)
         if 0 <= target <= 2:
             return BatchLoader(
-                batch_size, self.X, self[target], seed=seed, shuffle=shuffle
+                batch_size, self.X, self.to_tuple()[target], seed=seed, shuffle=shuffle
             )
         raise IndexError("If not None, parameter `target` must be in [0, 2]")
 
@@ -275,24 +275,64 @@ class Dataset:
 
 
 @ray.remote
-class DatasetHolder(dict[Hashable, Dataset]):
+class DatasetHandle:
     """Dataset holder to store datasets in the Ray object store.
 
     This class is used to store stateful datasets in the Ray object store. It is used to
     preserve the state of the dataset between the different steps of the pipeline, as
     Flower clients (up tp 1.5.0 at least) are ephemeral and do not preserve their state.
 
-    The class is a subclass of `dict`, and can be used as such. Datasets are stored
-    using the dict API (e.g. `dataset_holder["cicids"]` externally, and using
-    `self["cicids"]` inside the object).
+    The class provides almost the same public API as `dict`, and can be used as such,
+    except for magic methods. Datasets are stored using the dict API (e.g.
 
     Attributes
     ----------
-    facade : DatasetFacade
-        The facade used to manage the datasets.
+    _dict : dict
+        Dictionary containing the datasets.
     """
+
+    _dict: dict = {}
+
+    def __init__(self, *args, **kwargs):
+        """Initialize the DatasetHandle."""
+        self._dict = dict(*args, **kwargs)
+
+    def clear(self):
+        """Clear the inner dictionary."""
+        self._dict.clear()
+
+    def copy(self):
+        """Return a copy of the inner dictionary."""
+        return self.__class__(self._dict.copy())
+
+    def get(self, *args, **kwargs):
+        """Return the value for the given key."""
+        return self._dict.get(*args, **kwargs)
+
+    def items(self):
+        """Return the items of the inner dictionary."""
+        return self._dict.items()
+
+    def keys(self):
+        """Return the keys of the inner dictionary."""
+        return self._dict.keys()
+
+    def pop(self, *args, **kwargs):
+        """Pop the given key from the inner dictionary."""
+        return self._dict.pop(*args, **kwargs)
+
+    def popitem(self):
+        """Pop an item from the inner dictionary."""
+        return self._dict.popitem()
+
+    def update(self, *args, **kwargs):
+        """Update the inner dictionary."""
+        return self._dict.update(*args, **kwargs)
+
+    def values(self):
+        """Return the values of the inner dictionary."""
+        return self._dict.values()
 
     def poison(self, key: Hashable, *args, **kwargs) -> int:
         """Poison the held dataset."""
-        n = self[key].poison(*args, **kwargs)
-        return n
+        return self._dict[key].poison(*args, **kwargs)

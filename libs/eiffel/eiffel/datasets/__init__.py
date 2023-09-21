@@ -29,7 +29,7 @@ NIIDClassPartitioner
 import pathlib
 import tempfile
 
-from .dataset import BatchLoader, Dataset, DatasetHolder
+from .dataset import BatchLoader, Dataset, DatasetHandle
 from .partitioners import IIDPartitioner, NIIDClassPartitioner
 
 DEFAULT_SEARCH_PATH = pathlib.Path(tempfile.gettempdir()) / "eiffel-data"
@@ -37,7 +37,7 @@ DEFAULT_SEARCH_PATH = pathlib.Path(tempfile.gettempdir()) / "eiffel-data"
 __all__ = [
     "BatchLoader",
     "Dataset",
-    "DatasetHolder",
+    "DatasetHandle",
     "IIDPartitioner",
     "NIIDClassPartitioner",
     "DEFAULT_SEARCH_PATH",

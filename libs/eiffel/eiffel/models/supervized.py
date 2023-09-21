@@ -53,6 +53,7 @@ def mk_popoola_mlp(
     model.compile(
         optimizer=optimizer or Adam(learning_rate=learning_rate),
         loss=loss_fn or BinaryCrossentropy(),
+        metrics=["accuracy"],
     )
 
     return model

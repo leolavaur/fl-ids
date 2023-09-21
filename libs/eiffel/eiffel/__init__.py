@@ -2,12 +2,14 @@ import os
 from logging import getLogger
 from pathlib import Path
 
+from flwr.common.logger import logger as flwr_logger
 from omegaconf import OmegaConf
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
 log = getLogger(__name__)
+flwr_logger.removeHandler(flwr_logger.handlers[0])
 
 
 def get_git_root():

@@ -1,6 +1,8 @@
 """Eiffel client API."""
 
+import itertools
 import logging
+from copy import deepcopy
 from functools import reduce
 from typing import Callable, Optional, cast
 
@@ -12,7 +14,7 @@ from keras.callbacks import History
 from tensorflow import keras
 
 from eiffel.core.metrics import metrics_from_preds
-from eiffel.datasets.dataset import Dataset, DatasetHolder
+from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns
 from eiffel.utils.logging import VerbLevel
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
@@ -42,14 +44,14 @@ class EiffelClient(NumPyClient):
     """
 
     cid: EiffelCID
-    data_holder: DatasetHolder
+    data_holder: DatasetHandle
     model: keras.Model
     poison_ins: Optional[PoisonIns]
 
     def __init__(
         self,
         cid: EiffelCID,
-        data_holder: DatasetHolder,
+        data_holder: DatasetHandle,
         model: keras.Model,
         verbose: VerbLevel = VerbLevel.SILENT,
         seed: Optional[int] = None,
@@ -63,7 +65,7 @@ class EiffelClient(NumPyClient):
         self.seed = seed
         self.poison_ins = poison_ins
 
-    def get_parameters(self) -> list[NDArray]:
+    def get_parameters(self, config: Config) -> list[NDArray]:
         """Return the current parameters.
 
         Returns
@@ -112,10 +114,10 @@ class EiffelClient(NumPyClient):
             train_set.to_sequence(
                 config["batch_size"], target=1, seed=self.seed, shuffle=True
             ),
-            epochs=int(config["epochs"]),
+            epochs=int(config["num_epochs"]),
             verbose=self.verbose,
         )
-        del train_set
+
         return (
             self.model.get_weights(),
             len(train_set),
@@ -152,10 +154,15 @@ class EiffelClient(NumPyClient):
 
         test_set: Dataset = ray.get(self.data_holder.get.remote("test"))
 
-        loss = self.model.evaluate(
+        output = self.model.evaluate(
             test_set.to_sequence(batch_size, target=1, seed=self.seed, shuffle=True),
             verbose=self.verbose,
         )
+        if isinstance(output, list):
+            output = dict(zip(self.model.metrics_names, output))
+            loss = output["loss"]
+        else:
+            loss = output
 
         # Do not shuffle the test set for inference, otherwise we cannot compare y_pred
         # with y_true.
@@ -170,7 +177,7 @@ class EiffelClient(NumPyClient):
         metrics = metrics_from_preds(y_true, y_pred)
         metrics["loss"] = loss
 
-        return loss, metrics, y_pred
+        return loss, len(test_set), metrics
 
 
 def mk_client_fn(pools: list[Pool]) -> Callable[[EiffelCID], EiffelClient]:
@@ -186,18 +193,41 @@ def mk_client_fn(pools: list[Pool]) -> Callable[[EiffelCID], EiffelClient]:
     Callable[[EiffelCID], EiffelClient]
         A function which takes a client ID and returns a client.
     """
-    if any((not p.deployed()) for p in pools):
+    if not all(p.deployed for p in pools):
         raise RuntimeError("Not all pools are deployed.")
 
     def mk_client(cid: EiffelCID) -> EiffelClient:
         """Create a client."""
+        print(cid)
+        print(list(itertools.chain(*[p.ids for p in pools])))
         pool = next(p for p in pools if cid in p)
         return EiffelClient(
             cid,
             pool.holders[cid],
-            pool.model_fn(),
+            pool.model_fn(ray.get(pool.holders[cid].get.remote("train")).X.shape[1]),
             seed=pool.seed,
             poison_ins=pool.attack,
         )
 
     return mk_client
+
+
+def get_client(
+    cid: EiffelCID,
+    mappings: dict[EiffelCID, tuple[ray.ObjectRef, PoisonIns, keras.Model]],
+    seed: int,
+    attack: Optional[PoisonIns] = None,
+) -> EiffelClient:
+    """Return a client based on its CID."""
+    if cid not in mappings:
+        raise ValueError(f"Client `{cid}` not found in mappings.")
+
+    handle, attack, model_fn = mappings[cid]
+
+    return EiffelClient(
+        cid,
+        handle,
+        model_fn(ray.get(handle.get.remote("train")).X.shape[1]),
+        seed=seed,
+        poison_ins=attack,
+    )
