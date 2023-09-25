@@ -144,14 +144,18 @@
             #   }
             shellHook = ''
               export PYTHONPATH=$(realpath ./libs/eiffel)
-              export EIFFEL_INTERPRETER_PATH=${eiffel} 
+              export EIFFEL_PYTHON_PATH=${eiffel}/bin/python
+              export EIFFEL_JAVA_PATH=${zulu}/bin/java
             '' + (if stdenv.isLinux then ''
               export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [
                 "${cudaPackages.cudatoolkit}/lib"
                 "${cudaPackages.cudatoolkit.lib}/lib"
                 "${cudaPackages.cudnn}/lib"
-              ]} 
-            '' + ":$LD_LIBRARY_PATH" else "");
+                "${pkgs.cudaPackages.cudatoolkit}/nvvm/libdevice/"
+              ]}:$LD_LIBRARY_PATH
+              
+              export XLA_FLAGS=--xla_gpu_cuda_data_dir=${pkgs.cudaPackages.cudatoolkit}
+            '' else "");
           };
 
         });

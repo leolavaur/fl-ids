@@ -53,7 +53,7 @@ class Experiment:
     n_concurrent: int
     seed: int
 
-    server: Server
+    server: Server | None
     strategy: Strategy
     pools: list[Pool]
 

@@ -4,6 +4,10 @@ import logging
 from enum import Enum
 from functools import wraps
 
+from flwr.common.logger import logger as flwr_logger
+
+flwr_logger.removeHandler(flwr_logger.handlers[0])
+
 
 class VerbLevel(Enum):
     """Verbosity level.
@@ -70,7 +74,7 @@ class ColoredFormatter(logging.Formatter):
         elif isinstance(verbose_loggers, str) and verbose_loggers.lower() in __name__:
             self.details = True
         elif isinstance(verbose_loggers, list) and any(
-            verbose_loggers, lambda x: x.lower() in __name__
+            x.lower() in __name__ for x in verbose_loggers
         ):
             self.details = True
 

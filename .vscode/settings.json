@@ -1,6 +1,6 @@
 {
     "python.testing.pytestEnabled": true,
-    "python.defaultInterpreterPath": "${env:EIFFEL_INTERPRETER_PATH}",
+    "python.defaultInterpreterPath": "${env:EIFFEL_PYTHON_PATH}",
     "python.terminal.launchArgs": [
         "-m",
         "IPython",
@@ -11,9 +11,12 @@
         "get_ipython().run_line_magic('autoreload', '2'); get_ipython().run_line_magic('clear', '')",
         "-i"
     ],
+    "python.analysis.stubPath": "",
     "black-formatter.args": [
         "--experimental-string-processing"
     ],
+    "ruff.path": ["ruff"],
+    "ltex.java.path": "${env:EIFFEL_JAVA_PATH}",
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-python.black-formatter",
@@ -23,4 +26,5 @@
         },
         "editor.formatOnPaste": false,
     },
+    "python.analysis.typeCheckingMode": "basic",
 }
