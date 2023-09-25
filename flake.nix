@@ -65,6 +65,7 @@
       pythonVer = "python310";
 
       expList = [
+        "demo"
         "pca"
       ];
 
@@ -143,7 +144,10 @@
             #       (map (p: "$(realpath ./exps/${p}/src/)") expList)
             #   }
             shellHook = ''
-              export PYTHONPATH=$(realpath ./libs/eiffel)
+              export PYTHONPATH=${
+                lib.strings.concatStringsSep ":"
+                  (map (p: "$(realpath ./exps/${p}/src)") expList)
+              }:$(realpath ./libs/eiffel/)
               export EIFFEL_PYTHON_PATH=${eiffel}/bin/python
               export EIFFEL_JAVA_PATH=${zulu}/bin/java
             '' + (if stdenv.isLinux then ''

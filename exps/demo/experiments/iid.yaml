@@ -1,0 +1,9 @@
+# @package _global_
+
+experiment:
+  pools:
+    - n_benign: 4
+
+defaults:
+  - override /datasets: 
+    - nfv2/sampled/cicids

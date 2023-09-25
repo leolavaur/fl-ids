@@ -17,7 +17,7 @@ from flwr.server.strategy import Strategy
 from flwr.simulation import start_simulation
 from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
 from hydra.utils import instantiate
-from omegaconf import DictConfig, ListConfig, open_dict
+from omegaconf import DictConfig, ListConfig
 
 from eiffel.core.errors import ConfigError
 from eiffel.utils.typing import ConfigDict, MetricsDict
@@ -222,7 +222,7 @@ def mk_config_fn(
 
 def compute_client_resources(
     n_concurrent: int, headroom: float = 0.1
-) -> dict[str, int]:
+) -> dict[str, float]:
     """Compute the number of CPUs and GPUs to allocate to each client.
 
     Parameters
@@ -252,7 +252,7 @@ def compute_client_resources(
 
 
 def obj_to_list(
-    config_obj: ListConfig | DictConfig,
+    config_obj: ListConfig | DictConfig | list[DictConfig],
     expected_length: int = 0,
 ) -> list:
     """Convert a DictConfig or ListConfig object to a list."""
@@ -274,13 +274,13 @@ def obj_to_list(
         elif len(config_obj) == 1:
             config_obj = list(config_obj) * expected_length
 
-    return config_obj
+    return list(config_obj)
 
 
 def aggregate_metrics_fn(metrics_mapping: list[tuple[int, MetricsDict]]) -> MetricsDict:
     """Collect all metrics client-per-client.
 
-    Eiffel processes metrics after experiment ending, which permits more versatile
+    Eiffel processes metrics after the experiment's ending, which permits more versatile
     analytics. However, Flower expects a single metrics dictionary. This serializes each
     client's metrics into a single dictionary.
 
@@ -299,7 +299,10 @@ def aggregate_metrics_fn(metrics_mapping: list[tuple[int, MetricsDict]]) -> Metr
     """
     metrics: MetricsDict = {}
     for _, m in metrics_mapping:
-        cid = m.pop("_cid")
+        cid = str(m.pop("_cid"))
+        stats = m.pop("attack_stats", None)
+        if stats is not None:
+            m["attack_stats"] = json.loads(str(stats))
         metrics[cid] = json.dumps(m)
 
     return metrics

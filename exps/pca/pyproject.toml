@@ -1,25 +1,14 @@
 [tool.poetry]
-name = "pcafl"
+name = "demo"
 version = "0.1.0"
-description = "Experiments for PCAFL"
+description = "Demonstrator for FL+IDS"
 authors = ["l20lavau <leo.lavaur@imt-atlantique.fr>"]
 license = "MIT"
 readme = "README.md"
-#packages = [ { include = "pcafl", from = "src" } ]
 
 [tool.poetry.dependencies]
 python = "~3.10"
 eiffel-framework = {path = "../../libs/eiffel", develop = true}
-
-
-# [tool.poetry.group.darwin.dependencies]
-# eiffel-framework = {path = "../../libs/eiffel", develop = true, extras = ["darwin"], platform = "darwin"}
-
-# [tool.poetry.group.linux.dependencies]
-# eiffel-framework = {path = "../../libs/eiffel", develop = true, extras = ["linux"], platform = "linux"}
-
-#[tool.poetry.scripts]
-#pcafl = "pcafl:main"
 
 [build-system]
 requires = ["poetry-core"]
