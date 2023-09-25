@@ -1,6 +1,6 @@
 {
+    "version": "0.2.0",
     "configurations": [
-    
         {
             "name": "Eiffel experiment",
             "type": "python",
@@ -13,12 +13,25 @@
             "justMyCode": true
         },
         {
-                "name": "Eiffel",
-                "type": "python",
-                "request": "launch",
-                "module": "eiffel",
-                "justMyCode": true
-            },
+            "name": "Eiffel",
+            "type": "python",
+            "request": "launch",
+            "module": "eiffel",
+            "args": [
+                "datasets=${input:dataset}",
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Eiffel with foreign code",
+            "type": "python",
+            "request": "launch",
+            "module": "eiffel",
+            "args": [
+                "datasets=${input:dataset}",
+            ],
+            "justMyCode": false
+        }
     ],
     "inputs": [
         {
@@ -30,6 +43,17 @@
                     "label": "PCA-FL",
                     "value": "pca"
                 }
+            ]
+        },
+        {
+            "id": "dataset",
+            "type": "pickString",
+            "description": "Select the dataset to run",
+            "options": [
+                {
+                    "label": "BoT-IoT",
+                    "value": "nfv2/sampled/botiot"
+                },
             ]
         }
     ]

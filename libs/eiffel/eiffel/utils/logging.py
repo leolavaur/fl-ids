@@ -1,7 +1,33 @@
 """Logging module."""
 
 import logging
+from enum import Enum
 from functools import wraps
+
+
+class VerbLevel(Enum):
+    """Verbosity level.
+
+    This class defines the verbosity level for Eiffel clients, which is then passed
+    directly to Keras' model training API.
+
+    From https://keras.io/api/models/model_training_apis/#fit-method:
+
+        verbose: 'auto', 0, 1, or 2. Verbosity mode. 0 = silent, 1 = progress bar, 2 =
+        one line per epoch. 'auto' defaults to 1 for most cases, but 2 when used with
+        ParameterServerStrategy. Note that the progress bar is not particularly useful
+        when logged to a file, so verbose=2 is recommended when not running
+        interactively (eg, in a production environment).
+    """
+
+    AUTO = "auto"
+    SILENT = 0
+    INPLACE = 1
+    VERBOSE = 2
+
+    def __str__(self):
+        """Return the string representation of the verbosity level."""
+        return str(self.value)
 
 
 class ColoredFormatter(logging.Formatter):
@@ -56,7 +82,7 @@ class ColoredFormatter(logging.Formatter):
         log_fmt = (
             f"{self.shallow}%(asctime)s{self.reset}"
             + f" [{self.COLORS[record.levelno]}%(levelname)s{self.reset}]"
-            + (" %(pathname)s:%(lineno)d" if self.details else "")
+            + (" %(name)s:%(lineno)d" if self.details else "")
             + " > %(message)s"
         )
         formatter = logging.Formatter(log_fmt)

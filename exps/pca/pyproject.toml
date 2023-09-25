@@ -11,11 +11,6 @@ readme = "README.md"
 python = "~3.10"
 eiffel-framework = {path = "../../libs/eiffel", develop = true}
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.3.1"
-black = "^23.3.0"
-isort = "^5.12.0"
-autoflake = "^2.1.1"
 
 # [tool.poetry.group.darwin.dependencies]
 # eiffel-framework = {path = "../../libs/eiffel", develop = true, extras = ["darwin"], platform = "darwin"}
