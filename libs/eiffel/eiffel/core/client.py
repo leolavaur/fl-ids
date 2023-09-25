@@ -1,6 +1,7 @@
 """Eiffel client API."""
 
 import itertools
+import json
 import logging
 from copy import deepcopy
 from functools import reduce
@@ -115,7 +116,7 @@ class EiffelClient(NumPyClient):
                 config["batch_size"], target=1, seed=self.seed, shuffle=True
             ),
             epochs=int(config["num_epochs"]),
-            verbose=self.verbose,
+            verbose=0,
         )
 
         return (
@@ -124,6 +125,7 @@ class EiffelClient(NumPyClient):
             {
                 "accuracy": hist.history["accuracy"][-1],
                 "loss": hist.history["loss"][-1],
+                "_cid": self.cid,
             },
         )
 
@@ -176,43 +178,35 @@ class EiffelClient(NumPyClient):
 
         metrics = metrics_from_preds(y_true, y_pred)
         metrics["loss"] = loss
+        metrics["_cid"] = self.cid
+
+        if "stats" in config and config["stats"]:
+            # Compute attack-wise statistics. Only enabled for the last evaluation round.
+            attack_stats = []
+            class_df = test_set.m["Attack"]
+            for attack in (a for a in class_df.unique() if a != "Benign"):
+                attack_filter = class_df == attack
+
+                count = len(test_set.m[attack_filter])
+                correct = len(test_set.m[(attack_filter) & (test_set.y == y_pred)])
+                missed = len(test_set.m[(attack_filter) & (test_set.y != y_pred)])
+
+                attack_stats.append(
+                    {
+                        "attack": attack,
+                        "count": count,
+                        "correct": correct,
+                        "missed": missed,
+                        "percentage": f"{correct / count:.2%}",
+                    }
+                )
+
+            metrics["attack_stats"] = json.dumps(attack_stats)
 
         return loss, len(test_set), metrics
 
 
-def mk_client_fn(pools: list[Pool]) -> Callable[[EiffelCID], EiffelClient]:
-    """Return a function which creates a client based on its CID.
-
-    Parameters
-    ----------
-    pools : list[Pool]
-        A list of Eiffel pools, which will be used to create the clients.
-
-    Returns
-    -------
-    Callable[[EiffelCID], EiffelClient]
-        A function which takes a client ID and returns a client.
-    """
-    if not all(p.deployed for p in pools):
-        raise RuntimeError("Not all pools are deployed.")
-
-    def mk_client(cid: EiffelCID) -> EiffelClient:
-        """Create a client."""
-        print(cid)
-        print(list(itertools.chain(*[p.ids for p in pools])))
-        pool = next(p for p in pools if cid in p)
-        return EiffelClient(
-            cid,
-            pool.holders[cid],
-            pool.model_fn(ray.get(pool.holders[cid].get.remote("train")).X.shape[1]),
-            seed=pool.seed,
-            poison_ins=pool.attack,
-        )
-
-    return mk_client
-
-
-def get_client(
+def mk_client(
     cid: EiffelCID,
     mappings: dict[EiffelCID, tuple[ray.ObjectRef, PoisonIns, keras.Model]],
     seed: int,

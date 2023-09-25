@@ -1,6 +1,9 @@
 """Eiffel engine."""
 
 import functools
+import json
+import logging
+import math
 from copy import deepcopy
 from functools import reduce
 from typing import Callable
@@ -10,7 +13,6 @@ import ray
 import tensorflow as tf
 from flwr.client import ClientLike
 from flwr.server import Server, ServerConfig
-from flwr.server.history import History
 from flwr.server.strategy import Strategy
 from flwr.simulation import start_simulation
 from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
@@ -18,10 +20,13 @@ from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, open_dict
 
 from eiffel.core.errors import ConfigError
-from eiffel.utils.typing import ConfigDict
+from eiffel.utils.typing import ConfigDict, MetricsDict
 
-from .client import get_client, mk_client_fn
+from .client import mk_client
+from .metrics import History
 from .pool import Pool
+
+logger = logging.getLogger(__name__)
 
 
 class Experiment:
@@ -48,9 +53,9 @@ class Experiment:
     n_concurrent: int
     seed: int
 
-    server: Server = None
-    strategy: Strategy = None
-    pools: list[Pool] = []
+    server: Server
+    strategy: Strategy
+    pools: list[Pool]
 
     def __init__(self, config: DictConfig):
         """Initialize the experiment.
@@ -80,7 +85,10 @@ class Experiment:
             Hydra from the command line arguments and the configuration files.
         """
         self.seed = config.seed
+        tf.keras.utils.set_random_seed(self.seed)
+
         self.n_rounds = config.num_rounds
+        self.pools = []
 
         pools = obj_to_list(config.pools)
         attacks = obj_to_list(config.attacks, expected_length=len(config.pools))
@@ -95,9 +103,16 @@ class Experiment:
                 attack["n_rounds"] = config.num_rounds
 
             if hasattr(pool, "_target_"):
-                pool = instantiate(pool, dataset=dataset, attack=attack)
+                pool = instantiate(
+                    pool,
+                    partitioner=instantiate(config.get("partitioner")),
+                    dataset=dataset,
+                    attack=attack,
+                    model_fn=instantiate(config.model),
+                )
             else:
                 pool = Pool(
+                    partitioner=instantiate(config.get("partitioner")),
                     dataset=dataset,
                     model_fn=instantiate(config.model),
                     attack=attack,
@@ -112,23 +127,31 @@ class Experiment:
             config.strategy,
             min_fit_clients=self.n_clients,
             min_evaluate_clients=self.n_clients,
+            min_available_clients=self.n_clients,
             on_fit_config_fn=mk_config_fn(
                 {
                     "batch_size": config.batch_size,
                     "num_epochs": config.num_epochs,
                 }
             ),
-            on_evaluate_config_fn=mk_config_fn({"batch_size": config.batch_size}),
+            evaluate_metrics_aggregation_fn=aggregate_metrics_fn,
+            fit_metrics_aggregation_fn=aggregate_metrics_fn,
+            on_evaluate_config_fn=mk_config_fn(
+                {"batch_size": config.batch_size}, stats_when=self.n_rounds
+            ),
         )
 
         if "server" in config and config.server is not None:
             self.server = instantiate(config.server)
+        else:
+            self.server = None
 
     def run(self, **ray_kwargs) -> History:
         """Run the experiment."""
         init_kwargs = (ray_kwargs or {}) | {
             "ignore_reinit_error": True,
             # "local_mode": True,
+            "num_gpus": len(tf.config.list_physical_devices("GPU")),
         }
         ray.init(**init_kwargs)
 
@@ -138,17 +161,17 @@ class Experiment:
         mappings = reduce(lambda a, b: a | b, [p.gen_mappings() for p in self.pools])
 
         fn = functools.partial(
-            get_client,
+            mk_client,
             mappings=mappings,
             seed=self.seed,
         )
 
-        return start_simulation(
+        hist = start_simulation(
             client_fn=fn,
             num_clients=self.n_clients,
             config=ServerConfig(num_rounds=self.n_rounds),
             strategy=self.strategy,
-            # client_resources=compute_client_resources(self.n_concurrent),
+            client_resources=compute_client_resources(self.n_concurrent),
             actor_kwargs={
                 # Enable GPU growth upon actor init
                 # does nothing if `num_gpus` in client_resources is 0.0
@@ -159,19 +182,72 @@ class Experiment:
             keep_initialised=True,
         )
 
+        ray.shutdown()
 
-def mk_config_fn(config: ConfigDict) -> Callable[[int], ConfigDict]:
-    """Return a function which creates a config for the given round."""
+        return History.from_flwr(hist)
+
+    def data_stats(self) -> dict[str, dict[str, int]]:
+        """Return the data statistics for each pool."""
+        return {p.pool_id: p.shards_stats for p in self.pools}
+
+
+def mk_config_fn(
+    config: ConfigDict, stats_when: int = -1
+) -> Callable[[int], ConfigDict]:
+    """Return a function which creates a config for the given round.
+
+    Optionally, the function can be configured to return a config with the `stats` flag
+    enabled for a given round. This is useful to compute attack-wise statistics.
+
+    Parameters
+    ----------
+    config : ConfigDict
+        The configuration to return.
+    stats_when : int, optional
+        The round for which to enable the `stats` flag. Defaults to -1, which disables
+        the flag entirely.
+    """
+    if stats_when > 0:
+
+        def config_fn(r: int) -> ConfigDict:
+            cfg = config | {"round": r}
+            if r == stats_when:
+                return cfg | {"stats": True}
+            return cfg
+
+        return config_fn
+
     return lambda r: config | {"round": r}
 
 
-def compute_client_resources(n_concurrent: int) -> tuple[float, float]:
-    """Compute the number of CPUs and GPUs to allocate to each client."""
-    available_cpus = psutil.cpu_count()
+def compute_client_resources(
+    n_concurrent: int, headroom: float = 0.1
+) -> dict[str, int]:
+    """Compute the number of CPUs and GPUs to allocate to each client.
+
+    Parameters
+    ----------
+    n_concurrent : int
+        The number of concurrent clients.
+    headroom : float, optional
+        The headroom to leave for the system. Defaults to 0.1.
+
+    Returns
+    -------
+    dict[str, float]
+        The number of CPUs and GPUs to allocate to each client.
+    """
+    available_cpus = psutil.cpu_count() * (1 - headroom)
     available_gpus = len(tf.config.list_physical_devices("GPU"))
+    if n_concurrent > available_cpus:
+        logger.warning(
+            f"Number of concurrent clients ({n_concurrent}) is greater than the number"
+            f" of available CPUs ({available_cpus}). Some clients will be run"
+            " sequentially."
+        )
     return {
-        "num_cpus": max(1, available_cpus / n_concurrent),
-        "num_gpus": available_gpus / n_concurrent,
+        "num_cpus": math.floor(max(1, available_cpus / n_concurrent)),
+        "num_gpus": available_gpus / min(n_concurrent, available_cpus),
     }
 
 
@@ -199,3 +275,31 @@ def obj_to_list(
             config_obj = list(config_obj) * expected_length
 
     return config_obj
+
+
+def aggregate_metrics_fn(metrics_mapping: list[tuple[int, MetricsDict]]) -> MetricsDict:
+    """Collect all metrics client-per-client.
+
+    Eiffel processes metrics after experiment ending, which permits more versatile
+    analytics. However, Flower expects a single metrics dictionary. This serializes each
+    client's metrics into a single dictionary.
+
+
+    Parameters
+    ----------
+    metrics_mapping : list[tuple[int, MetricsDict]]
+        A list of tuples containing the number of samples in the testing set and the
+        collected metrics for each client.
+
+
+    Returns
+    -------
+    MetricsDict
+        A single dictionary containing all metrics.
+    """
+    metrics: MetricsDict = {}
+    for _, m in metrics_mapping:
+        cid = m.pop("_cid")
+        metrics[cid] = json.dumps(m)
+
+    return metrics

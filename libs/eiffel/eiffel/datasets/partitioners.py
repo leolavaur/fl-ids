@@ -79,7 +79,13 @@ class IIDPartitioner(Partitioner):
     class_column: str
     df_key: str
 
-    def __init__(self, *args, class_column: str, df_key: str = "m", **kwargs) -> None:
+    def __init__(
+        self,
+        class_column: str,
+        *args,
+        df_key: str = "m",
+        **kwargs,
+    ) -> None:
         """Initialize the IID partitioner."""
         self.class_column = class_column
         self.df_key = df_key
@@ -126,9 +132,9 @@ class NIIDClassPartitioner(Partitioner):
 
     def __init__(
         self,
-        *args,
         class_column: str,
         preserved_classes: list[str],
+        *args,
         n_drop: int = 1,
         df_key: str = "m",
         **kwargs,
@@ -201,8 +207,11 @@ class NIIDClassPartitioner(Partitioner):
 
         self.partitions = []
         pt = IIDPartitioner(
-            dataset, self.n_partitions, self.class_column, df_key=self.df_key
+            self.class_column,
+            self.n_partitions,
+            df_key=self.df_key,
         )
+        pt.load(dataset)
         parts = pt.all()
         for p in parts:
             drop = np.random.choice(dropable, self.n_drop, replace=False)

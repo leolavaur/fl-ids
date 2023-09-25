@@ -20,7 +20,7 @@ File structure
 
 Wether it is downloaded using Eiffel or not, the NF-V2 dataset is expected to follow the
 following file structure. You should rename the files to match the structure if you
-download the dataset manually.
+download the datasets manually.
 ```
 .../nfv2
     ├── origin
@@ -45,20 +45,17 @@ References
       approach. arXiv preprint arxiv:2209.00721 (2022). https://arxiv.org/abs/2209.00721
 """
 
-import operator
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
-from tempfile import gettempdir
-from typing import List, Optional, Tuple, overload
+from typing import ClassVar, List, Optional
 
 import numpy as np
 import pandas as pd
 from omegaconf import ListConfig
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 from eiffel.datasets import DEFAULT_SEARCH_PATH, Dataset
-from eiffel.utils.logging import logged
 
 from .poisoning import PoisonOp
 
@@ -83,7 +80,7 @@ RM_COLS = [
 class NFV2Dataset(Dataset):
     """NF-V2 Dataset."""
 
-    _stratify_column = "Attack"
+    _stratify_column: ClassVar[str] = "Attack"
 
     def poison(
         self: Dataset,
@@ -103,7 +100,8 @@ class NFV2Dataset(Dataset):
             Poisoning operation to apply. Either PoisonOp.INC or PoisonOp.DEC.
         target_classes: Optional[List[str]]
             List of classes to poison. If None, all classes are poisoned, including
-            benign samples.
+            benign samples. If ["*"], all attacks are poisoned, excluding benign
+            samples. Otherwise, only the attacks in the list are poisoned.
         seed: Optional[int]
             Seed for reproducibility.
 
@@ -160,8 +158,8 @@ class NFV2Dataset(Dataset):
         idx = d.y[target].sample(n=n, random_state=seed).index.to_list()
 
         # apply the poisoning operation
-        d.y.loc[idx] = d.y[idx].apply(operator.not_)
-        d.y = d.y.astype(int)
+        # cast to int to avoid future deprecation in NumPy
+        d.y.loc[idx] = d.y[idx].apply(lambda x: int(not x))
         if op == PoisonOp.DEC:
             d.m.loc[idx, "Poisoned"] = False
         else:
@@ -277,7 +275,10 @@ def mk_nfv2_mockset(size: int, iid: bool, seed=None) -> NFV2Dataset:
             if size % 4 != 0:
                 # if the dataset is not divisible by 4, the classes will not be balanced
                 raise ValueError(
-                    "Cannot create an IID dataset with a size that is not divisible by 4.",
+                    (
+                        "Cannot create an IID dataset with a size that is not divisible"
+                        " by 4."
+                    ),
                     size,
                 )
             mock_df["Attack"] = np.array(

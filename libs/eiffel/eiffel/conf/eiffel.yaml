@@ -27,9 +27,12 @@ num_epochs: 10
 batch_size: 512
 seed: 1138
 
+poisoning:
+  type: untargeted
+
 # Attack parameters.
 attacks:
-  - type: untargeted  # untargeted or targeted
+  - type: ${poisoning.type}  # untargeted or targeted
     profile: ${poisoning.profile}
 
 # Distribution parameters.
@@ -39,12 +42,14 @@ pools:
 
 # Runtime configuration.
 experiment:
+  seed: ${seed}
   num_rounds: ${num_rounds}
   num_epochs: ${num_epochs}
   batch_size: ${batch_size}
+  
   strategy: ${strategy}
   model: ${model}
-  seed: ${seed}
+  partitioner: ${partitioner}
 
   pools: "${pools}"
 
@@ -61,20 +66,25 @@ defaults:
 
   - strategy: fedavg
   - model: popoola
+  - partitioner: dumb
 
   - poisoning/profile: loud
+  - poisoning/type: untargeted
 
   - optional .@_global_: config  # Optional user configuration file.
   - override hydra/job_logging: eiffel
   
 
 hydra:
-  # TODO: add overrides in the output path
+  job:
+    chdir: True
+
   run:
+    # TODO: add overrides in the output path
     dir: ${gitdir:}/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
 
   sweep:
     dir: ${gitdir:}/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
-    subdir: ${hydra.job.override_dirname}
+    subdir: ${sanitize:${hydra.job.override_dirname}}
 
 

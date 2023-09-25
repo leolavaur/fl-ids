@@ -1,7 +1,12 @@
 """Metrics for evaluating model performance."""
 
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
+from flwr.server.history import History as FlwrHistory
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -11,7 +16,89 @@ from sklearn.metrics import (
     recall_score,
 )
 
-from eiffel.utils.typing import MetricsDict, NDArray
+from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
+
+
+@dataclass
+class History:
+    """History of a model training session.
+
+    The History object provides metrics dictionaries for the different phases of the
+    experiment. Each dictionary is indexed first by the client ID, then by the round
+    number (starting at 1), and finally by the metric name.
+
+    Attributes
+    ----------
+    fit : dict[EiffelCID, dict[int, MetricsDict]]
+        The metrics obtained during the fit phase, directly from the model.
+    distributed : dict[EiffelCID, dict[int, MetricsDict]], optional
+        The metrics obtained via distributed evaluation, using the client's dataset.
+        Each client receives the new global model of the round and evaluates it on its
+        own dataset.
+    centralized : dict[EiffelCID, dict[int, MetricsDict]], optional
+        The metrics obtained via centralized evaluation, using the server's dataset.
+        The server evaluates the new global model of the round using a dedicated test
+        set representative of clients' data.
+
+    Examples
+    --------
+    >>> history.fit["client_1"][1]["accuracy"]
+    0.98
+    """
+
+    fit: dict[EiffelCID, dict[int, MetricsDict]] = field(default_factory=dict)
+    distributed: dict[EiffelCID, dict[int, MetricsDict]] = field(default_factory=dict)
+    centralized: dict[int, MetricsDict] = field(default_factory=dict)
+
+    @classmethod
+    def from_flwr(cls, flwr_history: FlwrHistory) -> "History":
+        """Create a History object from a Flower History object.
+
+        Parameters
+        ----------
+        flwr_history : flwr.server.history.History
+            The Flower History object.
+
+        Returns
+        -------
+        History
+            The History object.
+        """
+        fit, distributed = {}, {}
+
+        for cid, rnd_metrics in flwr_history.metrics_distributed_fit.items():
+            fit[cid] = {k: json.loads(v) for k, v in rnd_metrics}
+
+        for cid, rnd_metrics in flwr_history.metrics_distributed.items():
+            distributed[cid] = {k: json.loads(v) for k, v in rnd_metrics}
+
+        centralized = {k: v for k, v in flwr_history.metrics_centralized}
+
+        return cls(fit=fit, distributed=distributed, centralized=centralized)
+
+    def save(
+        self, key: str, path: Path | str | None = None, filename: str = "metrics.json"
+    ) -> None:
+        """Save the history to a JSON file.
+
+        Parameters
+        ----------
+        key : str, optional
+            The key to use to save the history. If `None`, the history is saved as
+            `history.json`. Defaults to `None`.
+        path : Path | str, optional
+            The path to the file to save the history to. If `None`, the history is saved
+            in the current working directory. Defaults to `None`.
+        """
+        content = getattr(self, key)
+
+        if path is None:
+            path = Path.cwd()
+        else:
+            path = Path(path)
+
+        file = path / filename
+        file.write_text(json.dumps(content, indent=4))
 
 
 def mean_absolute_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:

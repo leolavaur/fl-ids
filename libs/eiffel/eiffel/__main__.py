@@ -1,10 +1,13 @@
 """Entrypoint for the Eiffel CLI."""
 
+import json
 import logging
 import textwrap
+from pathlib import Path
 from typing import Any
 
 import hydra
+from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
 from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from omegaconf.errors import InterpolationToMissingValueError, MissingMandatoryValue
@@ -37,6 +40,8 @@ def main(cfg: DictConfig):
     """Entrypoint for the Eiffel CLI."""
     log = logging.getLogger(__name__)
 
+    enable_tf_gpu_growth()
+
     log.info("Starting Eiffel")
     if cfg.is_empty():
         log.critical("Empty configuration.")
@@ -53,7 +58,9 @@ def main(cfg: DictConfig):
     )
 
     ex = Experiment(cfg.experiment)
+    Path("./stats.json").write_text(json.dumps(ex.data_stats(), indent=4))
     hist = ex.run()
+    hist.save("distributed")
 
 
 if __name__ == "__main__":

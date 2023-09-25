@@ -38,8 +38,8 @@ class Pool:
 
     pool_id: str
     attack: PoisonIns
-    shards: dict[EiffelCID, tuple[Dataset, Dataset]] = {}
-    holders: dict[EiffelCID, ActorHandle] = {}
+    shards: dict[EiffelCID, tuple[Dataset, Dataset]]
+    holders: dict[EiffelCID, ActorHandle]
     model_fn: Callable[..., tf.keras.Model]
 
     def __init__(
@@ -74,6 +74,7 @@ class Pool:
         """
         self.seed = seed
         self.model_fn = model_fn
+        self.holders = {}
 
         if not pool_id:
             alphabet = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -93,7 +94,9 @@ class Pool:
         _test, _train = dataset.split(at=test_ratio, seed=self.seed)
 
         if not partitioner:
-            partitioner = DumbPartitioner(n_partitions=n_benign + n_malicious)
+            partitioner = DumbPartitioner
+
+        partitioner = partitioner(n_partitions=n_benign + n_malicious)
 
         partitioner.load(_train)
         _train_shards = partitioner.all()
@@ -103,6 +106,7 @@ class Pool:
             partitioner.load(_test)
             _test_shards = partitioner.all()
 
+        self.shards = {}
         for cid in benign_cids:
             self.shards[cid] = (_train_shards.pop(), _test_shards.pop())
 
@@ -113,12 +117,17 @@ class Pool:
                 self.attack = PoisonIns.from_dict(
                     attack, default_target=dataset.default_target
                 )
+            else:
+                raise TypeError(
+                    "`attack` must be a PoisonIns or a valid PoisonIns "
+                    f"configuration dictionary, got {type(attack)}."
+                )
 
             p_task = self.attack.base
             for cid in malicious_cids:
                 _train_shard = _train_shards.pop()
                 _train_shard.poison(
-                    p_task.fraction, p_task.op, self.attack.target, self.seed
+                    p_task.fraction, p_task.operation, self.attack.target, self.seed
                 )
                 self.shards[cid] = (_train_shard, _test_shards.pop())
 
@@ -132,6 +141,8 @@ class Pool:
 
     def deploy(self) -> None:
         """Deploy the dataset onto the Ray object store."""
+        if not self.holders:
+            self.holders = {}
         for cid, (train, test) in self.shards.items():
             if cid in self.holders:
                 raise ValueError(f"Client `{cid}` already deployed.")
@@ -160,6 +171,14 @@ class Pool:
         for cid, handle in self.holders.items():
             mappings[cid] = (handle, self.attack, self.model_fn)
         return mappings
+
+    @property
+    def shards_stats(self) -> dict:
+        """Return the pool data statistics."""
+        return {
+            cid: {"train": train.stats, "test": test.stats}
+            for cid, (train, test) in self.shards.items()
+        }
 
     @property
     def ids(self) -> list[EiffelCID]:

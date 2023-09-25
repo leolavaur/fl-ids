@@ -12,7 +12,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Hashable, List, Optional, Tuple, overload
+from typing import ClassVar, Hashable, List, Optional, Tuple, cast, overload
 
 import numpy as np
 import pandas as pd
@@ -88,12 +88,21 @@ class Dataset:
 
     key: str | None = None
 
-    _default_target: list[str] | None = None
-    _stratify_column: str | None = None
-    _stratify_df: str = "m"
+    _default_target: list[str] = field(init=True, default_factory=list)
+
+    # Class attributes
+    _stratify_column: ClassVar[str]
+    _stratify_df: ClassVar[str] = "m"
 
     def __post_init__(self):
-        """Check the validity of the stratify options."""
+        """Check the validity of the stratify options.
+
+        The following attributes must be set by the child class:
+        * `_stratify_column`: the column to use for stratification.
+
+        """
+        if not hasattr(self, "_stratify_column") or not self._stratify_column:
+            raise ValueError("Stratify column not set.")
         if self._stratify_column and self._stratify_column not in getattr(
             self, self._stratify_df
         ):
@@ -269,9 +278,18 @@ class Dataset:
     @property
     def default_target(self) -> list[str] | None:
         """Return the default target for poisoning."""
-        if self._default_target is None:
+        if len(self._default_target) == 0:
             raise ValueError("No default target set for this dataset.")
         return self._default_target
+
+    @property
+    def stats(self) -> dict[str, dict[str, int]]:
+        """Return the data statistics the dataset."""
+        return (
+            cast(pd.Series, getattr(self, self._stratify_df)[self._stratify_column])
+            .value_counts()
+            .to_dict()
+        )
 
 
 @ray.remote
@@ -283,7 +301,21 @@ class DatasetHandle:
     Flower clients (up tp 1.5.0 at least) are ephemeral and do not preserve their state.
 
     The class provides almost the same public API as `dict`, and can be used as such,
-    except for magic methods. Datasets are stored using the dict API (e.g.
+    except for magic methods. Datasets are stored using the dict API.
+
+    Examples
+    --------
+    >>> train, test = load_data("cifar10")
+    >>> ray.init()
+    >>> handle = DatasetHandle.remote({"train": train, "test": test})
+    >>> handle.get.remote("train")
+    Dataset(...)
+    >>> handle["train"]
+    TypeError: 'DatasetHandle' object is not subscriptable
+    >>> handle.keys.remote()
+    dict_keys(['train', 'test'])
+    >>> train, test = load_data("cifar100")
+    >>> handle.update.remote({"train": train, "test": test})
 
     Attributes
     ----------
