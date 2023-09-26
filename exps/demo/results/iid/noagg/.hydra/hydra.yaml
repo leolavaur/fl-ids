@@ -123,13 +123,14 @@ hydra:
     - hydra.callbacks.mattermost.url=https://mattermost.imt-atlantique.fr/hooks/rxgijqzhk7yq5xi88e9zzatcyh
     - hydra.mode=MULTIRUN
     task:
-    - +experiments=glob(*)
+    - strategy=fednoagg
+    - +experiments=iid
   job:
     name: __main__
     chdir: true
-    override_dirname: +experiments=glob(*)
-    id: ???
-    num: ???
+    override_dirname: +experiments=iid,strategy=fednoagg
+    id: '1'
+    num: 1
     config_name: eiffel
     env_set: {}
     env_copy: []
@@ -155,15 +156,15 @@ hydra:
     - path: ''
       schema: structured
       provider: schema
-    output_dir: ???
+    output_dir: /home/leo/Workspace/phdcybersec/fl-ids/multirun/2023-09-26/13-52-34/+experiments=iid,strategy=fednoagg
     choices:
+      experiments: iid
       .@_global_: config
       poisoning/type: untargeted
       poisoning/profile: loud
       partitioner: dumb
       model: popoola
-      strategy: fedavg
-      datasets: ???
+      strategy: fednoagg
       hydra/env: default
       hydra/callbacks: null
       hydra/job_logging: eiffel
@@ -174,38 +175,3 @@ hydra:
       hydra/launcher: basic
       hydra/output: default
   verbose: false
-num_attackers: 0
-num_clients: 10
-num_rounds: 10
-num_epochs: 10
-batch_size: 512
-seed: 1138
-attacks:
-- type: ${poisoning.type}
-  profile: ${poisoning.profile}
-pools:
-- n_benign: ${num_clients}
-  n_malicious: ${num_attackers}
-experiment:
-  seed: 1138
-  num_rounds: 10
-  num_epochs: 10
-  batch_size: 512
-  strategy: ${strategy}
-  model: ${model}
-  partitioner: ${partitioner}
-  pools: ${pools}
-  attacks: ${attacks}
-  datasets: '${oc.dict.values: datasets}'
-strategy:
-  _target_: flwr.server.strategy.fedavg.FedAvg
-  initial_parameters: null
-model:
-  _target_: eiffel.models.supervized.mk_popoola_mlp
-  _partial_: true
-partitioner:
-  _target_: eiffel.datasets.partitioners.DumbPartitioner
-  _partial_: true
-poisoning:
-  profile: '1.0'
-  type: untargeted

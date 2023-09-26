@@ -136,6 +136,7 @@
 
               # tools
               poetry
+              ltex-ls
             ];
 
             # shellHook = ''
@@ -149,7 +150,7 @@
                   (map (p: "$(realpath ./exps/${p}/src)") expList)
               }:$(realpath ./libs/eiffel/)
               export EIFFEL_PYTHON_PATH=${eiffel}/bin/python
-              export EIFFEL_JAVA_PATH=${zulu}/bin/java
+              export EIFFEL_LTEX_PATH=${ltex-ls}/bin/ltex-ls
             '' + (if stdenv.isLinux then ''
               export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [
                 "${cudaPackages.cudatoolkit}/lib"
