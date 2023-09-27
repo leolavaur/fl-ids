@@ -16,7 +16,7 @@
         "--experimental-string-processing"
     ],
     "ruff.path": ["ruff"],
-    // "ltex.ltex-ls.path": "ltex-ls",
+    "ltex.ltex-ls.path": "${config:erz}",
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-python.black-formatter",
@@ -27,4 +27,6 @@
         "editor.formatOnPaste": false,
     },
     "python.analysis.typeCheckingMode": "basic",
+    "erz": "tot",
+    "eeer": "${config:erz}"
 }
