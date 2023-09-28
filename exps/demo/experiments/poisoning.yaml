@@ -1,0 +1,14 @@
+# @package _global_
+
+experiment:
+  pools:
+    - n_benign: 2
+      n_malicious: 2
+
+  attacks:
+    - type: untargeted
+      profile: "1.0"
+
+defaults:
+  - override /datasets: 
+    - nfv2/sampled/cicids

@@ -27,9 +27,6 @@ num_epochs: 10
 batch_size: 512
 seed: 1138
 
-poisoning:
-  type: untargeted
-
 # Attack parameters.
 attacks:
   - type: ${poisoning.type}  # untargeted or targeted
@@ -70,6 +67,10 @@ defaults:
 
   - poisoning/profile: loud
   - poisoning/type: untargeted
+
+  - hydra/callbacks:
+    - mattermost
+    - plot
 
   - optional .@_global_: config  # Optional user configuration file.
   - override hydra/job_logging: eiffel

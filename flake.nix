@@ -65,6 +65,7 @@
       pythonVer = "python310";
 
       expList = [
+        "demo"
         "pca"
       ];
 
@@ -135,6 +136,7 @@
 
               # tools
               poetry
+              ltex-ls
             ];
 
             # shellHook = ''
@@ -143,15 +145,22 @@
             #       (map (p: "$(realpath ./exps/${p}/src/)") expList)
             #   }
             shellHook = ''
-              export PYTHONPATH=$(realpath ./libs/eiffel)
-              export EIFFEL_INTERPRETER_PATH=${eiffel} 
+              export PYTHONPATH=${
+                lib.strings.concatStringsSep ":"
+                  (map (p: "$(realpath ./exps/${p}/src)") expList)
+              }:$(realpath ./libs/eiffel/)
+              export EIFFEL_PYTHON_PATH=${eiffel}/bin/python
+              export EIFFEL_LTEX_PATH=${ltex-ls}/bin/ltex-ls
             '' + (if stdenv.isLinux then ''
               export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [
                 "${cudaPackages.cudatoolkit}/lib"
                 "${cudaPackages.cudatoolkit.lib}/lib"
                 "${cudaPackages.cudnn}/lib"
-              ]} 
-            '' + ":$LD_LIBRARY_PATH" else "");
+                "${pkgs.cudaPackages.cudatoolkit}/nvvm/libdevice/"
+              ]}:$LD_LIBRARY_PATH
+              
+              export XLA_FLAGS=--xla_gpu_cuda_data_dir=${pkgs.cudaPackages.cudatoolkit}
+            '' else "");
           };
 
         });

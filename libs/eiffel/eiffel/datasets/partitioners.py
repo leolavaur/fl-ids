@@ -22,8 +22,8 @@ class Partitioner(metaclass=ABCMeta):
         """Return the number of partitions."""
         return len(self.partitions)
 
-    def __getitem__(self, idx: int | slice) -> Dataset:
-        """Return the dataset at the given index."""
+    def __getitem__(self, idx: int | slice) -> Dataset | list[Dataset]:
+        """Select a subset of partitions from the partitioner."""
         return self.partitions[idx]
 
     @abstractmethod
@@ -216,5 +216,5 @@ class NIIDClassPartitioner(Partitioner):
         for p in parts:
             drop = np.random.choice(dropable, self.n_drop, replace=False)
             mask = getattr(p, self.df_key)[self.class_column].isin(drop)
-            p.drop(mask[mask].index)
+            p.drop(mask[mask].index)  # select only the rows in mask that are True
             self.partitions.append(p)

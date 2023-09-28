@@ -1,0 +1,15 @@
+# @package _global_
+
+experiment:
+  pools:
+    - n_benign: 1
+    - n_benign: 1
+    - n_benign: 1
+    - n_benign: 1
+
+defaults:
+  - override /datasets: 
+    - nfv2/sampled/cicids
+    - nfv2/sampled/botiot
+    - nfv2/sampled/toniot
+    - nfv2/sampled/nb15
