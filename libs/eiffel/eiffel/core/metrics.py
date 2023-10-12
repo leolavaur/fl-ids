@@ -3,6 +3,7 @@
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -67,12 +68,16 @@ class History:
         fit, distributed = {}, {}
 
         for cid, rnd_metrics in flwr_history.metrics_distributed_fit.items():
-            fit[cid] = {k: json.loads(v) for k, v in rnd_metrics}
+            fit[cid] = {k: json.loads(str(v)) for k, v in rnd_metrics}
 
         for cid, rnd_metrics in flwr_history.metrics_distributed.items():
-            distributed[cid] = {k: json.loads(v) for k, v in rnd_metrics}
+            distributed[cid] = {k: json.loads(str(v)) for k, v in rnd_metrics}
 
-        centralized = {k: v for k, v in flwr_history.metrics_centralized}
+        # transform Dict[str, List[Tuple[int, Scalar]]] into Dict[int, MetricsDict]
+        centralized: dict[int, MetricsDict] = {}
+        for r, _ in enumerate(next(iter(flwr_history.metrics_centralized.values()))):
+            metrics = {k: v[r][1] for k, v in flwr_history.metrics_centralized.items()}
+            centralized[r] = cast(MetricsDict, metrics)
 
         return cls(fit=fit, distributed=distributed, centralized=centralized)
 
@@ -178,11 +183,11 @@ def metrics_from_preds(y_true: NDArray, y_pred: NDArray) -> MetricsDict:
     tp = conf[1][1]
 
     return {
-        "accuracy": accuracy_score(y_true, y_pred),
-        "precision": precision_score(y_true, y_pred),
-        "recall": recall_score(y_true, y_pred),
-        "f1": f1_score(y_true, y_pred),
-        "mcc": matthews_corrcoef(y_true, y_pred),
+        "accuracy": float(accuracy_score(y_true, y_pred)),
+        "precision": float(precision_score(y_true, y_pred)),
+        "recall": float(recall_score(y_true, y_pred)),
+        "f1": float(f1_score(y_true, y_pred)),
+        "mcc": float(matthews_corrcoef(y_true, y_pred)),
         "missrate": fn / (fn + tp) if (fn + tp) != 0 else 0,
         "fallout": fp / (fp + tn) if (fp + tn) != 0 else 0,
     }
