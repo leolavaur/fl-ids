@@ -39,6 +39,7 @@ pools:
 
 # Runtime configuration.
 experiment:
+  _target_: eiffel.core.experiment.Experiment
   seed: ${seed}
   num_rounds: ${num_rounds}
   num_epochs: ${num_epochs}
@@ -69,7 +70,7 @@ defaults:
   - poisoning/type: untargeted
 
   - hydra/callbacks:
-    #- mattermost
+    - mattermost
     - plot
 
   - optional .@_global_: config  # Optional user configuration file.

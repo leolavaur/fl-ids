@@ -37,7 +37,7 @@ class PlotterCallback(Callback):
             print(f"File {self.input} not found.")
 
     def _plot(self, metrics: dict, output: str) -> None:
-        """Plot the boxplots."""
+        """Generate the plot."""
         raise NotImplementedError
 
 
@@ -53,13 +53,15 @@ class PlotCallback(PlotterCallback):
         self,
         *,
         metric: str = "accuracy",
+        smooth: bool = False,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.metric = metric
+        self.smooth = smooth
 
     def _plot(self, metrics: dict, output: str) -> None:
-        """Plot the boxplots."""
+        """Generate the plot."""
         benign_metrics = []
         attacker_metrics = []
 
@@ -77,21 +79,31 @@ class PlotCallback(PlotterCallback):
         attacker_metrics = [sum(m) / len(m) for m in attacker_metrics]
         rounds = [r + 1 for r in range(len(benign_metrics))]
 
-        # 300 represents number of points to make between min and max
-        lin_x = np.linspace(min(rounds), max(rounds), 300)
-        benign_spl = make_interp_spline(rounds, benign_metrics, k=2)  # type: BSpline
-        benign_smooth = benign_spl(lin_x)
+        benign_plot = (rounds, benign_metrics)
+        attacker_plot = (rounds, attacker_metrics)
+
+        if self.smooth:
+            # 300 represents number of points to make between min and max
+            lin_x = np.linspace(min(rounds), max(rounds), 300)
+            benign_spl = make_interp_spline(
+                rounds, benign_metrics, k=2
+            )  # type: BSpline
+            benign_smooth = benign_spl(lin_x)
+
+            benign_plot = (lin_x, benign_smooth)
+
+            if attacker_metrics:
+                attacker_spl = make_interp_spline(rounds, attacker_metrics, k=2)
+                attacker_smooth = attacker_spl(lin_x)
+                attacker_plot = (lin_x, attacker_smooth)
 
         plt.figure()
         plt.title(f"Mean {self.metric}")
         plt.xlabel("Rounds")
         plt.ylabel(self.metric.title())
-        plt.plot(lin_x, benign_smooth, label="Benign")
-        # plt.plot(rounds, benign_metrics, label="Benign")
+        plt.plot(*benign_plot, label="Benign")
         if attacker_metrics:
-            attacker_spl = make_interp_spline(rounds, attacker_metrics, k=2)
-            attacker_smooth = attacker_spl(lin_x)
-            plt.plot(lin_x, attacker_smooth, label="Attackers")
+            plt.plot(*attacker_plot, label="Attacker")
         plt.legend()
         plt.savefig(Path(output))
         plt.close()

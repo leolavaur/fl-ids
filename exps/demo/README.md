@@ -2,7 +2,7 @@
 
 Federated learning (FL) is a distributed machine learning paradigm enabling the training of global models without sharing the clients' data.
 The "horizontal" settings is sometimes referred to as collaborative FL, as it allows participants to share locally-acquired knowledge with others.
-This would allow IDSs to share insights while respecting the privacy and and confidentiality concerns of its organization.
+This would allow IDSs to share insights while respecting the privacy and and confidentiality concerns of their organization.
 
 In this demonstration, we show that (1) FL can improve the detection of locally unknown attacks using the others, (2) heterogeneous network topologies can impede the federation's performance, and (3) open federations are particularly sensitive to malicious actors.
 
@@ -33,4 +33,17 @@ The repository is structured as follows:
 ├── poetry.lock             # Poetry lock file
 ├── poetry.toml             # Poetry configuration
 └── README.md               # This file
+```
+
+## Generate the results
+
+The graphs are generated using the [Eiffel](https://github.com/phdcybersec/eiffel) framework, which is included as a local dependency using `git subtree`.
+If the `eiffel` command is available in your path, you can generate the results using the following command:
+```bash
+eiffel --config-dir exps/demo/ --multirun strategy=fedavg,fednoagg +experiments="glob(*)"
+```
+
+You can also use the Mattermost callback feature to get notified when the experiments are done:
+```bash
+eiffel --config-dir exps/demo/ --multirun strategy=fedavg,fednoagg +experiments="glob(*)" hydra.callbacks.mattermost.url=true hydra.callbacks.mattermost.url=https://mattermost.example.com/hooks/...
 ```

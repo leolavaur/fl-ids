@@ -5,21 +5,26 @@ import json
 import logging
 import math
 from copy import deepcopy
-from functools import reduce
-from typing import Callable
+from functools import partial, reduce
+from typing import Any, Callable, Type
 
 import psutil
 import ray
 import tensorflow as tf
 from flwr.client import ClientLike
 from flwr.server import Server, ServerConfig
-from flwr.server.strategy import Strategy
+from flwr.server.strategy import FedAvg, Strategy
 from flwr.simulation import start_simulation
 from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
 from hydra.utils import instantiate
+from keras.models import Model
 from omegaconf import DictConfig, ListConfig
 
 from eiffel.core.errors import ConfigError
+from eiffel.datasets.dataset import Dataset
+from eiffel.datasets.partitioners import DumbPartitioner, Partitioner
+from eiffel.datasets.poisoning import PoisonIns
+from eiffel.utils.hydra import instantiate_or_return
 from eiffel.utils.typing import ConfigDict, MetricsDict
 
 from .client import mk_client
@@ -57,94 +62,148 @@ class Experiment:
     strategy: Strategy
     pools: list[Pool]
 
-    def __init__(self, config: DictConfig):
+    def __init__(
+        self,
+        seed: int,
+        num_rounds: int,
+        num_epochs: int,
+        batch_size: int,
+        model_fn: Callable[..., tf.keras.Model] | DictConfig,
+        pools: list[Pool | DictConfig],
+        datasets: list[Dataset | DictConfig],
+        attacks: list[PoisonIns | dict | DictConfig],
+        strategy: Strategy | DictConfig | None = None,
+        server: Server | DictConfig | None = None,
+        partitioner: Partitioner | DictConfig | None = None,
+    ):
         """Initialize the experiment.
 
-        The `expriment` object is a DictConfig object containing all configuration to
-        instantiate an Eiffel experiment. Notably, it should contain three ListConfig
-        objects:
+        The `expriment` object is a wrapper around the Flower server. It is responsible
+        for instantiating the server, the clients, and the strategy. It also handles the
+        data partitioning and the attack configuration.
+
+        Initialization relies mostly on three configurations objects obtained from
+        Hydra, and thereafter mapped together to create the experiment's setup:
 
         - `pools`: the list of client pools. Each pool is a DictConfig object
-            containing the configuration of the pool. At the very least, it should
-            contain the number of clients in the pools as: `{n_benign: int, n_malicious:
-            int}`.
+            containing, or an instantiated Pool object. If a dictionary, it should
+            contain, at the very least, the number of clients in the pools as:
+            `{n_benign: int, n_malicious: int}`.
         - `datasets`: the list of datasets used by the clients. Each dataset is a
           DictConfig object that can be passed to Hydra's instantiation logic for a
-          `load_data` fonction.
-        - `attacks`: the attack configuration as: `{type: str, profile: str}`.
+          `load_data` fonction, or a Dataset object.
+        - `attacks`: the attack configuration as: `{type: str, profile: str}`, or a list
+          of PoisonIns objects.
 
         The number of pools is defined by the length of the `pools` list. If a single
-        DictConfig is provided, ie. if the length of the list is 1, then the attack or
+        element is provided, ie. if the length of the list is 1, then the attack or
         dataset is used by all pools. Otherwise, the length of the list should be equal
         to the number of pools.
 
+        If the number of datasets is 1, then the evaluation can be done centrally by the
+        server. Otherwise, the evaluation is done by each client, and the distributed
+        metrics are aggregated afterwards. This can be disabled using the
+        `distributed_evaluation` flag, which is set to `False` by default.
+
         Parameters
         ----------
-        config : omegaconf.DictConfig
-            The configuration of the experiment. This is the configuration aggregated by
-            Hydra from the command line arguments and the configuration files.
+        seed : int
+            The seed for reproducibility.
+        num_rounds : int
+            The number of rounds to run.
+        num_epochs : int
+            The number of epochs to run on each client.
+        batch_size : int
+            The batch size to use.
+        model_fn : Callable[..., tf.keras.Model] | DictConfig
+            A function that returns a compiled Keras model. Each client process will run
+            this function to instantiate its model. If a DictConfig object is provided,
+            the function is instantiated using Hydra's instantiation logic and MUST
+            return a `functool.partial` object.
+        pools : list[Pool | DictConfig]
+            The list of client pools.
+        datasets : list[Dataset | DictConfig]
+            The datasets to use per pool.
+        attacks : list[PoisonIns | dict | DictConfig]
+            The attacks to use per pool.
+        strategy : Strategy | DictConfig | None, optional
+            The Flower-compatible strategy to use. Defaults to
+            `flwr.server.strategy.FedAvg` if None.
+        server : Server | DictConfig | None, optional
+            The Flower server. Defaults to the default Flower server if None.
+        partitioner : Partitioner | DictConfig | None, optional
+            The partitioner to use. Defaults to `DumbPartitioner` if None.
+
+        Raises
+        ------
+        ConfigError
+            If the number of pools is not equal to the number of datasets or the number
+            of attacks.
         """
-        self.seed = config.seed
+        self.seed = seed
         tf.keras.utils.set_random_seed(self.seed)
 
-        self.n_rounds = config.num_rounds
+        self.n_rounds = num_rounds
         self.pools = []
 
-        pools = obj_to_list(config.pools)
-        attacks = obj_to_list(config.attacks, expected_length=len(config.pools))
-        datasets = obj_to_list(config.datasets, expected_length=len(config.pools))
+        pools = obj_to_list(pools)
+        attacks = obj_to_list(attacks, expected_length=len(pools))
+        datasets = obj_to_list(datasets, expected_length=len(pools))
 
         pools_mapping = zip(pools, attacks, datasets)
 
         for pool, attack, dataset in pools_mapping:
-            if isinstance(attack, DictConfig):
-                attack = dict(attack)
-            if not hasattr(attack, "n_rounds"):
-                attack["n_rounds"] = config.num_rounds
+            if not isinstance(dataset, Dataset):
+                dataset = instantiate_or_return(dataset, Dataset)
 
-            if hasattr(pool, "_target_"):
-                pool = instantiate(
-                    pool,
-                    partitioner=instantiate(config.get("partitioner")),
-                    dataset=dataset,
-                    attack=attack,
-                    model_fn=instantiate(config.model),
-                )
-            else:
-                pool = Pool(
-                    partitioner=instantiate(config.get("partitioner")),
-                    dataset=dataset,
-                    model_fn=instantiate(config.model),
-                    attack=attack,
-                    **pool,
+            if not isinstance(attack, PoisonIns):
+                if isinstance(attack, DictConfig):
+                    attack = dict(attack)
+                if not hasattr(attack, "n_rounds"):
+                    attack["n_rounds"] = num_rounds
+
+            if isinstance(pool, (DictConfig, dict)):
+                if "_target_" in pool:
+                    pool = instantiate(
+                        pool,
+                        partitioner=instantiate_or_return(partitioner, Partitioner),
+                        dataset=instantiate_or_return(dataset, Dataset),
+                        attack=attack,
+                        model_fn=instantiate_or_return(model_fn, Model),
+                    )
+                else:
+                    pool = Pool(
+                        dataset=instantiate_or_return(dataset, Dataset),
+                        model_fn=instantiate_or_return(model_fn, partial),
+                        partitioner=instantiate_or_return(partitioner, Partitioner),
+                        attack=attack,
+                        **{str(k): v for k, v in pool.items()},
+                    )
+            elif not isinstance(pool, Pool):
+                raise ConfigError(
+                    f"Invalid pool type: {type(pool)}. Expected a Pool object."
                 )
             self.pools.append(pool)
 
         self.n_clients = sum([len(p) for p in self.pools])
-        self.n_concurrent = config.get("n_concurrent", self.n_clients)
 
         self.strategy = instantiate(
-            config.strategy,
+            strategy,
             min_fit_clients=self.n_clients,
             min_evaluate_clients=self.n_clients,
             min_available_clients=self.n_clients,
             on_fit_config_fn=mk_config_fn(
                 {
-                    "batch_size": config.batch_size,
-                    "num_epochs": config.num_epochs,
+                    "batch_size": batch_size,
+                    "num_epochs": num_epochs,
                 }
             ),
             evaluate_metrics_aggregation_fn=aggregate_metrics_fn,
             fit_metrics_aggregation_fn=aggregate_metrics_fn,
             on_evaluate_config_fn=mk_config_fn(
-                {"batch_size": config.batch_size}, stats_when=self.n_rounds
+                {"batch_size": batch_size}, stats_when=self.n_rounds
             ),
         )
-
-        if "server" in config and config.server is not None:
-            self.server = instantiate(config.server)
-        else:
-            self.server = None
 
     def run(self, **ray_kwargs) -> History:
         """Run the experiment."""
@@ -252,11 +311,11 @@ def compute_client_resources(
 
 
 def obj_to_list(
-    config_obj: ListConfig | DictConfig | list[DictConfig],
+    config_obj: ListConfig | DictConfig | list,
     expected_length: int = 0,
 ) -> list:
     """Convert a DictConfig or ListConfig object to a list."""
-    if not isinstance(config_obj, (ListConfig, DictConfig)):
+    if not isinstance(config_obj, (ListConfig, list, DictConfig, dict)):
         raise ConfigError(
             f"Invalid config object: {type(config_obj)}. Expected a list or dictionary."
         )

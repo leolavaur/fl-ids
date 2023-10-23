@@ -57,7 +57,7 @@ def main(cfg: DictConfig):
         + textwrap.indent(OmegaConf.to_yaml(cfg, resolve=True), "\t")
     )
 
-    ex = Experiment(cfg.experiment)
+    ex = instantiate(cfg.experiment)
     Path("./stats.json").write_text(json.dumps(ex.data_stats(), indent=4))
     hist = ex.run()
     hist.save("distributed")
