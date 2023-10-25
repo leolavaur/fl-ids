@@ -8,7 +8,7 @@
             "module": "eiffel",
             "args": [
                 "--config-dir",
-                "${workspaceFolder}/exps/${input:experiment}/src/",
+                "${workspaceFolder}/${input:experiment}",
             ],
             "justMyCode": true
         },
@@ -41,7 +41,11 @@
             "options": [
                 {
                     "label": "PCA-FL",
-                    "value": "pca"
+                    "value": "exps/pca/src"
+                },
+                {
+                    "label": "Demo FL",
+                    "value": "exps/demo"
                 }
             ]
         },

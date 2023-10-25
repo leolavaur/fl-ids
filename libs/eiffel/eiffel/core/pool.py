@@ -37,7 +37,7 @@ class Pool:
     """
 
     pool_id: str
-    attack: PoisonIns
+    attack: PoisonIns | None
     shards: dict[EiffelCID, tuple[Dataset, Dataset]]
     holders: dict[EiffelCID, ActorHandle]
     model_fn: Callable[..., tf.keras.Model]
@@ -74,6 +74,7 @@ class Pool:
         """
         self.seed = seed
         self.model_fn = model_fn
+        self.attack = attack
         self.holders = {}
 
         if not pool_id:
@@ -111,17 +112,7 @@ class Pool:
             self.shards[cid] = (_train_shards.pop(), _test_shards.pop())
 
         if attack:
-            if isinstance(attack, PoisonIns):
-                self.attack = attack
-            elif isinstance(attack, dict | DictConfig):
-                self.attack = PoisonIns.from_dict(
-                    attack, default_target=dataset.default_target
-                )
-            else:
-                raise TypeError(
-                    "`attack` must be a PoisonIns or a valid PoisonIns "
-                    f"configuration dictionary, got {type(attack)}."
-                )
+            assert isinstance(attack, PoisonIns)
 
             p_task = self.attack.base
             for cid in malicious_cids:

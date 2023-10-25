@@ -46,7 +46,7 @@ experiment:
   batch_size: ${batch_size}
   
   strategy: ${strategy}
-  model: ${model}
+  model_fn: ${model}
   partitioner: ${partitioner}
 
   pools: "${pools}"
@@ -70,7 +70,6 @@ defaults:
   - poisoning/type: untargeted
 
   - hydra/callbacks:
-    - mattermost
     - plot
 
   - optional .@_global_: config  # Optional user configuration file.

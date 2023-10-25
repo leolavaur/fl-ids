@@ -6,6 +6,7 @@ import logging
 import math
 from copy import deepcopy
 from functools import partial, reduce
+from types import NoneType
 from typing import Any, Callable, Type
 
 import psutil
@@ -72,8 +73,8 @@ class Experiment:
         pools: list[Pool | DictConfig],
         datasets: list[Dataset | DictConfig],
         attacks: list[PoisonIns | dict | DictConfig],
-        strategy: Strategy | DictConfig | None = None,
-        server: Server | DictConfig | None = None,
+        strategy: partial[Strategy] | Strategy | None = None,
+        server: Server | None = None,
         partitioner: Partitioner | DictConfig | None = None,
     ):
         """Initialize the experiment.
@@ -119,7 +120,8 @@ class Experiment:
             A function that returns a compiled Keras model. Each client process will run
             this function to instantiate its model. If a DictConfig object is provided,
             the function is instantiated using Hydra's instantiation logic and MUST
-            return a `functool.partial` object.
+            return a `functool.partial` object, using `_partial_: True`. Overall, it is
+            recommanded to pass a partial function.
         pools : list[Pool | DictConfig]
             The list of client pools.
         datasets : list[Dataset | DictConfig]
@@ -143,6 +145,7 @@ class Experiment:
         self.seed = seed
         tf.keras.utils.set_random_seed(self.seed)
 
+        self.server = server
         self.n_rounds = num_rounds
         self.pools = []
 
@@ -156,17 +159,24 @@ class Experiment:
             if not isinstance(dataset, Dataset):
                 dataset = instantiate_or_return(dataset, Dataset)
 
-            if not isinstance(attack, PoisonIns):
-                if isinstance(attack, DictConfig):
-                    attack = dict(attack)
-                if not hasattr(attack, "n_rounds"):
-                    attack["n_rounds"] = num_rounds
+            if not isinstance(attack, (PoisonIns, NoneType)):
+                if isinstance(attack, dict | DictConfig):
+                    if "n_rounds" not in attack:
+                        attack["n_rounds"] = num_rounds
+                    self.attack = PoisonIns.from_dict(
+                        attack, default_target=dataset.default_target
+                    )
+                else:
+                    raise TypeError(
+                        "`attack` must be a PoisonIns, a valid PoisonIns "
+                        f"configuration dictionary, or None; got {type(attack)}."
+                    )
 
             if isinstance(pool, (DictConfig, dict)):
                 if "_target_" in pool:
                     pool = instantiate(
                         pool,
-                        partitioner=instantiate_or_return(partitioner, Partitioner),
+                        partitioner=instantiate_or_return(partitioner, partial),
                         dataset=instantiate_or_return(dataset, Dataset),
                         attack=attack,
                         model_fn=instantiate_or_return(model_fn, Model),
@@ -175,7 +185,7 @@ class Experiment:
                     pool = Pool(
                         dataset=instantiate_or_return(dataset, Dataset),
                         model_fn=instantiate_or_return(model_fn, partial),
-                        partitioner=instantiate_or_return(partitioner, Partitioner),
+                        partitioner=instantiate_or_return(partitioner, partial),
                         attack=attack,
                         **{str(k): v for k, v in pool.items()},
                     )
@@ -187,25 +197,32 @@ class Experiment:
 
         self.n_clients = sum([len(p) for p in self.pools])
 
-        self.strategy = instantiate(
-            strategy,
-            min_fit_clients=self.n_clients,
-            min_evaluate_clients=self.n_clients,
-            min_available_clients=self.n_clients,
-            on_fit_config_fn=mk_config_fn(
-                {
-                    "batch_size": batch_size,
-                    "num_epochs": num_epochs,
-                }
-            ),
-            evaluate_metrics_aggregation_fn=aggregate_metrics_fn,
-            fit_metrics_aggregation_fn=aggregate_metrics_fn,
-            on_evaluate_config_fn=mk_config_fn(
-                {"batch_size": batch_size}, stats_when=self.n_rounds
-            ),
-        )
+        if strategy is None:
+            strategy = FedAvg()
 
-    def run(self, **ray_kwargs) -> History:
+        if isinstance(strategy, partial):
+            self.strategy = strategy(
+                min_fit_clients=self.n_clients,
+                min_evaluate_clients=self.n_clients,
+                min_available_clients=self.n_clients,
+                on_fit_config_fn=mk_config_fn(
+                    {
+                        "batch_size": batch_size,
+                        "num_epochs": num_epochs,
+                    }
+                ),
+                evaluate_metrics_aggregation_fn=aggregate_metrics_fn,
+                fit_metrics_aggregation_fn=aggregate_metrics_fn,
+                on_evaluate_config_fn=mk_config_fn(
+                    {"batch_size": batch_size}, stats_when=self.n_rounds
+                ),
+            )
+        else:
+            self.strategy = strategy
+
+        assert isinstance(self.strategy, Strategy)
+
+    def run(self, **ray_kwargs) -> None:
         """Run the experiment."""
         init_kwargs = (ray_kwargs or {}) | {
             "ignore_reinit_error": True,
@@ -225,12 +242,12 @@ class Experiment:
             seed=self.seed,
         )
 
-        hist = start_simulation(
+        self.hist = start_simulation(
             client_fn=fn,
             num_clients=self.n_clients,
             config=ServerConfig(num_rounds=self.n_rounds),
             strategy=self.strategy,
-            client_resources=compute_client_resources(self.n_concurrent),
+            client_resources=compute_client_resources(self.n_clients),
             actor_kwargs={
                 # Enable GPU growth upon actor init
                 # does nothing if `num_gpus` in client_resources is 0.0
@@ -243,7 +260,10 @@ class Experiment:
 
         ray.shutdown()
 
-        return History.from_flwr(hist)
+    @property
+    def history(self) -> History:
+        """Return the experiment's history."""
+        return History.from_flwr(self.hist)
 
     def data_stats(self) -> dict[str, dict[str, int]]:
         """Return the data statistics for each pool."""
@@ -315,12 +335,12 @@ def obj_to_list(
     expected_length: int = 0,
 ) -> list:
     """Convert a DictConfig or ListConfig object to a list."""
-    if not isinstance(config_obj, (ListConfig, list, DictConfig, dict)):
+    if not isinstance(config_obj, (ListConfig, list, DictConfig, dict, NoneType)):
         raise ConfigError(
             f"Invalid config object: {type(config_obj)}. Expected a list or dictionary."
         )
 
-    if isinstance(config_obj, DictConfig):
+    if not isinstance(config_obj, (list, ListConfig)):
         config_obj = [config_obj]
 
     if expected_length > 0:

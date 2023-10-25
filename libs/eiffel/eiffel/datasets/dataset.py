@@ -117,6 +117,8 @@ class Dataset:
 
     def __eq__(self, other):
         """Compare two datasets."""
+        if not isinstance(other, Dataset):
+            return False
         return (
             self.X.equals(other.X) and self.y.equals(other.y) and self.m.equals(other.m)
         )
@@ -283,7 +285,7 @@ class Dataset:
         return self._default_target
 
     @property
-    def stats(self) -> dict[str, dict[str, int]]:
+    def stats(self) -> dict[str, int]:
         """Return the data statistics the dataset."""
         return (
             cast(pd.Series, getattr(self, self._stratify_df)[self._stratify_column])

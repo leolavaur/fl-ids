@@ -57,9 +57,14 @@ def main(cfg: DictConfig):
         + textwrap.indent(OmegaConf.to_yaml(cfg, resolve=True), "\t")
     )
 
-    ex = instantiate(cfg.experiment)
+    # _convert_ is required for nested instantiations
+    # see:
+    # - https://github.com/facebookresearch/hydra/issues/2591#issuecomment-1518170214
+    # - https://github.com/facebookresearch/hydra/issues/1719
+    ex = instantiate(cfg.experiment, _convert_="object")
     Path("./stats.json").write_text(json.dumps(ex.data_stats(), indent=4))
-    hist = ex.run()
+    ex.run()
+    hist = ex.history
     hist.save("distributed")
 
 

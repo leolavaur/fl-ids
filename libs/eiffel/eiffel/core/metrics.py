@@ -20,36 +20,33 @@ from sklearn.metrics import (
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
 
 
-@dataclass
 class History:
     """History of a model training session.
 
-    The History object provides metrics dictionaries for the different phases of the
-    experiment. Each dictionary is indexed first by the client ID, then by the round
-    number (starting at 1), and finally by the metric name.
-
-    Attributes
-    ----------
-    fit : dict[EiffelCID, dict[int, MetricsDict]]
-        The metrics obtained during the fit phase, directly from the model.
-    distributed : dict[EiffelCID, dict[int, MetricsDict]], optional
-        The metrics obtained via distributed evaluation, using the client's dataset.
-        Each client receives the new global model of the round and evaluates it on its
-        own dataset.
-    centralized : dict[EiffelCID, dict[int, MetricsDict]], optional
-        The metrics obtained via centralized evaluation, using the server's dataset.
-        The server evaluates the new global model of the round using a dedicated test
-        set representative of clients' data.
-
-    Examples
-    --------
-    >>> history.fit["client_1"][1]["accuracy"]
-    0.98
+    The History object contains the training and evaluation metrics of a model training
+    session.
     """
 
-    fit: dict[EiffelCID, dict[int, MetricsDict]] = field(default_factory=dict)
-    distributed: dict[EiffelCID, dict[int, MetricsDict]] = field(default_factory=dict)
-    centralized: dict[int, MetricsDict] = field(default_factory=dict)
+    def __init__(
+        self,
+        fit: dict[EiffelCID, dict[int, MetricsDict]] = {},
+        distributed: dict[EiffelCID, dict[int, MetricsDict]] = {},
+        centralized: dict[int, MetricsDict] = {},
+    ) -> None:
+        """Initialize a History object.
+
+        Parameters
+        ----------
+        fit : dict[EiffelCID, dict[int, MetricsDict]], optional
+            Training metrics of the clients, by client ID and round number.
+        distributed : dict[EiffelCID, dict[int, MetricsDict]], optional
+            Evaluation metrics of the clients, by client ID and round number.
+        centralized : dict[int, MetricsDict], optional
+            Evaluation metrics on the server, by round number.
+        """
+        self.fit = fit
+        self.distributed = distributed
+        self.centralized = centralized
 
     @classmethod
     def from_flwr(cls, flwr_history: FlwrHistory) -> "History":
@@ -63,21 +60,24 @@ class History:
         Returns
         -------
         History
-            The History object.
+            The Eiffel History object.
         """
-        fit, distributed = {}, {}
+        fit = {}
+        distributed = {}
+        centralized = {}
 
-        for cid, rnd_metrics in flwr_history.metrics_distributed_fit.items():
-            fit[cid] = {k: json.loads(str(v)) for k, v in rnd_metrics}
+        for cid, metrics in flwr_history.metrics_distributed_fit.items():
+            fit[cid] = {}
+            for round, json_metrics in metrics:
+                fit[cid][round] = json.loads(str(json_metrics))
 
-        for cid, rnd_metrics in flwr_history.metrics_distributed.items():
-            distributed[cid] = {k: json.loads(str(v)) for k, v in rnd_metrics}
+        for cid, metrics in flwr_history.metrics_distributed.items():
+            distributed[cid] = {}
+            for round, json_metrics in metrics:
+                distributed[cid][round] = json.loads(str(json_metrics))
 
-        # transform Dict[str, List[Tuple[int, Scalar]]] into Dict[int, MetricsDict]
-        centralized: dict[int, MetricsDict] = {}
-        for r, _ in enumerate(next(iter(flwr_history.metrics_centralized.values()))):
-            metrics = {k: v[r][1] for k, v in flwr_history.metrics_centralized.items()}
-            centralized[r] = cast(MetricsDict, metrics)
+        for round, json_metrics in flwr_history.metrics_centralized:
+            centralized[round] = json.loads(str(json_metrics))
 
         return cls(fit=fit, distributed=distributed, centralized=centralized)
 

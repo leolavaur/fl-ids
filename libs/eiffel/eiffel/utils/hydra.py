@@ -30,4 +30,4 @@ def instantiate_or_return(obj: Any, typ: Type) -> Any:
         if isinstance(ret, typ):
             return ret
         raise ValueError(f"Expected {typ}, got {type(ret)}")
-    raise ValueError(f"Unexpected object {obj}.")
+    raise ValueError(f"Unexpected object {obj}, was exptecting {typ}.")

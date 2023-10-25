@@ -45,5 +45,5 @@ eiffel --config-dir exps/demo/ --multirun strategy=fedavg,fednoagg +experiments=
 
 You can also use the Mattermost callback feature to get notified when the experiments are done:
 ```bash
-eiffel --config-dir exps/demo/ --multirun strategy=fedavg,fednoagg +experiments="glob(*)" hydra.callbacks.mattermost.url=true hydra.callbacks.mattermost.url=https://mattermost.example.com/hooks/...
+eiffel --config-dir exps/demo/ --multirun strategy=fedavg,fednoagg +experiments="glob(*)" hydra/callbacks="[plot,mattermost]" hydra.callbacks.mattermost.url=https://mattermost.example.com/hooks/...
 ```
