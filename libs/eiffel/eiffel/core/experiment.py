@@ -163,7 +163,7 @@ class Experiment:
                 if isinstance(attack, dict | DictConfig):
                     if "n_rounds" not in attack:
                         attack["n_rounds"] = num_rounds
-                    self.attack = PoisonIns.from_dict(
+                    attack = PoisonIns.from_dict(
                         attack, default_target=dataset.default_target
                     )
                 else:

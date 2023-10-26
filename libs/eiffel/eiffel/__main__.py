@@ -47,7 +47,8 @@ def main(cfg: DictConfig):
         log.critical("Empty configuration.")
         exit(1)
 
-    missings = collect_missing(cfg)
+    # missings = collect_missing(cfg)
+    missings = OmegaConf.missing_keys(cfg)
     if missings:
         log.critical(f"Missing fields: {missings}")
         exit(1)

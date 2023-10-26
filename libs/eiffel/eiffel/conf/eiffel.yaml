@@ -69,16 +69,29 @@ defaults:
   - poisoning/profile: loud
   - poisoning/type: untargeted
 
-  - hydra/callbacks:
+  # Defaults below are framework-related, and have no impact on the experiment.
+  - callbacks:
     - plot
 
-  - optional .@_global_: config  # Optional user configuration file.
+  # Use a `config.yaml` file to override user configuration, like the number of clients.
+  # Use `setup` to override experiment configuration, like datasets or attack scenarios.
+  # `setup`s and `config.yaml` are not mutually exclusive, and shall be considered as
+  # complementary: the `setup` override provides per-experiment configurations, while
+  # the config file per-project configuration.
+  # Note: defining new defaults options in `config.yaml` is not supported. New
+  # defaults can be added from the command line using the `+<default>=<name>` syntax.
+  - optional .@_global_: config
+  - optional setup: null
   - override hydra/job_logging: eiffel
   
 
 hydra:
   job:
     chdir: True
+    config:
+      override_dirname:
+        exclude_keys:
+          - callbacks
 
   run:
     # TODO: add overrides in the output path
