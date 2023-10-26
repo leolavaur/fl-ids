@@ -1,0 +1,98 @@
+{
+    "ktkexq": {
+        "ktkexq_benign_0": {
+            "train": {
+                "Benign": 704311,
+                "DDoS": 58818,
+                "DoS": 20631,
+                "Bot": 6062,
+                "Brute Force": 5251,
+                "Infilteration": 4915,
+                "injection": 12
+            },
+            "test": {
+                "Benign": 176312,
+                "DDoS": 14740,
+                "DoS": 4943,
+                "Bot": 1533,
+                "Brute Force": 1274,
+                "Infilteration": 1193,
+                "injection": 5
+            }
+        }
+    },
+    "k2nd6q": {
+        "k2nd6q_benign_0": {
+            "train": {
+                "DDoS": 387879,
+                "DoS": 354116,
+                "Reconnaissance": 55137,
+                "Benign": 2831,
+                "Theft": 37
+            },
+            "test": {
+                "DDoS": 97247,
+                "DoS": 88173,
+                "Reconnaissance": 13835,
+                "Benign": 738,
+                "Theft": 7
+            }
+        }
+    },
+    "aawe1q": {
+        "aawe1q_benign_0": {
+            "train": {
+                "Benign": 287398,
+                "scanning": 178486,
+                "xss": 116251,
+                "DDoS": 96103,
+                "password": 54239,
+                "DoS": 33660,
+                "injection": 32577,
+                "Backdoor": 770,
+                "mitm": 359,
+                "ransomware": 157
+            },
+            "test": {
+                "Benign": 72220,
+                "scanning": 44574,
+                "xss": 28983,
+                "DDoS": 23768,
+                "password": 13775,
+                "DoS": 8397,
+                "injection": 8001,
+                "Backdoor": 175,
+                "mitm": 78,
+                "ransomware": 29
+            }
+        }
+    },
+    "nvnv30": {
+        "nvnv30_benign_0": {
+            "train": {
+                "Benign": 767991,
+                "Exploits": 10523,
+                "Fuzzers": 7545,
+                "Generic": 5649,
+                "Reconnaissance": 4235,
+                "DoS": 1968,
+                "Analysis": 783,
+                "Backdoor": 749,
+                "Shellcode": 501,
+                "Worms": 56
+            },
+            "test": {
+                "Benign": 192087,
+                "Exploits": 2664,
+                "Fuzzers": 1832,
+                "Generic": 1327,
+                "Reconnaissance": 1117,
+                "DoS": 487,
+                "Analysis": 186,
+                "Backdoor": 176,
+                "Shellcode": 116,
+                "Worms": 8
+            }
+        }
+    }
+}
