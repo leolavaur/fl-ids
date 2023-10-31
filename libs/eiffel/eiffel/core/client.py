@@ -16,7 +16,7 @@ from tensorflow import keras
 
 from eiffel.core.metrics import metrics_from_preds
 from eiffel.datasets.dataset import Dataset, DatasetHandle
-from eiffel.datasets.poisoning import PoisonIns
+from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 from eiffel.utils.logging import VerbLevel
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
 
@@ -102,11 +102,12 @@ class EiffelClient(NumPyClient):
                 logger.warning(
                     f"{self.cid}: No round number provided, skipping poisoning."
                 )
-            elif config["round"] in self.poison_ins.tasks:
-                task = self.poison_ins.tasks[config["round"]]
-                self.data_holder.poison.remote(
-                    task.fraction, task.op, self.poison_ins.target, self.seed
+            elif self.poison_ins.tasks is None:
+                logger.debug(
+                    f"{self.cid}: No poisoning tasks provided, skipping poisoning."
                 )
+            elif config["round"] in self.poison_ins.tasks:
+                self.poison(self.poison_ins.tasks[config["round"]])
                 logger.debug(f"{self.cid}: Poisoned the dataset.")
 
         train_set: Dataset = ray.get(self.data_holder.get.remote("train"))
@@ -204,6 +205,24 @@ class EiffelClient(NumPyClient):
             metrics["attack_stats"] = json.dumps(attack_stats)
 
         return loss, len(test_set), metrics
+
+    def poison(self, task: PoisonTask) -> None:
+        """Poison the dataset.
+
+        Parameters
+        ----------
+        task : PoisonTask
+            The poisoning task to perform.
+        """
+        assert self.poison_ins is not None
+
+        self.data_holder.poison.remote(
+            "train", task.fraction, task.operation, self.poison_ins.target, self.seed
+        )
+        if self.poison_ins.poison_eval:
+            self.data_holder.poison.remote(
+                "test", task.fraction, task.operation, self.poison_ins.target, self.seed
+            )
 
 
 def mk_client(

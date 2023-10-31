@@ -24,7 +24,7 @@ class PoisonTask(NamedTuple):
     operation: PoisonOp = PoisonOp.INC
 
 
-PoisonTasks = Dict[int, Optional[PoisonTask]]
+PoisonTasks = Dict[int, PoisonTask]
 
 
 # @dataclass(frozen=True)
