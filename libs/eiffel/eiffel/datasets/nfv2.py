@@ -211,9 +211,9 @@ def load_data(
     # PATH MANAGEMENT
     # ---------------
 
-    path = Path(path)
+    ppath = Path(path)
 
-    if path.exists() and path.is_file():
+    if ppath.exists() and ppath.is_file():
         csv_path = path
 
     else:
@@ -223,13 +223,16 @@ def load_data(
             search_path = Path(search_path)
 
         if not search_path.exists():
-            raise FileNotFoundError(f"Search path does not exist: {search_path}")
+            raise FileNotFoundError(
+                f"Search path does not exist: {search_path}",
+                {"search_path": search_path},
+            )
 
-        csv_path = search_path / path
+        csv_path = search_path / ppath
 
         if not csv_path.exists():
             raise FileNotFoundError(
-                f"Dataset not found: '{path}'",
+                f"Dataset not found: '{ppath}'",
                 {"search_path": search_path, "csv_path": csv_path},
             )
 

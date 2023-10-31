@@ -18,14 +18,16 @@ def test_partitioners():
     classes = d.m["Attack"].unique()
 
     # Test0: Dumb partitioner
-    pt = DumbPartitioner(d, n_partitions=10)
+    pt = DumbPartitioner(n_partitions=10)
+    pt.load(d)
     parts = pt.all()
 
     assert len(parts) == 10
     assert all(len(p) == 10 for p in parts)
 
     # Test1: IID partitioner
-    pt = IIDPartitioner(d, n_partitions=10, class_column="Attack")
+    pt = IIDPartitioner(n_partitions=10, class_column="Attack")
+    pt.load(d)
     parts = pt.all()
 
     assert len(parts) == 10
@@ -34,8 +36,9 @@ def test_partitioners():
 
     # Test2: NIID partitioner
     pt = NIIDClassPartitioner(
-        d, n_partitions=10, class_column="Attack", preserved_classes=["Benign"]
+        n_partitions=10, class_column="Attack", preserved_classes=["Benign"]
     )
+    pt.load(d)
     parts = pt.all()
     assert len(parts) == 10
     assert all(set(p.m["Attack"].unique()) != set(classes) for p in parts)

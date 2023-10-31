@@ -13,8 +13,8 @@ from eiffel.datasets.poisoning import (
 
 def test_parse_poisoning_selector():
     """Test parse_poisoning_selector()."""
-    assert parse_poisoning_selector("0.5", 10) == (PoisonTask(0.5), None)
-    assert parse_poisoning_selector("1", 10) == (PoisonTask(1.0), None)
+    assert parse_poisoning_selector("0.5", 10) == (PoisonTask(0.5), {})
+    assert parse_poisoning_selector("1", 10) == (PoisonTask(1.0), {})
     assert parse_poisoning_selector("0.0+0.1[:5]", 10) == (
         PoisonTask(0.0),
         {
@@ -46,6 +46,19 @@ def test_parse_poisoning_selector():
         {
             2: PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
             3: PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
+        },
+    )
+    with pytest.raises(IndexError):
+        _ = parse_poisoning_selector("1-0.1[2:6]", 4)
+
+    assert parse_poisoning_selector("1-0.1[2:6]", 10) == (
+        PoisonTask(1.0),
+        {
+            2: PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
+            3: PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
+            4: PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
+            5: PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
+            6: PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
         },
     )
     assert parse_poisoning_selector(r"0.1+0.1{3,5}", 10) == (
@@ -81,14 +94,3 @@ def test_parse_poisoning_selector():
         _ = parse_poisoning_selector("0.5+0.1[1:4:2]", 1)
         _ = parse_poisoning_selector("0.", 1)
         _ = parse_poisoning_selector("toto", 1)
-
-
-# ensure that `PoisonIns.base`'s operator is always `PoisonOp.INC`
-def test_PoisonIns():
-    """Test PoisonIns."""
-    with pytest.raises(ValueError):
-        _ = PoisonIns(
-            target=["DoS"],
-            base=PoisonTask(fraction=0.1, operation=PoisonOp.DEC),
-            tasks=None,
-        )
