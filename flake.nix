@@ -87,6 +87,9 @@
             gpustat = super.gpustat.overrideAttrs (old: {
               buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools super.setuptools-scm ];
             });
+            pandarallel = super.pandarallel.overrideAttrs (old: {
+              buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools ];
+            });
             opencensus = super.opencensus.overrideAttrs (old: {
               # See: https://github.com/DavHau/mach-nix/issues/255#issuecomment-812984772
               postInstall = ''
