@@ -1,0 +1,8 @@
+- datasets=nfv2/sampled/cicids
+- partitioner=iid
+- batch_size=512
+- +epochs=10e
+- +distribution=3-7
+- +target=dos
+- +scenario=continuous-100
+- +callbacks=mattermost

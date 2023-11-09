@@ -1,0 +1,8 @@
+- datasets=nfv2/sampled/cicids
+- partitioner=iid
+- batch_size=32
+- +epochs=1e
+- +distribution=3-7
+- +target=dos
+- +scenario=redemption-3
+- +callbacks=mattermost

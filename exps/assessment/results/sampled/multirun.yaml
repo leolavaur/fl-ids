@@ -123,19 +123,18 @@ hydra:
     - hydra.callbacks.mattermost.url=https://mattermost.imt-atlantique.fr/hooks/rxgijqzhk7yq5xi88e9zzatcyh
     - hydra.mode=MULTIRUN
     task:
-    - datasets=nfv2/sampled/cicids
-    - num_clients=6
-    - num_attackers=4
-    - poisoning/profile=glob(*)
-    - poisoning/type=targeted,untargeted
-    - partitioner=dumb,niid_class
-    - batch_size=32,512
-    - num_epochs=1,10
+    - datasets=nfv2/sampled/nb15
+    - partitioner=iid
+    - batch_size=32,128,512
+    - +epochs=1e,4e,10e
+    - +distribution=10-0,9-1,7-3,5-5,3-7
+    - +target=dos,untargeted
+    - +scenario=late-3,redemption-3,continuous-10,continuous-30,continuous-60,continuous-100
     - +callbacks=mattermost
   job:
     name: __main__
     chdir: true
-    override_dirname: batch_size=32,512,datasets=nfv2/sampled/cicids,num_attackers=4,num_clients=6,num_epochs=1,10,partitioner=dumb,niid_class,poisoning/profile=glob(*),poisoning/type=targeted,untargeted
+    override_dirname: +distribution=10-0,9-1,7-3,5-5,3-7,+epochs=1e,4e,10e,+scenario=late-3,redemption-3,continuous-10,continuous-30,continuous-60,continuous-100,+target=dos,untargeted,batch_size=32,128,512,datasets=nfv2/sampled/nb15,partitioner=iid
     id: ???
     num: ???
     config_name: eiffel
@@ -158,6 +157,9 @@ hydra:
     - path: eiffel.conf
       schema: pkg
       provider: main
+    - path: /home/leo/Workspace/phdcybersec/fl-ids/exps/assessment/conf
+      schema: file
+      provider: command-line
     - path: ''
       schema: structured
       provider: schema
@@ -168,10 +170,10 @@ hydra:
       .@_global_: config
       poisoning/type: untargeted
       poisoning/profile: loud
-      partitioner: dumb
+      partitioner: iid
       model: popoola
       strategy: fedavg
-      datasets: nfv2/sampled/cicids
+      datasets: nfv2/sampled/nb15
       hydra/env: default
       hydra/callbacks: null
       hydra/job_logging: eiffel
@@ -182,8 +184,8 @@ hydra:
       hydra/launcher: basic
       hydra/output: default
   verbose: false
-num_attackers: 4
-num_clients: 6
+num_attackers: 0
+num_clients: 10
 num_rounds: 10
 num_epochs: 10
 batch_size: 512
@@ -204,15 +206,16 @@ experiment:
   model_fn: ${model}
   partitioner: ${partitioner}
   pools: ${pools}
-  attacks: ${attacks}
+  attacks:
+  - ${attack}
   datasets: '${oc.dict.values: datasets}'
 datasets:
-  cicids:
+  nb15:
     _target_: eiffel.datasets.nfv2.load_data
-    path: ${gitdir:}/data/nfv2/sampled/cicids.csv.gz
-    key: cicids
+    path: ${gitdir:}/data/nfv2/sampled/nb15.csv.gz
+    key: nb15
     _default_target:
-    - DoS
+    - Analysis
 strategy:
   _target_: flwr.server.strategy.fedavg.FedAvg
   initial_parameters: null
@@ -221,8 +224,10 @@ model:
   _target_: eiffel.models.supervized.mk_popoola_mlp
   _partial_: true
 partitioner:
-  _target_: eiffel.datasets.partitioners.DumbPartitioner
+  _target_: eiffel.datasets.partitioners.IIDPartitioner
   _partial_: true
+  class_column: Attack
 poisoning:
   profile: '1.0'
   type: untargeted
+attack: null
