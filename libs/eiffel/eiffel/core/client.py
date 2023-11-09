@@ -12,6 +12,7 @@ import ray
 from flwr.client import NumPyClient
 from flwr.common import Config, Scalar
 from keras.callbacks import History
+from pandarallel import pandarallel
 from tensorflow import keras
 
 from eiffel.core.metrics import metrics_from_preds
@@ -65,6 +66,8 @@ class EiffelClient(NumPyClient):
         self.verbose = verbose
         self.seed = seed
         self.poison_ins = poison_ins
+
+        # pandarallel.initialize(nb_workers=2)
 
     def get_parameters(self, config: Config) -> list[NDArray]:
         """Return the current parameters.

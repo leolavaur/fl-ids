@@ -7,10 +7,13 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 import pytest
+from pandarallel import pandarallel
 
 from eiffel.datasets import Dataset
 from eiffel.datasets.nfv2 import RM_COLS, NFV2Dataset, load_data
 from eiffel.datasets.poisoning import PoisonIns, PoisonOp, PoisonTask
+
+pandarallel.initialize(nb_workers=6)
 
 
 def test_load_data():
@@ -21,7 +24,7 @@ def test_load_data():
     with tempfile.TemporaryDirectory() as tmpdir:
         data_path = f"{tmpdir}/nfv2.csv"
 
-        mock_df = pd.DataFrame(np.random.rand(1000, len(cols)), columns=cols)
+        mock_df = pd.DataFrame(np.random.rand(10000, len(cols)), columns=cols)
         # fill the "Attack" column with random values in {"Benign", "Botnet", "Dos",
         # "DDoS"}
         mock_df["Attack"] = np.random.choice(
@@ -89,8 +92,10 @@ def test_poison_targeted():
         *PoisonTask(0.1),
         target_classes=["DoS"],
         seed=SEED,
+        parallel=True,
     )
     p_dos_n = sum(mock_d.y[mock_d.m["Attack"] == "DoS"])
+
     assert p_dos_n == np.floor(0.9 * dos_n)  # floor because of ceil in `poison()`
 
     # Test2: poisoning on 10% of target; again -> 20% should be poisoned
@@ -98,6 +103,7 @@ def test_poison_targeted():
         *PoisonTask(0.1),
         target_classes=["DoS"],
         seed=SEED,
+        parallel=True,
     )
     p_dos_n = sum(mock_d.y[mock_d.m["Attack"] == "DoS"])
     assert p_dos_n == np.floor(0.8 * dos_n)
@@ -107,11 +113,12 @@ def test_poison_targeted():
         *PoisonTask(0.1, PoisonOp.DEC),
         target_classes=["DoS"],
         seed=SEED,
+        parallel=True,
     )
     p_dos_n = sum(mock_d.y[mock_d.m["Attack"] == "DoS"])
     assert p_dos_n == np.floor(0.9 * dos_n)
 
-    print(f"test_poison_targeted: {timeit.default_timer() - t:.2f}s")
+    print(f"Test took {timeit.default_timer() - t:.2f}s")
 
 
 def test_poison_untargeted():
@@ -128,6 +135,7 @@ def test_poison_untargeted():
     n = mock_d.poison(
         *PoisonTask(0.1),
         seed=SEED,
+        parallel=True,
     )
     n_poisoned = sum(
         (~mock_d.y)
@@ -144,6 +152,7 @@ def test_poison_untargeted():
     n = mock_d.poison(
         *PoisonTask(0.1),
         seed=SEED,
+        parallel=True,
     )
 
     n_poisoned = sum(
@@ -161,6 +170,7 @@ def test_poison_untargeted():
     n = mock_d.poison(
         *PoisonTask(0.1, PoisonOp.DEC),
         seed=SEED,
+        parallel=True,
     )
 
     n_poisoned = sum(
@@ -174,7 +184,7 @@ def test_poison_untargeted():
     assert n_poisoned == sum(mock_d.m["Poisoned"])
     assert n_poisoned == np.floor(0.1 * len(mock_d))
 
-    print(f"test_poison_untargeted: {timeit.default_timer() - t:.2f}s")
+    print(f"Test took {timeit.default_timer() - t:.2f}s")
 
 
 if __name__ == "__main__":

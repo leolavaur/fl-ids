@@ -4,7 +4,8 @@ from typing import Optional
 
 import keras
 from keras.losses import BinaryCrossentropy, Loss
-from keras.optimizers import Adam, Optimizer
+from keras.optimizers import Optimizer
+from keras.optimizers.legacy import Adam
 
 
 def mk_popoola_mlp(

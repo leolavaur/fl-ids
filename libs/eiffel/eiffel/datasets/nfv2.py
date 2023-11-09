@@ -88,6 +88,7 @@ class NFV2Dataset(Dataset):
         op: PoisonOp,
         target_classes: Optional[List[str]] = None,
         seed: Optional[int] = None,
+        parallel: bool = False,
     ) -> int:
         """Poison a dataset by apply a function to a given number of samples.
 
@@ -159,7 +160,11 @@ class NFV2Dataset(Dataset):
 
         # apply the poisoning operation
         # cast to int to avoid future deprecation in NumPy
-        d.y.loc[idx] = d.y[idx].apply(lambda x: int(not x))
+        if parallel:
+            d.y.loc[idx] = d.y[idx].parallel_apply(lambda x: int(not x))
+        else:
+            d.y.loc[idx] = d.y[idx].apply(lambda x: int(not x))
+
         if op == PoisonOp.DEC:
             d.m.loc[idx, "Poisoned"] = False
         else:

@@ -90,6 +90,12 @@
             pandarallel = super.pandarallel.overrideAttrs (old: {
               buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools ];
             });
+            ml-dtypes = super.ml-dtypes.overrideAttrs (old: {
+              buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools super.pybind11 ];
+            });
+            tensorboard = super.tensorboard.overrideAttrs (old: {
+              buildInputs = (old.buildInputs or [ ]) ++ [ super.six ];
+            });
             opencensus = super.opencensus.overrideAttrs (old: {
               # See: https://github.com/DavHau/mach-nix/issues/255#issuecomment-812984772
               postInstall = ''
