@@ -160,7 +160,11 @@ class Pool:
 
         mappings = {}
         for cid, handle in self.holders.items():
-            mappings[cid] = (handle, self.attack, self.model_fn)
+            mappings[cid] = (
+                handle,
+                self.attack if "malicious" in cid else None,
+                self.model_fn,
+            )
         return mappings
 
     @property

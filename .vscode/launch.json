@@ -13,7 +13,14 @@
             "justMyCode": true
         },
         {
-            "name": "Eiffel",
+            "name": "Eiffel only",
+            "type": "python",
+            "request": "launch",
+            "module": "eiffel",
+            "justMyCode": false
+        },
+        {
+            "name": "Eiffel with dataset",
             "type": "python",
             "request": "launch",
             "module": "eiffel",
@@ -21,16 +28,6 @@
                 "datasets=${input:dataset}",
             ],
             "justMyCode": true
-        },
-        {
-            "name": "Eiffel with foreign code",
-            "type": "python",
-            "request": "launch",
-            "module": "eiffel",
-            "args": [
-                "datasets=${input:dataset}",
-            ],
-            "justMyCode": false
         }
     ],
     "inputs": [
