@@ -1,0 +1,8 @@
+- datasets=nfv2/sampled/nb15
+- partitioner=iid
+- batch_size=32
+- +epochs=1e
+- +distribution=7-3
+- +target=dos
+- +scenario=redemption-3
+- +callbacks=mattermost

@@ -1,0 +1,8 @@
+- datasets=nfv2/sampled/nb15
+- partitioner=iid
+- batch_size=128
+- +epochs=1e
+- +distribution=7-3
+- +target=dos
+- +scenario=continuous-10
+- +callbacks=mattermost
