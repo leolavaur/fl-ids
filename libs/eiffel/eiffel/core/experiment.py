@@ -27,6 +27,7 @@ from eiffel.datasets.partitioners import DumbPartitioner, Partitioner
 from eiffel.datasets.poisoning import PoisonIns
 from eiffel.utils.hydra import instantiate_or_return
 from eiffel.utils.typing import ConfigDict, MetricsDict
+from eiffel.utils.time import timeit
 
 from .client import mk_client
 from .metrics import History
@@ -63,6 +64,7 @@ class Experiment:
     strategy: Strategy
     pools: list[Pool]
 
+    @timeit
     def __init__(
         self,
         seed: int,

@@ -114,7 +114,7 @@ class EiffelClient(NumPyClient):
         self.model.set_weights(parameters)
         hist: History = self.model.fit(
             train_set.to_sequence(
-                config["batch_size"], target=1, seed=self.seed, shuffle=True
+                int(config["batch_size"]), target=1, seed=self.seed, shuffle=True
             ),
             epochs=int(config["num_epochs"]),
             verbose=0,

@@ -16,6 +16,7 @@ from eiffel.core.errors import ConfigError
 from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.partitioners import DumbPartitioner, Partitioner
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
+from eiffel.utils.time import timeit
 
 from ..utils.typing import EiffelCID
 
@@ -42,6 +43,7 @@ class Pool:
     holders: dict[EiffelCID, ActorHandle]
     model_fn: Callable[..., tf.keras.Model]
 
+    @timeit
     def __init__(
         self,
         dataset: Dataset | DictConfig,
@@ -130,6 +132,7 @@ class Pool:
         """Return whether the pool contains the client."""
         return cid in self.shards
 
+    @timeit
     def deploy(self) -> None:
         """Deploy the dataset onto the Ray object store."""
         if not self.holders:
