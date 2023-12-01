@@ -1,20 +1,22 @@
 """Eiffel client API."""
 
+from collections import Counter
 import itertools
 import json
 import logging
 from copy import deepcopy
 from functools import reduce
-from typing import Callable, Optional, cast
+from typing import Any, Callable, Optional, cast
 
 import numpy as np
 import ray
 from flwr.client import NumPyClient
 from flwr.common import Config, Scalar
 from keras.callbacks import History
+from sklearn.metrics import confusion_matrix
 from tensorflow import keras
+from eiffel.core.metrics import metrics_from_confmat
 
-from eiffel.core.metrics import metrics_from_preds
 from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 from eiffel.utils.logging import VerbLevel
@@ -57,6 +59,7 @@ class EiffelClient(NumPyClient):
         verbose: VerbLevel = VerbLevel.SILENT,
         seed: Optional[int] = None,
         poison_ins: Optional[PoisonIns] = None,
+        eval_fit: bool = True,
     ) -> None:
         """Initialize the EiffelClient."""
         self.cid = cid
@@ -65,6 +68,7 @@ class EiffelClient(NumPyClient):
         self.verbose = verbose
         self.seed = seed
         self.poison_ins = poison_ins
+        self.eval_fit = eval_fit
 
     def get_parameters(self, config: Config) -> list[NDArray]:
         """Return the current parameters.
@@ -120,15 +124,18 @@ class EiffelClient(NumPyClient):
             verbose=0,
         )
 
-        return (
-            self.model.get_weights(),
-            len(train_set),
-            {
-                "accuracy": hist.history["accuracy"][-1],
-                "loss": hist.history["loss"][-1],
-                "_cid": self.cid,
-            },
-        )
+        ret = {
+            "fit_accuracy": hist.history["accuracy"][-1],
+            "fit_loss": hist.history["loss"][-1],
+            "_cid": self.cid,
+        }
+
+        if self.eval_fit:
+            test_loss, _, metrics = self.evaluate(self.model.get_weights(), config)
+            ret["test_loss"] = test_loss
+            ret.update(metrics)
+
+        return (self.model.get_weights(), len(train_set), ret)
 
     def evaluate(
         self, parameters: list[NDArray], config: Config
@@ -161,10 +168,11 @@ class EiffelClient(NumPyClient):
             test_set.to_sequence(batch_size, target=1, seed=self.seed, shuffle=True),
             verbose=self.verbose,
         )
-        if isinstance(output, list):
+        try:
             output = dict(zip(self.model.metrics_names, output))
             loss = output["loss"]
-        else:
+        except TypeError:
+            # If `evaluate` returns a single value, it is a scalar for the loss.
             loss = output
 
         # Do not shuffle the test set for inference, otherwise we cannot compare y_pred
@@ -177,34 +185,33 @@ class EiffelClient(NumPyClient):
 
         y_true = test_set.y.to_numpy().astype(int)
 
-        metrics = metrics_from_preds(y_true, y_pred)
-        metrics["loss"] = loss
-        metrics["_cid"] = self.cid
+        return_data: dict[str, Any] = {}
 
-        if "stats" in config and config["stats"]:
-            # Compute attack-wise statistics. Only enabled for the last evaluation round.
-            attack_stats = []
-            class_df = test_set.m["Attack"]
-            for attack in (a for a in class_df.unique() if a != "Benign"):
-                attack_filter = class_df == attack
+        class_df = test_set.m["Attack"]
+        for label in (c for c in class_df.unique() if c != "Benign"):
+            # compute the confusion matrix for each label (attacks or "Benign")
+            y_true_attack = y_true[class_df == label]
+            y_pred_attack = y_pred[class_df == label]
 
-                count = len(test_set.m[attack_filter])
-                correct = len(test_set.m[(attack_filter) & (test_set.y == y_pred)])
-                missed = len(test_set.m[(attack_filter) & (test_set.y != y_pred)])
+            # compute the detection rate and miss rate
+            try:
+                tn, _, fn, tp = confusion_matrix(y_true_attack, y_pred_attack).ravel()
+                return_data[label] = {
+                    "recall": tp / (tp + fn),
+                    "missrate": fn / (tp + fn),
+                }
+            except ValueError:
+                # If the confusion matrix is not (2, 2), it means that `y_true_attack`
+                # and `y_pred_attack` are equal, so recall is 1.0 and missrate is 0.0.
+                return_data[label] = {"recall": 1.0, "missrate": 0.0}
 
-                attack_stats.append(
-                    {
-                        "attack": attack,
-                        "count": count,
-                        "correct": correct,
-                        "missed": missed,
-                        "percentage": f"{correct / count:.2%}",
-                    }
-                )
+        tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+        return_data["global"] = metrics_from_confmat(tn, fp, fn, tp)
 
-            metrics["attack_stats"] = json.dumps(attack_stats)
+        return_data["loss"] = loss
+        return_data["_cid"] = self.cid
 
-        return loss, len(test_set), metrics
+        return (loss, len(test_set), {k: json.dumps(v) for k, v in return_data.items()})
 
     def poison(self, task: PoisonTask) -> None:
         """Poison the dataset.

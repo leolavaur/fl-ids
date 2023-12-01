@@ -6,6 +6,6 @@ import numpy as np
 from numpy.typing import NDArray as NDArray
 
 EiffelCID = str
-DictKey = str | int
-DictVal = str | int | float | bool | bytes | None
+DictKey = str
+DictVal = str | int | float | bool | bytes
 ConfigDict = MetricsDict = dict[DictKey, DictVal]

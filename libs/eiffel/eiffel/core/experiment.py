@@ -166,7 +166,7 @@ class Experiment:
                     if "n_rounds" not in attack:
                         attack["n_rounds"] = num_rounds
                     attack = PoisonIns.from_dict(
-                        attack, default_target=dataset.default_target
+                        dict(attack), default_target=dataset.default_target
                     )
                 else:
                     raise TypeError(
@@ -363,8 +363,10 @@ def aggregate_metrics_fn(metrics_mapping: list[tuple[int, MetricsDict]]) -> Metr
 
     Eiffel processes metrics after the experiment's ending, which permits more versatile
     analytics. However, Flower expects a single metrics dictionary. This serializes each
-    client's metrics into a single dictionary.
-
+    client's metrics into a single dictionary, indexed by the client's ID and containing
+    collected metrtics (recall and missrate) for each attack class, as well as global
+    metrics for the entire test set: accuracy, precision, recall, F1-score, missrate,
+    and fallout.
 
     Parameters
     ----------
@@ -372,18 +374,21 @@ def aggregate_metrics_fn(metrics_mapping: list[tuple[int, MetricsDict]]) -> Metr
         A list of tuples containing the number of samples in the testing set and the
         collected metrics for each client.
 
-
     Returns
     -------
     MetricsDict
         A single dictionary containing all metrics.
     """
-    metrics: MetricsDict = {}
+    round_metrics: MetricsDict = {}
     for _, m in metrics_mapping:
-        cid = str(m.pop("_cid"))
-        stats = m.pop("attack_stats", None)
-        if stats is not None:
-            m["attack_stats"] = json.loads(str(stats))
-        metrics[cid] = json.dumps(m)
+        met = {}
+        for k, v in m.items():
+            try:
+                met[k] = json.loads(str(v))
+            except json.JSONDecodeError:
+                met[k] = v
 
-    return metrics
+        cid = str(met.pop("_cid"))
+        round_metrics[cid] = json.dumps(met)
+
+    return round_metrics

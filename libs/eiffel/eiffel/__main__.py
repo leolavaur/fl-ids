@@ -8,6 +8,7 @@ from typing import Any
 
 import hydra
 from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
+from flwr.common.logger import logger as flwr_logger
 from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from omegaconf.errors import InterpolationToMissingValueError, MissingMandatoryValue
@@ -38,7 +39,13 @@ def collect_missing(cfg: Any, missing=[]) -> list:
 @hydra.main(version_base="1.3", config_path="conf", config_name="eiffel")
 def main(cfg: DictConfig):
     """Entrypoint for the Eiffel CLI."""
+
     log = logging.getLogger(__name__)
+
+    loggers = [logging.getLogger(name) for name in logging.root.manager.loggerDict]
+    for logger in loggers:
+        logger.handlers.clear()
+        logger.propagate = True
 
     enable_tf_gpu_growth()
 
@@ -67,7 +74,11 @@ def main(cfg: DictConfig):
     ex.run()
     hist = ex.history
     hist.save("distributed")
+    log.info("Run completed.")
+    log.info(f"Results saved in: {Path.cwd()}.")
 
 
 if __name__ == "__main__":
+    flwr_logger.setLevel(logging.INFO)
+
     main()

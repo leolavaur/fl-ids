@@ -1,5 +1,5 @@
 """Eiffel: Evaluation framework for FL-based intrusion detection using Flower."""
-import os
+import os, logging
 
 from omegaconf import OmegaConf
 
