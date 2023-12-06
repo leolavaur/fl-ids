@@ -73,6 +73,7 @@ def main(cfg: DictConfig):
     Path("./stats.json").write_text(json.dumps(ex.data_stats(), indent=4))
     ex.run()
     hist = ex.history
+    hist.save("fit")
     hist.save("distributed")
     log.info("Run completed.")
     log.info(f"Results saved in: {Path.cwd()}.")
