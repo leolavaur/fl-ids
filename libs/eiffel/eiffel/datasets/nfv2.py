@@ -236,7 +236,7 @@ def load_data(
                 {"search_path": search_path, "csv_path": csv_path},
             )
 
-    df = pd.read_csv(csv_path, low_memory=True)
+    df = pd.read_csv(csv_path, engine="pyarrow")
 
     # DATA PREPROCESSING
     # ------------------
@@ -278,10 +278,8 @@ def mk_nfv2_mockset(size: int, iid: bool, seed=None) -> NFV2Dataset:
             if size % 4 != 0:
                 # if the dataset is not divisible by 4, the classes will not be balanced
                 raise ValueError(
-                    (
-                        "Cannot create an IID dataset with a size that is not divisible"
-                        " by 4."
-                    ),
+                    "Cannot create an IID dataset with a size that is not divisible"
+                    " by 4.",
                     size,
                 )
             mock_df["Attack"] = np.array(

@@ -1,9 +1,10 @@
 """Metrics for evaluating model performance."""
 
+from functools import reduce
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import cast
+from typing import Any, Optional, cast
 
 import numpy as np
 import pandas as pd
@@ -82,25 +83,31 @@ class History:
         return cls(fit=fit, distributed=distributed, centralized=centralized)
 
     def save(
-        self, key: str, path: Path | str | None = None, filename: str = "metrics.json"
+        self,
+        key: Optional[str] = None,
+        path: Optional[Path | str] = None,
+        filename: Optional[str] = None,
     ) -> None:
         """Save the history to a JSON file.
 
         Parameters
         ----------
-        key : str, optional
-            The key to use to save the history. If `None`, the history is saved as
-            `history.json`. Defaults to `None`.
-        path : Path | str, optional
-            The path to the file to save the history to. If `None`, the history is saved
-            in the current working directory. Defaults to `None`.
+        key : str
+            The key to the metrics to save.
+        path : Path | str | None, optional
         """
-        content = getattr(self, key)
+        if key is None:
+            content = self.__dict__
+        else:
+            content = getattr(self, key)
 
         if path is None:
             path = Path.cwd()
         else:
             path = Path(path)
+
+        if filename is None:
+            filename = f"{key or 'metrics'}.json"
 
         file = path / filename
         file.write_text(json.dumps(content, indent=4))
@@ -160,34 +167,27 @@ def root_mean_squared_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.nd
     return np.sqrt(np.mean((x_orig - x_pred) ** 2, axis=1))
 
 
-def metrics_from_preds(y_true: NDArray, y_pred: NDArray) -> MetricsDict:
-    """Evaluate the predictions of a model.
+def metrics_from_confmat(*conf: int) -> dict[str, float]:
+    """Translate a confusion matrix into metrics.
 
     Parameters
     ----------
-    y_true : NDArray
-        True labels.
-    y_pred : NDArray
-        Predicted labels.
+    conf : tuple[int]
+        The confusion matrix, under the form (tn, fp, fn, tp).
 
     Returns
     -------
-    Dict[str, float]
-        Dictionary with the evaluation metrics (accuracy, precision, recall, f1, mcc,
+    dict[str, float]
+        Dictionary with the evaluation metrics (accuracy, precision, recall, f1,
         missrate, fallout).
     """
-    conf = confusion_matrix(y_true, y_pred)
-    tn = conf[0][0]
-    fp = conf[0][1]
-    fn = conf[1][0]
-    tp = conf[1][1]
+    tn, fp, fn, tp = conf
 
     return {
-        "accuracy": float(accuracy_score(y_true, y_pred)),
-        "precision": float(precision_score(y_true, y_pred)),
-        "recall": float(recall_score(y_true, y_pred)),
-        "f1": float(f1_score(y_true, y_pred)),
-        "mcc": float(matthews_corrcoef(y_true, y_pred)),
-        "missrate": fn / (fn + tp) if (fn + tp) != 0 else 0,
-        "fallout": fp / (fp + tn) if (fp + tn) != 0 else 0,
+        "accuracy": float((tp + tn) / (tp + tn + fp + fn)),
+        "precision": float(tp / (tp + fp)) if (tp + fp) != 0 else 0,
+        "recall": float(tp / (tp + fn)) if (tp + fn) != 0 else 0,
+        "f1": float(2 * tp / (2 * tp + fp + fn)) if (2 * tp + fp + fn) != 0 else 0,
+        "missrate": float(fn / (fn + tp)) if (fn + tp) != 0 else 0,
+        "fallout": float(fp / (fp + tn)) if (fp + tn) != 0 else 0,
     }

@@ -6,7 +6,7 @@ from functools import wraps
 
 from flwr.common.logger import logger as flwr_logger
 
-flwr_logger.removeHandler(flwr_logger.handlers[0])
+# flwr_logger.removeHandler(flwr_logger.handlers[0])
 
 
 class VerbLevel(Enum):
@@ -47,6 +47,7 @@ class ColoredFormatter(logging.Formatter):
     shallow = "\x1b[38;5;8m"
     bold = "\x1b[1m"
     reset = "\x1b[0m"
+    cyan = "\x1b[38;5;14m"
 
     COLORS = {
         logging.DEBUG: f"{bold}\x1b[38;5;8m",  # grey
@@ -86,11 +87,16 @@ class ColoredFormatter(logging.Formatter):
         log_fmt = (
             f"{self.shallow}%(asctime)s{self.reset}"
             + f" [{self.COLORS[record.levelno]}%(levelname)s{self.reset}]"
-            + (" %(name)s:%(lineno)d" if self.details else "")
+            + f" [{self.shallow}%(name)s{self.reset}]"
+            + (" :%(lineno)d" if self.details else "")
             + " > %(message)s"
         )
         formatter = logging.Formatter(log_fmt)
-        return formatter.format(record)
+        message = formatter.format(record)
+        if not self.details:
+            package_name = record.name.split(".")[0]
+            return message.replace(record.name, package_name)
+        return message
 
 
 def logged(function):
