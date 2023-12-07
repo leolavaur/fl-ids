@@ -124,7 +124,6 @@ hydra:
     - hydra.verbose=flwr
     - hydra.mode=MULTIRUN
     task:
-<<<<<<<< HEAD:exps/assessment/results/sampled/hyperparam/multirun.yaml
     - partitioner=iid
     - datasets=nfv2/sampled/cicids
     - batch_size=32,64,128,256,512
@@ -132,24 +131,11 @@ hydra:
     - +distribution=10-0,5-5
     - +target=untargeted
     - +scenario=late-3,continuous-100
-========
-    - datasets=nfv2/sampled/nb15
-    - partitioner=iid
-    - batch_size=32,128,512
-    - +epochs=1e,4e,10e
-    - +distribution=10-0,9-1,7-3,5-5,3-7
-    - +target=dos,untargeted
-    - +scenario=late-3,redemption-3,continuous-10,continuous-30,continuous-60,continuous-100
->>>>>>>> origin/main:exps/assessment/results/sampled/megarun/multirun.yaml
     - +callbacks=mattermost
   job:
     name: __main__
     chdir: true
-<<<<<<<< HEAD:exps/assessment/results/sampled/hyperparam/multirun.yaml
     override_dirname: +distribution=10-0,5-5,+epochs=1e,4e,10e,+scenario=late-3,continuous-100,+target=untargeted,batch_size=32,64,128,256,512,datasets=nfv2/sampled/cicids,partitioner=iid
-========
-    override_dirname: +distribution=10-0,9-1,7-3,5-5,3-7,+epochs=1e,4e,10e,+scenario=late-3,redemption-3,continuous-10,continuous-30,continuous-60,continuous-100,+target=dos,untargeted,batch_size=32,128,512,datasets=nfv2/sampled/nb15,partitioner=iid
->>>>>>>> origin/main:exps/assessment/results/sampled/megarun/multirun.yaml
     id: ???
     num: ???
     config_name: eiffel
@@ -199,11 +185,7 @@ hydra:
       hydra/sweeper: basic
       hydra/launcher: basic
       hydra/output: default
-<<<<<<<< HEAD:exps/assessment/results/sampled/hyperparam/multirun.yaml
   verbose: flwr
-========
-  verbose: false
->>>>>>>> origin/main:exps/assessment/results/sampled/megarun/multirun.yaml
 num_attackers: 0
 num_clients: 10
 num_rounds: 10
@@ -250,9 +232,5 @@ partitioner:
 poisoning:
   profile: '1.0'
   type: untargeted
-<<<<<<<< HEAD:exps/assessment/results/sampled/hyperparam/multirun.yaml
 attack:
   type: untargeted
-========
-attack: null
->>>>>>>> origin/main:exps/assessment/results/sampled/megarun/multirun.yaml
