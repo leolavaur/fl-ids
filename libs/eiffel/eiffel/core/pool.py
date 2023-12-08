@@ -6,7 +6,6 @@ from typing import Callable, Optional
 
 import keras
 import tensorflow as tf
-from flwr.client import ClientLike
 from hydra.utils import call
 from omegaconf import DictConfig
 from ray import ObjectRef

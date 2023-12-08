@@ -12,7 +12,6 @@ from typing import Any, Callable, Type
 import psutil
 import ray
 import tensorflow as tf
-from flwr.client import ClientLike
 from flwr.server import Server, ServerConfig
 from flwr.server.strategy import FedAvg, Strategy
 from flwr.simulation import start_simulation

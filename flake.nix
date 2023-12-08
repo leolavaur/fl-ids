@@ -139,7 +139,7 @@
 
               # tools
               poetry
-              ltex-ls
+
             ];
 
             # shellHook = ''
