@@ -4,6 +4,7 @@ from collections import Counter
 import itertools
 import json
 import logging
+from collections import Counter
 from copy import deepcopy
 from functools import reduce
 from typing import Any, Callable, Optional, cast
@@ -12,11 +13,13 @@ import numpy as np
 import ray
 from flwr.client import NumPyClient
 from flwr.common import Config, Scalar
+from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
 from keras.callbacks import History
 from sklearn.metrics import confusion_matrix
 from tensorflow import keras
 from eiffel.core.metrics import metrics_from_confmat
 
+from eiffel.core.metrics import metrics_from_confmat
 from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 from eiffel.utils.logging import VerbLevel
@@ -25,6 +28,29 @@ from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
 from .pool import Pool
 
 logger = logging.getLogger(__name__)
+
+
+def mk_client_init_fn(seed: int) -> Callable[[], None]:
+    """Return a client initializer function.
+
+    Parameters
+    ----------
+    seed : int
+        The seed to use for random number generation.
+
+    Returns
+    -------
+    Callable[[None], None]
+        The client initializer function.
+    """
+
+    def init_fn() -> None:
+        keras.utils.set_random_seed(seed)
+        # Enable GPU growth upon actor init
+        # does nothing if `num_gpus` in client_resources is 0.0
+        enable_tf_gpu_growth()
+
+    return init_fn
 
 
 class EiffelClient(NumPyClient):

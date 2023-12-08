@@ -12,7 +12,6 @@ from typing import Any, Callable, Type
 import psutil
 import ray
 import tensorflow as tf
-from flwr.client import ClientLike
 from flwr.server import Server, ServerConfig
 from flwr.server.strategy import FedAvg, Strategy
 from flwr.simulation import start_simulation
@@ -26,10 +25,11 @@ from eiffel.datasets.dataset import Dataset
 from eiffel.datasets.partitioners import DumbPartitioner, Partitioner
 from eiffel.datasets.poisoning import PoisonIns
 from eiffel.utils.hydra import instantiate_or_return
+from eiffel.utils.time import timeit
 from eiffel.utils.typing import ConfigDict, MetricsDict
 from eiffel.utils.time import timeit
 
-from .client import mk_client
+from .client import mk_client, mk_client_init_fn
 from .metrics import History
 from .pool import Pool
 
@@ -250,11 +250,7 @@ class Experiment:
             config=ServerConfig(num_rounds=self.n_rounds),
             strategy=self.strategy,
             client_resources=compute_client_resources(self.n_clients),
-            actor_kwargs={
-                # Enable GPU growth upon actor init
-                # does nothing if `num_gpus` in client_resources is 0.0
-                "on_actor_init_fn": enable_tf_gpu_growth
-            },
+            actor_kwargs={"on_actor_init_fn": mk_client_init_fn(seed=self.seed)},
             clients_ids=reduce(lambda a, b: a + b, [p.ids for p in self.pools]),
             server=self.server,
             keep_initialised=True,
