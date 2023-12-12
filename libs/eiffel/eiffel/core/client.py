@@ -260,9 +260,8 @@ class EiffelClient(NumPyClient):
 
 def mk_client(
     cid: EiffelCID,
-    mappings: dict[EiffelCID, tuple[ray.ObjectRef, PoisonIns, keras.Model]],
+    mappings: dict[EiffelCID, tuple[ray.ObjectRef, Optional[PoisonIns], keras.Model]],
     seed: int,
-    attack: Optional[PoisonIns] = None,
 ) -> EiffelClient:
     """Return a client based on its CID."""
     if cid not in mappings:
