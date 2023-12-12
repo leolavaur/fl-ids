@@ -24,6 +24,7 @@ from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 from eiffel.utils.logging import VerbLevel
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
+from eiffel.utils import set_seed
 
 from .pool import Pool
 
@@ -45,7 +46,7 @@ def mk_client_init_fn(seed: int) -> Callable[[], None]:
     """
 
     def init_fn() -> None:
-        keras.utils.set_random_seed(seed)
+        set_seed(seed)
         # Enable GPU growth upon actor init
         # does nothing if `num_gpus` in client_resources is 0.0
         enable_tf_gpu_growth()
