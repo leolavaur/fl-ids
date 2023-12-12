@@ -24,6 +24,7 @@ from eiffel.core.errors import ConfigError
 from eiffel.datasets.dataset import Dataset
 from eiffel.datasets.partitioners import DumbPartitioner, Partitioner
 from eiffel.datasets.poisoning import PoisonIns
+from eiffel.utils import set_seed
 from eiffel.utils.hydra import instantiate_or_return
 from eiffel.utils.time import timeit
 from eiffel.utils.typing import ConfigDict, MetricsDict
@@ -145,7 +146,7 @@ class Experiment:
             of attacks.
         """
         self.seed = seed
-        tf.keras.utils.set_random_seed(self.seed)
+        set_seed(seed)
 
         self.server = server
         self.n_rounds = num_rounds
