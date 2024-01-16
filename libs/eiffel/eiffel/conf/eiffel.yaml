@@ -90,6 +90,8 @@ hydra:
     config:
       override_dirname:
         exclude_keys:
+          # Can be used to exclude keys that are irrelevant to the experiment, such as 
+          # the seed, or any key that would be common to this specific experiment.
           - callbacks
 
   run:
