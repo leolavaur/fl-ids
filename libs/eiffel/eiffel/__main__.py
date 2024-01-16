@@ -1,5 +1,7 @@
 """Entrypoint for the Eiffel CLI."""
 
+# import eiffel
+
 import json
 import logging
 import textwrap

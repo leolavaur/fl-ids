@@ -1,6 +1,7 @@
 """Dataset partitioners."""
 import math
 from abc import ABCMeta, abstractmethod
+from typing import Optional
 
 import numpy as np
 
@@ -13,10 +14,12 @@ class Partitioner(metaclass=ABCMeta):
     n_partitions: int
     partitions: list[Dataset]
 
-    def __init__(self, n_partitions: int) -> None:
+    def __init__(self, n_partitions: int, seed: Optional[int]) -> None:
         """Initialize the partitioner."""
         self.n_partitions = n_partitions
         self.partitions = []
+        if seed is not None:
+            np.random.seed(seed)
 
     def __len__(self) -> int:
         """Return the number of partitions."""

@@ -1,0 +1,8 @@
+- partitioner=iid
+- datasets=nfv2/sampled/nb15
+- batch_size=128
+- +epochs=300/4x75
+- +distribution=10-0
+- +target=untargeted
+- +scenario=late-3
+- +callbacks=mattermost

@@ -121,20 +121,23 @@ hydra:
   overrides:
     hydra:
     - hydra.callbacks.mattermost.url=https://mattermost.imt-atlantique.fr/hooks/rxgijqzhk7yq5xi88e9zzatcyh
+    - hydra.verbose=flwr
     - hydra.mode=MULTIRUN
     task:
-    - datasets=nfv2/sampled/nb15
+
     - partitioner=iid
-    - batch_size=32,128,512
-    - +epochs=1e,4e,10e
-    - +distribution=10-0,9-1,7-3,5-5,3-7
-    - +target=dos,untargeted
-    - +scenario=late-3,redemption-3,continuous-10,continuous-30,continuous-60,continuous-100
+    - datasets=nfv2/sampled/nb15,nfv2/sampled/cicids
+    - batch_size=32,64,128,256,512
+    - +epochs=300/1x300,300/4x75,300/10x30
+    - +distribution=10-0,5-5
+    - +target=untargeted
+    - +scenario=late-3,continuous-100
     - +callbacks=mattermost
   job:
     name: __main__
     chdir: true
-    override_dirname: +distribution=10-0,9-1,7-3,5-5,3-7,+epochs=1e,4e,10e,+scenario=late-3,redemption-3,continuous-10,continuous-30,continuous-60,continuous-100,+target=dos,untargeted,batch_size=32,128,512,datasets=nfv2/sampled/nb15,partitioner=iid
+
+    override_dirname: +distribution=10-0,5-5,+epochs=300/1x300,300/4x75,300/10x30,+scenario=late-3,continuous-100,+target=untargeted,batch_size=32,64,128,256,512,datasets=nfv2/sampled/nb15,nfv2/sampled/cicids,partitioner=iid
     id: ???
     num: ???
     config_name: eiffel
@@ -166,6 +169,7 @@ hydra:
     output_dir: ???
     choices:
       callbacks: mattermost
+      target: untargeted
       setup: null
       .@_global_: config
       poisoning/type: untargeted
@@ -173,7 +177,8 @@ hydra:
       partitioner: iid
       model: popoola
       strategy: fedavg
-      datasets: nfv2/sampled/nb15
+
+      datasets: ???
       hydra/env: default
       hydra/callbacks: null
       hydra/job_logging: eiffel
@@ -183,7 +188,8 @@ hydra:
       hydra/sweeper: basic
       hydra/launcher: basic
       hydra/output: default
-  verbose: false
+
+  verbose: flwr
 num_attackers: 0
 num_clients: 10
 num_rounds: 10
@@ -209,13 +215,7 @@ experiment:
   attacks:
   - ${attack}
   datasets: '${oc.dict.values: datasets}'
-datasets:
-  nb15:
-    _target_: eiffel.datasets.nfv2.load_data
-    path: ${gitdir:}/data/nfv2/sampled/nb15.csv.gz
-    key: nb15
-    _default_target:
-    - Analysis
+
 strategy:
   _target_: flwr.server.strategy.fedavg.FedAvg
   initial_parameters: null
@@ -227,7 +227,10 @@ partitioner:
   _target_: eiffel.datasets.partitioners.IIDPartitioner
   _partial_: true
   class_column: Attack
+
+  seed: ${seed}
 poisoning:
   profile: '1.0'
   type: untargeted
-attack: null
+attack:
+  type: untargeted

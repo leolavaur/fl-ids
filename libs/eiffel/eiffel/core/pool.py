@@ -98,7 +98,7 @@ class Pool:
         if not partitioner:
             partitioner = DumbPartitioner
 
-        partitioner = partitioner(n_partitions=n_benign + n_malicious)
+        partitioner = partitioner(n_partitions=n_benign + n_malicious, seed=self.seed)
 
         partitioner.load(_train)
         _train_shards = partitioner.all()

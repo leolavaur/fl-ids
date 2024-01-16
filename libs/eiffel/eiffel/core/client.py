@@ -20,6 +20,7 @@ from tensorflow import keras
 from eiffel.core.metrics import metrics_from_confmat
 from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
+from eiffel.utils import set_seed
 from eiffel.utils.logging import VerbLevel
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
 
@@ -43,7 +44,7 @@ def mk_client_init_fn(seed: int) -> Callable[[], None]:
     """
 
     def init_fn() -> None:
-        keras.utils.set_random_seed(seed)
+        set_seed(seed)
         # Enable GPU growth upon actor init
         # does nothing if `num_gpus` in client_resources is 0.0
         enable_tf_gpu_growth()
@@ -258,9 +259,8 @@ class EiffelClient(NumPyClient):
 
 def mk_client(
     cid: EiffelCID,
-    mappings: dict[EiffelCID, tuple[ray.ObjectRef, PoisonIns, keras.Model]],
+    mappings: dict[EiffelCID, tuple[ray.ObjectRef, Optional[PoisonIns], keras.Model]],
     seed: int,
-    attack: Optional[PoisonIns] = None,
 ) -> EiffelClient:
     """Return a client based on its CID."""
     if cid not in mappings:
