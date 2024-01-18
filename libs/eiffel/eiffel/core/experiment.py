@@ -28,11 +28,10 @@ from eiffel.utils import set_seed
 from eiffel.utils.hydra import instantiate_or_return
 from eiffel.utils.time import timeit
 from eiffel.utils.typing import ConfigDict, MetricsDict
-from eiffel.utils.time import timeit
 
 from .client import mk_client, mk_client_init_fn
-from .metrics import History
 from .pool import Pool
+from .results import Results
 
 logger = logging.getLogger(__name__)
 
@@ -260,9 +259,9 @@ class Experiment:
         ray.shutdown()
 
     @property
-    def history(self) -> History:
-        """Return the experiment's history."""
-        return History.from_flwr(self.hist)
+    def results(self) -> Results:
+        """Return the experiment's results."""
+        return Results.from_flwr(self.hist)
 
     def data_stats(self) -> dict[str, dict[str, int]]:
         """Return the data statistics for each pool."""
