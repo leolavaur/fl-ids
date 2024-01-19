@@ -98,7 +98,10 @@
               '';
             });
           });
-        };
+        } // (if pkgs.stdenv.isDarwin then {
+          pyproject = "${self}/libs/eiffel/macos/pyproject.toml";
+          poetrylock = "${self}/libs/eiffel/macos/poetry.lock";
+        } else {});
 
         #   env = pkgs.buildEnv  {
         #       name = "env";
@@ -140,7 +143,7 @@
               # tools
               poetry
               getopt # for remoterun.sh
-            ];
+            ];  
 
             shellHook = ''
               export PATH=${self}/bin:$PATH
