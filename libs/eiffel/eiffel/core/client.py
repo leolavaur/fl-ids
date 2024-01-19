@@ -17,7 +17,7 @@ from keras.callbacks import History
 from sklearn.metrics import confusion_matrix
 from tensorflow import keras
 
-from eiffel.core.results import metrics_from_confmat
+from eiffel.analysis.metrics import metrics_from_confmat
 from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 from eiffel.utils import set_seed
