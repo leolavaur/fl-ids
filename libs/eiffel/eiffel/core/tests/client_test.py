@@ -1,11 +1,12 @@
 """Tests for eiffel.core.client."""
 
 import os
+
 import ray
-from eiffel.core.client import EiffelClient
-from eiffel.datasets.nfv2 import load_data
+
+from eiffel.core.client import EiffelClient, mk_client
 from eiffel.datasets.dataset import DatasetHandle
-from eiffel.core.client import mk_client
+from eiffel.datasets.nfv2 import load_data
 from eiffel.models.supervized import mk_popoola_mlp
 
 SEED = 1138

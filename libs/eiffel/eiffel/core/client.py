@@ -19,9 +19,10 @@ from sklearn.metrics import confusion_matrix
 from tensorflow import keras
 from eiffel.core.metrics import metrics_from_confmat
 
-from eiffel.core.metrics import metrics_from_confmat
+from eiffel.analysis.metrics import metrics_from_confmat
 from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
+from eiffel.utils import set_seed
 from eiffel.utils.logging import VerbLevel
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
 from eiffel.utils import set_seed

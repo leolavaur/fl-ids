@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import hydra
+from flwr.common.logger import logger as flwr_logger
 from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
 from flwr.common.logger import logger as flwr_logger
 from hydra.utils import instantiate
@@ -74,9 +75,9 @@ def main(cfg: DictConfig):
     ex = instantiate(cfg.experiment, _convert_="object")
     Path("./stats.json").write_text(json.dumps(ex.data_stats(), indent=4))
     ex.run()
-    hist = ex.history
-    hist.save("fit")
-    hist.save("distributed")
+    res = ex.results
+    res.save("fit")
+    res.save("distributed")
     log.info("Run completed.")
     log.info(f"Results saved in: {Path.cwd()}.")
 

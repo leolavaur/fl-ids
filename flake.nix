@@ -139,21 +139,16 @@
 
               # tools
               poetry
-
+              getopt # for remoterun.sh
             ];
 
-            # shellHook = ''
-            #   export PYTHONPATH=${
-            #     lib.strings.concatStringsSep ":"
-            #       (map (p: "$(realpath ./exps/${p}/src/)") expList)
-            #   }
             shellHook = ''
+              export PATH=${self}/bin:$PATH
               export PYTHONPATH=${
                 lib.strings.concatStringsSep ":"
                   (map (p: "$(realpath ./exps/${p}/src)") expList)
               }:$(realpath ./libs/eiffel/)
               export EIFFEL_PYTHON_PATH=${eiffel}/bin/python
-              export EIFFEL_LTEX_PATH=${ltex-ls}/bin/ltex-ls
             '' + (if stdenv.isLinux then ''
               export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [
                 "${cudaPackages.cudatoolkit}/lib"
