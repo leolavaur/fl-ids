@@ -233,7 +233,7 @@ class EiffelClient(NumPyClient):
         tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
         return_data["global"] = metrics_from_confmat(tn, fp, fn, tp)
 
-        return_data["loss"] = loss
+        return_data["global"]["loss"] = loss
         return_data["_cid"] = self.cid
 
         return (loss, len(test_set), {k: json.dumps(v) for k, v in return_data.items()})
