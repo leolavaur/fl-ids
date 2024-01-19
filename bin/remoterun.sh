@@ -77,6 +77,7 @@ main() {
         git push --set-upstream origin "$NEWBRANCHNAME"
     } > /dev/null 2>&1
 
+
     # run the experiment on the remote host
     ssh "$TARGET" bash << EOF
 echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
