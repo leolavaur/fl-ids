@@ -139,11 +139,11 @@
 
               # tools
               poetry
-
+              getopt # for remoterun.sh
             ];
 
             shellHook = ''
-              export PATH=${eiffel}/bin:$PATH
+              export PATH=${self}/bin:$PATH
               export PYTHONPATH=${
                 lib.strings.concatStringsSep ":"
                   (map (p: "$(realpath ./exps/${p}/src)") expList)
