@@ -65,25 +65,29 @@ main() {
         exit 1
     fi
 
-    CURRENTBRANCH=$(git branch --show-current)
-    NEWBRANCHNAME=auto-$(md5sum <<< "$EXPERIMENT" | cut -d' ' -f1)
+    CURRENT=$(git branch --show-current)
+    RELEASE="release"
 
     # switch to a new branch, create it if it doesn't exist
-    git checkout -b "$NEWBRANCHNAME"
-    git add .
-    git commit -am "auto commit"
-    git push --set-upstream origin "$NEWBRANCHNAME"
+    {
+        git stash
+        git checkout -b "$NEWBRANCHNAME" 
+        git add .
+        git commit -am "auto commit"
+        git push --set-upstream origin "$NEWBRANCHNAME"
+    } > /dev/null 2>&1
 
     # run the experiment on the remote host
     ssh "$TARGET" bash << EOF
+echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
 cd ~/Workspace/phdcybersec/fl-ids
+git fetch
 git checkout origin/$NEWBRANCHNAME
-tmux -d -t "auto-remoterun" <(nix develop -c eiffel --config-dir $EXPERIMENT; exit) || echo "Tmux session already running.\nCheck it out with 'tmux attach -t auto-remoterun'."
+tmux new-session -d -t "auto-remoterun" "nix develop -c eiffel --config-dir $EXPERIMENT; exit" || echo "Tmux session already running.\nCheck it out with 'tmux attach -t auto-remoterun'."
 EOF
 
     git checkout "$CURRENTBRANCH"
-
-
+    git stash pop
 
 }
 
