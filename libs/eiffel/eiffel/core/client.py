@@ -1,6 +1,5 @@
 """Eiffel client API."""
 
-from collections import Counter
 import itertools
 import json
 import logging
@@ -17,7 +16,6 @@ from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
 from keras.callbacks import History
 from sklearn.metrics import confusion_matrix
 from tensorflow import keras
-from eiffel.core.metrics import metrics_from_confmat
 
 from eiffel.analysis.metrics import metrics_from_confmat
 from eiffel.datasets.dataset import Dataset, DatasetHandle
@@ -25,7 +23,6 @@ from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 from eiffel.utils import set_seed
 from eiffel.utils.logging import VerbLevel
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
-from eiffel.utils import set_seed
 
 from .pool import Pool
 

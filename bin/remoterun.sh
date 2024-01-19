@@ -2,6 +2,8 @@
 
 # This script runs the specified experiment on a remote experiment server.
 
+# TODO: Current state does not work.
+
 usage() {
     echo """
 Usage: remoterun.sh -e|--experiment <experiment> -t|--target <target>
@@ -69,27 +71,23 @@ main() {
     RELEASE="release"
 
     # switch to a new branch, create it if it doesn't exist
-    {
-        git stash
-        git checkout -b "$NEWBRANCHNAME" 
-        git add .
-        git commit -am "auto commit"
-        git push --set-upstream origin "$NEWBRANCHNAME"
-    } > /dev/null 2>&1
+    echo "Pushing current changes to the $RELEASE branch..."
+    git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." >/dev/null 2>&1 || { echo "Could not commit changes. Aborting."; exit 1; }
+    COMMIT=$(git rev-parse HEAD)
+    git push --force origin "$COMMIT:$RELEASE" >/dev/null 2>&1 || { echo "Could not push changes. Aborting."; exit 1; }
+    git reset --soft HEAD~1 >/dev/null 2>&1 || { echo "Could not reset changes. Aborting."; exit 1; }
 
 
     # run the experiment on the remote host
-    ssh "$TARGET" bash << EOF
-echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
+    echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
+    ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
 cd ~/Workspace/phdcybersec/fl-ids
-git fetch
-git checkout origin/$NEWBRANCHNAME
-tmux new-session -d -t "auto-remoterun" "nix develop -c eiffel --config-dir $EXPERIMENT; exit" || echo "Tmux session already running.\nCheck it out with 'tmux attach -t auto-remoterun'."
+git checkout "$RELEASE" >/dev/null 2>&1 || { echo "Branch '$RELEASE' does not exist. Aborting."; exit 1; }
+git pull --rebase >/dev/null 2>&1 || { echo "Could not pull from remote. Aborting."; exit 1; }
+tmux new-session -d -s "auto-remoterun" "nix develop -c eiffel --config-dir $EXPERIMENT || read && exit" >/dev/null 2>&1 || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
 EOF
 
-    git checkout "$CURRENTBRANCH"
-    git stash pop
-
+    
 }
 
 main "$@"
