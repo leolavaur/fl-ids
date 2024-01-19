@@ -136,6 +136,7 @@ hydra:
     name: __main__
     chdir: true
     override_dirname: +distribution=10-0,5-5,+epochs=300/1x300,300/4x75,300/10x30,+scenario=late-3,continuous-100,+target=untargeted,batch_size=32,64,128,256,512,datasets=nfv2/sampled/nb15,nfv2/sampled/cicids,partitioner=iid
+
     id: ???
     num: ???
     config_name: eiffel
@@ -168,6 +169,8 @@ hydra:
     choices:
       callbacks: mattermost
       target: untargeted
+
+      distribution: 5-5
       setup: null
       .@_global_: config
       poisoning/type: untargeted
@@ -175,6 +178,8 @@ hydra:
       partitioner: iid
       model: popoola
       strategy: fedavg
+
+      datasets: ???
       hydra/env: default
       hydra/callbacks: null
       hydra/job_logging: eiffel
@@ -185,56 +190,3 @@ hydra:
       hydra/launcher: basic
       hydra/output: default
   verbose: flwr
-
-num_attackers: 0
-num_clients: 10
-num_rounds: 10
-num_epochs: 10
-batch_size: 512
-seed: 1138
-attacks:
-- type: ${poisoning.type}
-  profile: ${poisoning.profile}
-pools:
-- n_benign: ${num_clients}
-  n_malicious: ${num_attackers}
-experiment:
-  _target_: eiffel.core.experiment.Experiment
-  seed: ${seed}
-  num_rounds: ${num_rounds}
-  num_epochs: ${num_epochs}
-  batch_size: ${batch_size}
-  strategy: ${strategy}
-  model_fn: ${model}
-  partitioner: ${partitioner}
-  pools: ${pools}
-  attacks:
-  - ${attack}
-  datasets: '${oc.dict.values: datasets}'
-
-datasets:
-  nb15:
-    _target_: eiffel.datasets.nfv2.load_data
-    path: ${gitdir:}/data/nfv2/sampled/nb15.csv.gz
-    key: nb15
-    _default_target:
-    - Analysis
-
-strategy:
-  _target_: flwr.server.strategy.fedavg.FedAvg
-  initial_parameters: null
-  _partial_: true
-model:
-  _target_: eiffel.models.supervized.mk_popoola_mlp
-  _partial_: true
-partitioner:
-  _target_: eiffel.datasets.partitioners.IIDPartitioner
-  _partial_: true
-  class_column: Attack
-  seed: ${seed}
-poisoning:
-  profile: '1.0'
-  type: untargeted
-attack:
-  type: untargeted
-

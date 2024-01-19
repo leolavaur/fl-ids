@@ -72,14 +72,14 @@ main() {
 
     # switch to a new branch, create it if it doesn't exist
     git checkout -b "$NEWBRANCHNAME" || git checkout "$NEWBRANCHNAME"
-    git commit -m "auto commit"
-    git push origin "$NEWBRANCHNAME"
+    git add .
+    git commit -am "auto commit"
+    git push --set-upstream origin "$NEWBRANCHNAME"
 
     # run the experiment on the remote host
     ssh "$TARGET" bash << EOF
 cd ~/Workspace/phdcybersec/fl-ids
 git checkout origin/$NEWBRANCHNAME
-git pull 
 tmux -d -t "auto-remoterun" <(nix develop -c eiffel --config-dir $EXPERIMENT; exit) || echo "Tmux session already running.\nCheck it out with 'tmux attach -t auto-remoterun'."
 EOF
 
