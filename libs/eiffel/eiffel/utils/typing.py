@@ -18,6 +18,7 @@ class MetricsDict(dict[str, float]):
         "f1",
         "missrate",
         "fallout",
+        "loss",
     ]
 
     def __init__(self, *args, **kwargs):
