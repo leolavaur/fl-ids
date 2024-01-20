@@ -19,7 +19,7 @@ Options:
 
 main() {
     # Parse the command line arguments.
-    OPTS=$(getopt -o e:t:n:h --long experiment:,target:,notify-url:,help -n 'parse-options' -- "$@")
+    OPTS=$(getopt -o e:t:n:hd --long experiment:,target:,notify-url:,help,debug -n 'parse-options' -- "$@")
 
     eval set -- "$OPTS"
 
@@ -41,6 +41,10 @@ main() {
             -h|--help)
                 usage 
                 exit 0
+                ;;
+            -d|--debug)
+                DEBUG=true
+                shift
                 ;;
             --)
                 shift
@@ -79,24 +83,45 @@ main() {
     fi
     COMMAND="eiffel --config-dir $EXPERIMENT $NOTIFYARGS"
 
-    # switch to a new branch, create it if it doesn't exist
-    echo "Pushing current changes to the $PUBLISHBRANCH branch..."
-    git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." >/dev/null 2>&1 || { echo "Could not commit changes. Aborting."; exit 1; }
-    COMMIT=$(git rev-parse HEAD)
-    git push --force origin "$COMMIT:$RELEASE" >/dev/null 2>&1 || { echo "Could not push changes. Aborting."; exit 1; }
-    git reset --soft HEAD~1 >/dev/null 2>&1 || { echo "Could not reset changes. Aborting."; exit 1; }
+    if [[ -n "$DEBUG" ]]; then
+        set -x
+
+        # switch to a new branch, create it if it doesn't exist
+        echo "Pushing current changes to the $PUBLISHBRANCH branch..."
+        git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." || { echo "Could not commit changes. Aborting."; exit 1; }
+        COMMIT=$(git rev-parse HEAD)
+        git push --force origin "$COMMIT:$RELEASE" || { echo "Could not push changes. Aborting."; exit 1; }
+        git reset --soft HEAD~1 || { echo "Could not reset changes. Aborting."; exit 1; }
 
 
-    # run the experiment on the remote host
-    echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
-    ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
+        # run the experiment on the remote host
+        echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
+        ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
+cd ~/Workspace/phdcybersec/fl-ids
+git checkout "$PUBLISHBRANCH" || { echo "Branch '$PUBLISHBRANCH' does not exist. Aborting."; exit 1; }
+git pull --rebase || { echo "Could not pull from remote. Aborting."; exit 1; }
+tmux new-session -d -s "auto-remoterun" "nix develop -c $COMMAND || read && exit" || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
+EOF
+    else
+
+        # switch to a new branch, create it if it doesn't exist
+        echo "Pushing current changes to the $PUBLISHBRANCH branch..."
+        git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." >/dev/null 2>&1 || { echo "Could not commit changes. Aborting."; exit 1; }
+        COMMIT=$(git rev-parse HEAD)
+        git push --force origin "$COMMIT:$RELEASE" >/dev/null 2>&1 || { echo "Could not push changes. Aborting."; exit 1; }
+        git reset --soft HEAD~1 >/dev/null 2>&1 || { echo "Could not reset changes. Aborting."; exit 1; }
+
+
+        # run the experiment on the remote host
+        echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
+        ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
 cd ~/Workspace/phdcybersec/fl-ids
 git checkout "$PUBLISHBRANCH" >/dev/null 2>&1 || { echo "Branch '$PUBLISHBRANCH' does not exist. Aborting."; exit 1; }
 git pull --rebase >/dev/null 2>&1 || { echo "Could not pull from remote. Aborting."; exit 1; }
 tmux new-session -d -s "auto-remoterun" "nix develop -c $COMMAND || read && exit" >/dev/null 2>&1 || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
 EOF
+    fi
 
-    
 }
 
 main "$@"
