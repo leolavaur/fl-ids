@@ -90,7 +90,7 @@ main() {
         echo "Pushing current changes to the $PUBLISHBRANCH branch..."
         git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." || { echo "Could not commit changes. Aborting."; exit 1; }
         COMMIT=$(git rev-parse HEAD)
-        git push --force origin "$COMMIT:$RELEASE" || { echo "Could not push changes. Aborting."; exit 1; }
+        git push --force origin "$COMMIT:$PUBLISHBRANCH" || { echo "Could not push changes. Aborting."; exit 1; }
         git reset --soft HEAD~1 || { echo "Could not reset changes. Aborting."; exit 1; }
 
 
@@ -108,7 +108,7 @@ EOF
         echo "Pushing current changes to the $PUBLISHBRANCH branch..."
         git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." >/dev/null 2>&1 || { echo "Could not commit changes. Aborting."; exit 1; }
         COMMIT=$(git rev-parse HEAD)
-        git push --force origin "$COMMIT:$RELEASE" >/dev/null 2>&1 || { echo "Could not push changes. Aborting."; exit 1; }
+        git push --force origin "$COMMIT:$PUBLISHBRANCH" >/dev/null 2>&1 || { echo "Could not push changes. Aborting."; exit 1; }
         git reset --soft HEAD~1 >/dev/null 2>&1 || { echo "Could not reset changes. Aborting."; exit 1; }
 
 
