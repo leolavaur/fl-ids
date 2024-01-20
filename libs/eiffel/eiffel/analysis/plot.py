@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
 
+from eiffel.analysis.metrics import load_attr_metric
+
 MARKERS = ["o", "D", "v", "*", "+", "^", "p", ".", "P", "<", ">", "X"]
 LINESTYLES = ["-", "--", "-.", ":"]
 COLORS = [
@@ -32,6 +34,14 @@ class Plotable(NamedTuple):
 
     name: str
     values: list[float]
+
+
+def load_plotable(
+    path: str, typ: str, metric: str = "accuracy", with_malicious: bool = False
+) -> Plotable:
+    """Load the plotable from the given path."""
+    metrics = load_attr_metric(path, typ, metric, with_malicious)
+    return Plotable(path, metrics)
 
 
 def envelope(
