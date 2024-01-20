@@ -13,7 +13,7 @@ hydra:
       partitioner: iid
       +datasets: nfv2/sampled/cicids
       batch_size: 512
-      +epochs: 100/10x10
+      +epochs: 100/4x25
       +distribution: glob(*)
       +target: untargeted,dos
       +scenario: redemption-3,continuous-100,continuous-10,continuous-30,continuous-60
