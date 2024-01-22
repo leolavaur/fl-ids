@@ -88,6 +88,7 @@ main() {
 
         # switch to a new branch, create it if it doesn't exist
         echo "Pushing current changes to the $PUBLISHBRANCH branch..."
+        git add .
         git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." || { echo "Could not commit changes. Aborting."; exit 1; }
         COMMIT=$(git rev-parse HEAD)
         git push --force origin "$COMMIT:$PUBLISHBRANCH" || { echo "Could not push changes. Aborting."; exit 1; }
