@@ -98,6 +98,39 @@ def envelope(
     )
 
 
+def scale(plotables: list[Plotable], length: int) -> list[Plotable]:
+    """Scale the plotables to the given length.
+
+    Each result length varies depending on the number of rounds. This function scales
+    results to the given length by repeating values. Thus, the results can only be
+    scaled to a multiple of the original length.
+
+    Parameters
+    ----------
+    plotables : Plotable
+        Plotables to scale.
+    length : int
+        Length to scale to. Must be a multiple of the original length.
+
+    Returns
+    -------
+    list[Plotable]
+        Scaled plotables.
+    """
+    if length <= 0:
+        raise ValueError("Length must be positive.")
+    ret = []
+    for p in plotables:
+        if length % len(p.values) != 0:
+            raise ValueError(
+                f"Length {length} is not a multiple of {len(p.values)} for {p.name}."
+            )
+        mul = int(length / len(p.values))
+        ret.append(Plotable(p.name, list(chain(*(([v] * mul) for v in p.values)))))
+
+    return ret
+
+
 # The following code is kept here for reference, but will be removed in the future.
 if False:
 
