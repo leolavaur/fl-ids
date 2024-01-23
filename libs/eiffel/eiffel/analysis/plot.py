@@ -35,6 +35,10 @@ class Plotable(NamedTuple):
     name: str
     values: list[float]
 
+    def __getitem__(self, s: slice) -> "Plotable":
+        """Get a slice of the plotable."""
+        return Plotable(self.name, self.values[s])
+
 
 def load_plotable(
     path: str, typ: str, metric: str = "accuracy", with_malicious: bool = False
