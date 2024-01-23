@@ -10,6 +10,8 @@ from typing import Any, Optional, TypedDict, cast
 import numpy as np
 import pandas as pd
 from flwr.server.history import History as FlwrHistory
+from schema import And, Schema, Use
+from schema import Optional as SchemaOpt
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -22,6 +24,29 @@ from sklearn.metrics import (
 from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
 
 ScopeName = str
+
+GLOBAL_METRICS = [
+    "accuracy",
+    "f1",
+    "precision",
+    "recall",
+    "missrate",
+    "fallout",
+    "loss",
+]
+
+TARGET_METRICS = ["recall", "missrate"]
+
+SeriesSchema = Schema(
+    {
+        And(Use(int), lambda r: r >= 0): {
+            And(
+                str,
+                lambda s: s in GLOBAL_METRICS,
+            ): And(Use(float), lambda x: 0 <= x <= 1),
+        }
+    }
+)
 
 
 class Series(dict[int, MetricsDict]):

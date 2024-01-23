@@ -7,10 +7,10 @@ import numpy as np
 import pandas as pd
 from IPython.display import HTML, display
 
-from eiffel.core.results import Results, Series
+from eiffel.core.results import MetaSeries, Results, Series
 
 
-def average(ss: list[Series] | dict[str, Series]) -> Series:
+def average(ss: list[Series | MetaSeries] | dict[str, Series | MetaSeries]) -> Series:
     """Compute the mean, metric per metric and for each round, of a list of Series.
 
     Parameters
@@ -46,7 +46,18 @@ def average(ss: list[Series] | dict[str, Series]) -> Series:
         for metric in metrics:
             m_bar[round][metric] = float(np.mean([s[round][metric] for s in lst]))
 
-    return m_bar
+    return dict_avg(ss)
+
+
+def dict_avg(ss: list[dict]) -> dict:
+    """Recursively average a list of dicts."""
+    d = {}
+    for k in ss[0].keys():
+        if isinstance(ss[0][k], dict):
+            d[k] = dict_avg([s[k] for s in ss])
+        else:
+            d[k] = np.mean([s[k] for s in ss])
+    return d
 
 
 def mean_absolute_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:
