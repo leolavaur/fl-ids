@@ -2,6 +2,7 @@
 
 import re
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -10,7 +11,9 @@ from IPython.display import HTML, display
 from eiffel.core.results import MetaSeries, Results, Series
 
 
-def average(ss: list[Series | MetaSeries] | dict[str, Series | MetaSeries]) -> Series:
+def average(
+    ss: list[Series | MetaSeries] | dict[str, Series | MetaSeries]
+) -> Series | MetaSeries:
     """Compute the mean, metric per metric and for each round, of a list of Series.
 
     Parameters
@@ -24,29 +27,17 @@ def average(ss: list[Series | MetaSeries] | dict[str, Series | MetaSeries]) -> S
     Series
         The mean of the Series.
     """
-    lst = ss if isinstance(ss, list) else list(ss.values())
+    lst = cast(list[dict], ss if isinstance(ss, list) else list(ss.values()))
 
     if len(lst) == 0:
         raise ValueError("lst must not be empty")
 
-    for s in lst:
-        if not isinstance(s, Series):
-            raise ValueError("ss must contain only Series")
-        if not s.keys() == lst[0].keys():
-            raise ValueError("all Series must have the same rounds")
-        if not next(iter(s.values())).keys() == next(iter(lst[0].values())).keys():
-            raise ValueError("all Series must have the same metrics")
-
-    rounds = lst[0].keys()
-    metrics = next(iter(lst[0].values())).keys()
-
-    m_bar = Series()
-    for round in rounds:
-        m_bar[round] = {}
-        for metric in metrics:
-            m_bar[round][metric] = float(np.mean([s[round][metric] for s in lst]))
-
-    return dict_avg(ss)
+    if isinstance(lst[0], Series):
+        return Series(dict_avg(lst))
+    elif isinstance(lst[0], MetaSeries):
+        return Series(dict_avg(lst))
+    else:
+        raise ValueError("lst must contain Series or MetaSeries")
 
 
 def dict_avg(ss: list[dict]) -> dict:
@@ -165,27 +156,28 @@ def load_metrics(
     return metrics
 
 
-def search_metrics(path: str, sort: bool = True, **conditions: str) -> list[str]:
+def search_results(path: str, sort: bool = True, **conditions: str) -> list[str]:
     """
-    Search the metrics from the given path.
+    Search corresponding results from the given path.
 
     Parameters
     ----------
     path : str
-        The path to the metrics.
+        The path to the results.
     conditions : dict[str, str]
-        The conditions to search the metrics. The keys are the names of hydra options
+        The conditions to search the results. The keys are the names of hydra options
         that have been set, and the values are the values of the options. For example,
         if conditions is set to `{"distribution": "10-0"}`, then the fonctions will load
-        all experiments that have been run with `distribution=10-0`. Values can also be
-        regex patterns. For example, if conditions is set to `{"distribution":
-        "10-.*"}`, then the fonctions will load all experiments that have been run with
-        `distribution` starting with `10-`.
+        all experiments that have been run with `distribution=10-0`. Values are regex
+        patterns, enclosed in `^[...]$` afterwards. For example, `{"distribution":
+        "10-.*"}`will match all experiments that have been run with `distribution`
+        starting with `10-`, while `{"scenario": "continuous-10"}` will match only
+        "continuous-10" and not "continuous-100".
 
     Returns
     -------
     list[str]
-        The paths to the metrics.
+        The paths to the results matching the conditions.
     """
     for _, v in conditions.items():
         v = str(v)
@@ -202,7 +194,8 @@ def search_metrics(path: str, sort: bool = True, **conditions: str) -> list[str]
             k.strip("+"): v for k, v in [p.split("=") for p in d.name.split(",")]
         }
         if all(
-            re.match(v, options.get(k, "")) is not None for k, v in conditions.items()
+            re.match(rf"^{v}$", options.get(k, "")) is not None
+            for k, v in conditions.items()
         ):
             metrics.append(d.as_posix())
 

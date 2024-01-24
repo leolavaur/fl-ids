@@ -37,65 +37,17 @@ GLOBAL_METRICS = [
 
 TARGET_METRICS = ["recall", "missrate"]
 
-SeriesSchema = Schema(
+MetricsSchema = Schema(
     {
-        And(Use(int), lambda r: r >= 0): {
-            And(
-                str,
-                lambda s: s in GLOBAL_METRICS,
-            ): And(Use(float), lambda x: 0 <= x <= 1),
+        Use(int): {
+            str: {
+                And(str, lambda s: s in GLOBAL_METRICS): And(
+                    Use(float), lambda f: 0 <= f <= 1
+                )
+            }
         }
     }
 )
-
-
-class Series(dict[int, MetricsDict]):
-    """A dictionary of metrics, by round number."""
-
-    def __init__(self, *args, **kwargs):
-        """Initialize a Series."""
-        d = dict(*args, **kwargs)
-        try:
-            super().__init__({int(k): v for k, v in d.items()})
-        except ValueError:
-            raise ValueError("Invalid key in Series, must be an int")
-
-    def __setitem__(self, __key: Any, __value: Any) -> None:
-        """Set an item in the dictionary."""
-        try:
-            return super().__setitem__(int(__key), MetricsDict(__value))
-        except ValueError:
-            raise ValueError("Invalid typing: key must be an int, value a MetricsDict")
-
-    def metric(self, metric: str) -> list[float]:
-        """Get the given metric."""
-        return [metrics[metric] for metrics in self.values()]
-
-
-class MetaSeries(dict[int, dict[ScopeName, MetricsDict]]):
-    """A dictionary of Series, by round and scope name.
-
-    The scope is a "class" filter for the metrics. For example, 'Bot' contains metrics
-    for the 'Bot' class. 'global' contains metrics for the whole dataset.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """Initialize a MetaSeries."""
-        d = dict(*args, **kwargs)
-        try:
-            super().__init__({int(k): v for k, v in d.items()})
-        except ValueError:
-            raise ValueError("Invalid key in Series, must be an int")
-
-    def scope(self, scope: ScopeName) -> Series:
-        """Return a Series for the given scope."""
-        return Series(
-            {
-                round: metrics[scope]
-                for round, metrics in self.items()
-                if scope in metrics
-            }
-        )
 
 
 class Results:
@@ -107,9 +59,9 @@ class Results:
 
     def __init__(
         self,
-        fit: dict[EiffelCID, MetaSeries] = {},
-        distributed: dict[EiffelCID, MetaSeries] = {},
-        centralized: dict | MetaSeries = MetaSeries(),
+        fit: dict[EiffelCID, dict] = {},
+        distributed: dict[EiffelCID, dict] = {},
+        centralized: dict | dict = dict(),
     ) -> None:
         """Initialize a Results object.
 
@@ -124,18 +76,16 @@ class Results:
         """
         self.fit = (
             fit
-            if all(isinstance(value, MetaSeries) for value in fit.values())
-            else {k: MetaSeries(v) for k, v in fit.items()}
+            if all(isinstance(value, dict) for value in fit.values())
+            else {k: dict(v) for k, v in fit.items()}
         )
         self.distributed = (
             distributed
-            if all(isinstance(value, MetaSeries) for value in distributed.values())
-            else {k: MetaSeries(v) for k, v in distributed.items()}
+            if all(isinstance(value, dict) for value in distributed.values())
+            else {k: dict(v) for k, v in distributed.items()}
         )
         self.centralized = (
-            centralized
-            if isinstance(centralized, MetaSeries)
-            else MetaSeries(centralized)
+            centralized if isinstance(centralized, dict) else dict(centralized)
         )
 
     @classmethod
@@ -169,7 +119,7 @@ class Results:
         for round, json_metrics in flwr_history.metrics_centralized:
             centralized[round] = json.loads(str(json_metrics))
 
-        return cls(fit=fit, distributed=distributed, centralized=Series(centralized))
+        return cls(fit=fit, distributed=distributed, centralized=centralized)
 
     @classmethod
     def from_path(cls, result_path: str | Path) -> "Results":
@@ -226,9 +176,9 @@ class Results:
         file = path / filename
         file.write_text(json.dumps(content, indent=4))
 
-    def scope(self, scope: ScopeName) -> "ScopedResults":
+    def scope(self, scope: ScopeName) -> "Results":
         """Return a ScopedResults object with the given scope."""
-        return ScopedResults(
+        return Results(
             fit={
                 cid: meta_series.scope(scope) for cid, meta_series in self.fit.items()
             },
@@ -237,44 +187,4 @@ class Results:
                 for cid, meta_series in self.distributed.items()
             },
             centralized=self.centralized.scope(scope),
-        )
-
-
-class ScopedResults:
-    """Results of a model training session for a given scope.
-
-    The scoped results are a view over the original results, with a given scope. Where a
-    Results object contains MetaSeries with different scopes, the ScopedResults object
-    will only contain Series with the given scope.
-    """
-
-    def __init__(
-        self,
-        fit: dict[EiffelCID, Series] = {},
-        distributed: dict[EiffelCID, Series] = {},
-        centralized: dict | Series = Series(),
-    ) -> None:
-        """Initialize a Results object.
-
-        Parameters
-        ----------
-        fit : dict[EiffelCID, dict[int, MetricsDict]], optional
-            Training metrics of the clients, by client ID and round number.
-        distributed : dict[EiffelCID, dict[int, MetricsDict]], optional
-            Evaluation metrics of the clients, by client ID and round number.
-        centralized : dict[int, MetricsDict], optional
-            Evaluation metrics on the server, by round number.
-        """
-        self.fit = (
-            fit
-            if all(isinstance(value, Series) for value in fit.values())
-            else {k: Series(v) for k, v in fit.items()}
-        )
-        self.distributed = (
-            distributed
-            if all(isinstance(value, Series) for value in distributed.values())
-            else {k: Series(v) for k, v in distributed.items()}
-        )
-        self.centralized = (
-            centralized if isinstance(centralized, Series) else Series(centralized)
         )
