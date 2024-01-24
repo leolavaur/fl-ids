@@ -107,7 +107,7 @@ class EiffelClient(NumPyClient):
 
     def fit(
         self, parameters: list[NDArray], config: Config
-    ) -> tuple[list[NDArray], int, MetricsDict]:
+    ) -> tuple[list[NDArray], int, dict]:
         """Fit the model to the local data set.
 
         Parameters
@@ -150,21 +150,25 @@ class EiffelClient(NumPyClient):
         )
 
         ret = {
-            "fit_accuracy": hist.history["accuracy"][-1],
-            "fit_loss": hist.history["loss"][-1],
             "_cid": self.cid,
         }
 
         if self.eval_fit:
             test_loss, _, metrics = self.evaluate(self.model.get_weights(), config)
-            ret["test_loss"] = test_loss
             ret.update(metrics)
+            ret["fit"] = json.dumps(
+                {
+                    "test_loss": test_loss,
+                    "fit_accuracy": hist.history["accuracy"][-1],
+                    "fit_loss": hist.history["loss"][-1],
+                }
+            )
 
         return (self.model.get_weights(), len(train_set), ret)
 
     def evaluate(
         self, parameters: list[NDArray], config: Config
-    ) -> tuple[float, int, MetricsDict]:
+    ) -> tuple[float, int, dict]:
         """Evaluate the model on the local data set.
 
         Parameters

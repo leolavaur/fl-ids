@@ -40,14 +40,6 @@ class Plotable(NamedTuple):
         return Plotable(self.name, self.values[s])
 
 
-def load_plotable(
-    path: str, typ: str, metric: str = "accuracy", with_malicious: bool = False
-) -> Plotable:
-    """Load the plotable from the given path."""
-    metrics = load_attr_metric(path, typ, metric, with_malicious)
-    return Plotable(path, metrics)
-
-
 def envelope(
     plotables: list[Plotable], ax: Axes | None = None, color: str = "orange"
 ) -> None:

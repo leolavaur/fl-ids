@@ -2,18 +2,16 @@
 
 import re
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
 from IPython.display import HTML, display
 
-from eiffel.core.results import MetaSeries, Results, Series
+from eiffel.core.results import Results
 
 
-def average(
-    ss: list[Series | MetaSeries] | dict[str, Series | MetaSeries]
-) -> Series | MetaSeries:
+def average(ss: list[dict] | dict[str, dict]) -> dict:
     """Compute the mean, metric per metric and for each round, of a list of Series.
 
     Parameters
@@ -27,17 +25,12 @@ def average(
     Series
         The mean of the Series.
     """
-    lst = cast(list[dict], ss if isinstance(ss, list) else list(ss.values()))
+    lst = ss if isinstance(ss, list) else list(ss.values())
 
     if len(lst) == 0:
         raise ValueError("lst must not be empty")
 
-    if isinstance(lst[0], Series):
-        return Series(dict_avg(lst))
-    elif isinstance(lst[0], MetaSeries):
-        return Series(dict_avg(lst))
-    else:
-        raise ValueError("lst must contain Series or MetaSeries")
+    return dict_avg(lst)
 
 
 def dict_avg(ss: list[dict]) -> dict:
@@ -131,29 +124,30 @@ def metrics_from_confmat(*conf: int) -> dict[str, float]:
     }
 
 
-def load_attr_metric(
-    path: str, attr: str, metric="accuracy", with_malicious=False
+def load_metric(
+    path: str,
+    dotpath: str,
+    attr: str = "distributed",
+    with_malicious: bool = False,
 ) -> list[float]:
     """Load the metrics from the given path."""
-    res = getattr(Results.from_path(path).scope("global"), attr)
+    res = getattr(Results.from_path(path), attr)
     if not with_malicious:
         res = {k: v for k, v in res.items() if "malicious" not in k}
-    return average(res).metric(metric)
+    return [get_value(d, dotpath) for d in average(res).values()]
 
 
-def load_metrics(
-    *paths: str, metric="accuracy", with_malicious=False
-) -> dict[str, tuple[list[float], list[float]]]:
-    """Load the metrics from the given paths."""
-    metrics = {}
-    for path in paths:
-        p = Path(path)
-        res = Results.from_path(path).scope("global")
-        metrics[p.name] = (
-            load_attr_metric(path, "fit", metric, with_malicious),
-            load_attr_metric(path, "distributed", metric, with_malicious),
-        )
-    return metrics
+def load_global_metric(
+    path: str,
+    attr: str = "distributed",
+    metric: str = "accuracy",
+    with_malicious: bool = False,
+) -> list[float]:
+    """Load the metrics from the given path."""
+    res = getattr(Results.from_path(path), attr)
+    if not with_malicious:
+        res = {k: v for k, v in res.items() if "malicious" not in k}
+    return [d["global"][metric] for d in average(res).values()]
 
 
 def search_results(path: str, sort: bool = True, **conditions: str) -> list[str]:
@@ -269,3 +263,12 @@ def display_choices(d: dict[str, list[str]]) -> None:
             + "</table>"
         )
     )
+
+
+def get_value(d: dict, dotpath: str) -> Any:
+    """Get the value of a dict using a dotpath."""
+    for key in dotpath.split("."):
+        if key not in d:
+            raise ValueError(f"Key {key} not found in {d}.")
+        d = d[key]
+    return d

@@ -1,27 +1,12 @@
 """Metrics for evaluating model performance."""
 
 import json
-import numbers
-from dataclasses import dataclass, field
-from functools import reduce
 from pathlib import Path
-from typing import Any, Optional, TypedDict, cast
 
-import numpy as np
-import pandas as pd
 from flwr.server.history import History as FlwrHistory
-from schema import And, Schema, Use
-from schema import Optional as SchemaOpt
-from sklearn.metrics import (
-    accuracy_score,
-    confusion_matrix,
-    f1_score,
-    matthews_corrcoef,
-    precision_score,
-    recall_score,
-)
+from schema import And, Optional, Or, Schema, Use
 
-from eiffel.utils.typing import EiffelCID, MetricsDict, NDArray
+from eiffel.utils.typing import EiffelCID, NDArray
 
 ScopeName = str
 
@@ -32,22 +17,27 @@ GLOBAL_METRICS = [
     "recall",
     "missrate",
     "fallout",
-    "loss",
+    # "loss",
 ]
 
 TARGET_METRICS = ["recall", "missrate"]
 
 MetricsSchema = Schema(
     {
-        Use(int): {
-            str: {
-                And(str, lambda s: s in GLOBAL_METRICS): And(
+        Use(int): {  # round number
+            str: {  # scope name
+                Optional(And(str, lambda s: "loss" not in s)): And(
                     Use(float), lambda f: 0 <= f <= 1
-                )
+                ),
+                Optional(And(str, lambda s: "loss" in s)): And(
+                    Use(float), lambda f: f >= 0
+                ),
             }
         }
     }
 )
+
+ResultsSchema = Schema({str: MetricsSchema})
 
 
 class Results:
@@ -74,19 +64,9 @@ class Results:
         centralized : dict[int, MetricsDict], optional
             Evaluation metrics on the server, by round number.
         """
-        self.fit = (
-            fit
-            if all(isinstance(value, dict) for value in fit.values())
-            else {k: dict(v) for k, v in fit.items()}
-        )
-        self.distributed = (
-            distributed
-            if all(isinstance(value, dict) for value in distributed.values())
-            else {k: dict(v) for k, v in distributed.items()}
-        )
-        self.centralized = (
-            centralized if isinstance(centralized, dict) else dict(centralized)
-        )
+        self.fit = fit
+        self.distributed = distributed
+        self.centralized = centralized
 
     @classmethod
     def from_flwr(cls, flwr_history: FlwrHistory) -> "Results":
@@ -148,9 +128,9 @@ class Results:
 
     def save(
         self,
-        key: Optional[str] = None,
-        path: Optional[Path | str] = None,
-        filename: Optional[str] = None,
+        key: str | None = None,
+        path: Path | str | None = None,
+        filename: str | None = None,
     ) -> None:
         """Save the history to a JSON file.
 
@@ -180,11 +160,31 @@ class Results:
         """Return a ScopedResults object with the given scope."""
         return Results(
             fit={
-                cid: meta_series.scope(scope) for cid, meta_series in self.fit.items()
+                cid: {round: metrics[scope] for round, metrics in self.fit[cid].items()}
+                for cid in self.fit
             },
             distributed={
-                cid: meta_series.scope(scope)
-                for cid, meta_series in self.distributed.items()
+                cid: {
+                    round: metrics[scope]
+                    for round, metrics in self.distributed[cid].items()
+                }
+                for cid in self.distributed
             },
-            centralized=self.centralized.scope(scope),
+            centralized={
+                round: metrics[scope] for round, metrics in self.centralized.items()
+            },
         )
+
+
+class ValidatedResults(Results):
+    """Results with validated metrics."""
+
+    def __init__(
+        self,
+        fit: dict[EiffelCID, dict] = {},
+        distributed: dict[EiffelCID, dict] = {},
+        centralized: dict | dict = dict(),
+    ) -> None:
+        self.fit = ResultsSchema.validate(fit) if fit else {}
+        self.distributed = ResultsSchema.validate(distributed) if distributed else {}
+        self.centralized = MetricsSchema.validate(centralized) if centralized else {}
