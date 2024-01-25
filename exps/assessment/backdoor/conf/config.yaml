@@ -15,6 +15,6 @@ hydra:
       batch_size: 512
       +epochs: 100/10x10
       +distribution: glob(*)
-      +target: bot,bruteforce,ddos,infiltration,injection
+      +target: dos,ddos,bot,bruteforce,injection,infiltration
       +scenario: continuous-100,continuous-30,continuous-60
       seed: 1138,421,1313,5555,6567,327,2187,1977,501,3263827

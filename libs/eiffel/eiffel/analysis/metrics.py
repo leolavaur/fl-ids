@@ -10,6 +10,9 @@ from IPython.display import HTML, display
 
 from eiffel.core.results import Results
 
+# Result analysis
+# ---------------
+
 
 def average(ss: list[dict] | dict[str, dict]) -> dict:
     """Compute the mean, metric per metric and for each round, of a list of Series.
@@ -33,97 +36,6 @@ def average(ss: list[dict] | dict[str, dict]) -> dict:
     return dict_avg(lst)
 
 
-def dict_avg(ss: list[dict]) -> dict:
-    """Recursively average a list of dicts."""
-    d = {}
-    for k in ss[0].keys():
-        if isinstance(ss[0][k], dict):
-            d[k] = dict_avg([s[k] for s in ss])
-        else:
-            d[k] = np.mean([s[k] for s in ss])
-    return d
-
-
-def mean_absolute_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:
-    """Mean absolute error.
-
-    Parameters
-    ----------
-    x_orig : pd.DataFrame
-        True labels.
-    x_pred : pd.DataFrame
-        Predicted labels.
-
-    Returns
-    -------
-    ndarray[float]
-        Mean absolute error.
-    """
-    return np.mean(np.abs(x_orig - x_pred), axis=1)
-
-
-def mean_squared_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:
-    """Mean squared error.
-
-    Parameters
-    ----------
-    x_orig : pd.DataFrame
-        True labels.
-    x_pred : pd.DataFrame
-        Predicted labels.
-
-    Returns
-    -------
-    ndarray[float]
-        Mean squared error.
-    """
-    return np.mean((x_orig - x_pred) ** 2, axis=1)
-
-
-def root_mean_squared_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:
-    """Root mean squared error.
-
-    Parameters
-    ----------
-    x_orig : pd.DataFrame
-        True labels.
-    x_pred : pd.DataFrame
-        Predicted labels.
-
-    Returns
-    -------
-    ndarray[float]
-        Root mean squared error.
-    """
-    return np.sqrt(np.mean((x_orig - x_pred) ** 2, axis=1))
-
-
-def metrics_from_confmat(*conf: int) -> dict[str, float]:
-    """Translate a confusion matrix into metrics.
-
-    Parameters
-    ----------
-    conf : tuple[int]
-        The confusion matrix, under the form (tn, fp, fn, tp).
-
-    Returns
-    -------
-    dict[str, float]
-        Dictionary with the evaluation metrics (accuracy, precision, recall, f1,
-        missrate, fallout).
-    """
-    tn, fp, fn, tp = conf
-
-    return {
-        "accuracy": float((tp + tn) / (tp + tn + fp + fn)),
-        "precision": float(tp / (tp + fp)) if (tp + fp) != 0 else 0,
-        "recall": float(tp / (tp + fn)) if (tp + fn) != 0 else 0,
-        "f1": float(2 * tp / (2 * tp + fp + fn)) if (2 * tp + fp + fn) != 0 else 0,
-        "missrate": float(fn / (fn + tp)) if (fn + tp) != 0 else 0,
-        "fallout": float(fp / (fp + tn)) if (fp + tn) != 0 else 0,
-    }
-
-
 def load_metric(
     path: str,
     dotpath: str,
@@ -135,19 +47,6 @@ def load_metric(
     if not with_malicious:
         res = {k: v for k, v in res.items() if "malicious" not in k}
     return [get_value(d, dotpath) for d in average(res).values()]
-
-
-def load_global_metric(
-    path: str,
-    attr: str = "distributed",
-    metric: str = "accuracy",
-    with_malicious: bool = False,
-) -> list[float]:
-    """Load the metrics from the given path."""
-    res = getattr(Results.from_path(path), attr)
-    if not with_malicious:
-        res = {k: v for k, v in res.items() if "malicious" not in k}
-    return [d["global"][metric] for d in average(res).values()]
 
 
 def search_results(path: str, sort: bool = True, **conditions: str) -> list[str]:
@@ -196,36 +95,61 @@ def search_results(path: str, sort: bool = True, **conditions: str) -> list[str]
     return sorted(metrics) if sort else metrics
 
 
-def avg(cond: str, lines: dict[str, list[float]]) -> dict[str, list[float]]:
-    """Average the lines on the specified condition."""
-    # extract the existing values of the condition
-    values: list[str] = []
-    for k in lines:
-        conditions = k.split(",")
-        for c in conditions:
-            if c.startswith(cond):
-                values.append(c.split("=")[1])
-    values = list(set(values))
+def load_asr(
+    path: str, target: list[str] = [], reference: list[float] = []
+) -> list[float]:
+    r"""Compute the ASR from the given path.
 
-    new_lines = {}
-    for variant in values:
-        for k in lines:
-            if f"{cond}={variant}" in k:
-                # remove the condition from the name
-                new_name = ",".join(
-                    [c for c in k.split(",") if c != f"{cond}={variant}"]
-                )
-                if f"{cond}={variant}" not in new_lines:
-                    new_lines[f"{cond}={variant}"] = {}
-                new_lines[f"{cond}={variant}"][new_name] = lines[k]
+    The ASR (Attack Success Rate) measures the impact of an attack on the legitimate
+    participants of the federation. Its definition depends on the attack:
 
-    avgs = {}
-    for name in next(iter(new_lines.values())):
-        avgs[name] = []
-        for variant in new_lines:
-            avgs[name].append(new_lines[variant][name])
-        avgs[name] = [sum(m) / len(m) for m in zip(*avgs[name])]
-    return avgs
+    - Foruntargeted attacks, the ASR is the mean missclassification rate of the benign
+      participants, or $1 - \text{accuracy}$.
+    - For targeted attacks, the ASR is the mean missrate obtained by benign participants
+      in the targeted label(s).
+
+    The above is refered to as the AASR (Absolute ASR). The ASR can also be computed
+    relatively to a reference scenario (typically the same run without malicious
+    participants), in which case it is scaled between this reference and 1. This is
+    refered to as the RASR (Relative ASR).
+
+    Parameters
+    ----------
+    path : str
+        The path to the results.
+    target : list[str], optional
+        The targeted labels, by default []. No target (empty list) is interpreted as an
+        untargeted attack. The labels must be provided as they are in the dataset; the
+        selection is case-sensitive.
+    reference : str, optional
+        The reference scenario, by default None. If None, the AASR is returned.
+
+    Returns
+    -------
+    list[float]
+        The RASR over time (round per round) if a reference is given, the AASR
+        otherwise.
+    """
+    if len(target) > 0:
+        aasrs = []
+        for t in target:
+            aasrs.append(load_metric(path, dotpath=f"{t}.missrate"))
+
+        aasr = np.mean(aasrs, axis=0)
+    else:
+        aasr = 1 - np.array(load_metric(path, dotpath="global.accuracy"))
+
+    if reference:
+        ref = np.array(reference)
+        rasr = ((np.maximum(ref, aasr) - ref) / (1 - ref)).astype(float)
+        if any(x for x in rasr if x > 1):
+            pass
+        return rasr.tolist()
+    return aasr.astype(float).tolist()
+
+
+# Multirun analysis
+# -----------------
 
 
 def choices(path: str) -> dict[str, list[str]]:
@@ -265,10 +189,25 @@ def display_choices(d: dict[str, list[str]]) -> None:
     )
 
 
+# Utilities
+# ---------
+
+
 def get_value(d: dict, dotpath: str) -> Any:
     """Get the value of a dict using a dotpath."""
     for key in dotpath.split("."):
         if key not in d:
             raise ValueError(f"Key {key} not found in {d}.")
         d = d[key]
+    return d
+
+
+def dict_avg(ss: list[dict]) -> dict:
+    """Recursively average a list of dicts."""
+    d = {}
+    for k in ss[0].keys():
+        if isinstance(ss[0][k], dict):
+            d[k] = dict_avg([s[k] for s in ss])
+        else:
+            d[k] = np.mean([s[k] for s in ss])
     return d

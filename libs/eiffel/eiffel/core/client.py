@@ -9,6 +9,7 @@ from functools import reduce
 from typing import Any, Callable, Optional, cast
 
 import numpy as np
+import pandas as pd
 import ray
 from flwr.client import NumPyClient
 from flwr.common import Config, Scalar
@@ -17,7 +18,6 @@ from keras.callbacks import History
 from sklearn.metrics import confusion_matrix
 from tensorflow import keras
 
-from eiffel.analysis.metrics import metrics_from_confmat
 from eiffel.datasets.dataset import Dataset, DatasetHandle
 from eiffel.datasets.poisoning import PoisonIns, PoisonTask
 from eiffel.utils import set_seed
@@ -279,3 +279,83 @@ def mk_client(
         seed=seed,
         poison_ins=attack,
     )
+
+
+def mean_absolute_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:
+    """Mean absolute error.
+
+    Parameters
+    ----------
+    x_orig : pd.DataFrame
+        True labels.
+    x_pred : pd.DataFrame
+        Predicted labels.
+
+    Returns
+    -------
+    ndarray[float]
+        Mean absolute error.
+    """
+    return np.mean(np.abs(x_orig - x_pred), axis=1)
+
+
+def mean_squared_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:
+    """Mean squared error.
+
+    Parameters
+    ----------
+    x_orig : pd.DataFrame
+        True labels.
+    x_pred : pd.DataFrame
+        Predicted labels.
+
+    Returns
+    -------
+    ndarray[float]
+        Mean squared error.
+    """
+    return np.mean((x_orig - x_pred) ** 2, axis=1)
+
+
+def root_mean_squared_error(x_orig: pd.DataFrame, x_pred: pd.DataFrame) -> np.ndarray:
+    """Root mean squared error.
+
+    Parameters
+    ----------
+    x_orig : pd.DataFrame
+        True labels.
+    x_pred : pd.DataFrame
+        Predicted labels.
+
+    Returns
+    -------
+    ndarray[float]
+        Root mean squared error.
+    """
+    return np.sqrt(np.mean((x_orig - x_pred) ** 2, axis=1))
+
+
+def metrics_from_confmat(*conf: int) -> dict[str, float]:
+    """Translate a confusion matrix into metrics.
+
+    Parameters
+    ----------
+    conf : tuple[int]
+        The confusion matrix, under the form (tn, fp, fn, tp).
+
+    Returns
+    -------
+    dict[str, float]
+        Dictionary with the evaluation metrics (accuracy, precision, recall, f1,
+        missrate, fallout).
+    """
+    tn, fp, fn, tp = conf
+
+    return {
+        "accuracy": float((tp + tn) / (tp + tn + fp + fn)),
+        "precision": float(tp / (tp + fp)) if (tp + fp) != 0 else 0,
+        "recall": float(tp / (tp + fn)) if (tp + fn) != 0 else 0,
+        "f1": float(2 * tp / (2 * tp + fp + fn)) if (2 * tp + fp + fn) != 0 else 0,
+        "missrate": float(fn / (fn + tp)) if (fn + tp) != 0 else 0,
+        "fallout": float(fp / (fp + tn)) if (fp + tn) != 0 else 0,
+    }

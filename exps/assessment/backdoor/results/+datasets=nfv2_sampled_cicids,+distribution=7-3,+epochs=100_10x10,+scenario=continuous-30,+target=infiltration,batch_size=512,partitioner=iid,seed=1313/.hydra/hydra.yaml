@@ -15,7 +15,7 @@ hydra:
       batch_size: '512'
       +epochs: 100/10x10
       +distribution: glob(*)
-      +target: bot,bruteforce,ddos,infiltration,injection
+      +target: infiltration
       +scenario: continuous-100,continuous-30,continuous-60
       seed: 1138,421,1313,5555,6567,327,2187,1977,501,3263827
   help:
@@ -143,8 +143,8 @@ hydra:
     name: __main__
     chdir: true
     override_dirname: +datasets=nfv2/sampled/cicids,+distribution=7-3,+epochs=100/10x10,+scenario=continuous-30,+target=infiltration,batch_size=512,partitioner=iid,seed=1313
-    id: '552'
-    num: 552
+    id: '102'
+    num: 102
     config_name: eiffel
     env_set: {}
     env_copy: []
@@ -171,7 +171,7 @@ hydra:
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /home/leo/Workspace/phdcybersec/fl-ids/multirun/2024-01-22/11-51-53/+datasets=nfv2_sampled_cicids,+distribution=7-3,+epochs=100_10x10,+scenario=continuous-30,+target=infiltration,batch_size=512,partitioner=iid,seed=1313
+    output_dir: /home/leo/Workspace/phdcybersec/fl-ids/multirun/2024-01-25/10-41-31/+datasets=nfv2_sampled_cicids,+distribution=7-3,+epochs=100_10x10,+scenario=continuous-30,+target=infiltration,batch_size=512,partitioner=iid,seed=1313
     choices:
       callbacks: mattermost
       scenario: continuous-30

@@ -1,32 +1,33 @@
 """Plotting and data analysis utilities."""
 
+import itertools
 import json
 import re
 from collections import Counter
 from itertools import chain
 from pathlib import Path
-from typing import NamedTuple, Optional
+from typing import Any, Generator, NamedTuple, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
 
-from eiffel.analysis.metrics import load_attr_metric
-
-MARKERS = ["o", "D", "v", "*", "+", "^", "p", ".", "P", "<", ">", "X"]
-LINESTYLES = ["-", "--", "-.", ":"]
-COLORS = [
-    "#1f77b4",
-    "#ff7f0e",
-    "#2ca02c",
-    "#d62728",
-    "#9467bd",
-    "#8c564b",
-    "#e377c2",
-    "#7f7f7f",
-    "#bcbd22",
-    "#17becf",
-]
+MARKERS = itertools.cycle(["o", "D", "v", "*", "+", "^", "p", ".", "P", "<", ">", "X"])
+LINESTYLES = itertools.cycle(["-", "--", "-.", ":"])
+COLORS = itertools.cycle(
+    [
+        "#1f77b4",
+        "#ff7f0e",
+        "#2ca02c",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#e377c2",
+        "#7f7f7f",
+        "#bcbd22",
+        "#17becf",
+    ]
+)
 
 
 class Plotable(NamedTuple):
