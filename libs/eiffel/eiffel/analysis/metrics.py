@@ -7,6 +7,8 @@ from typing import Any, cast
 import numpy as np
 import pandas as pd
 from IPython.display import HTML, display
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import MinMaxScaler
 
 from eiffel.core.results import Results
 
@@ -146,6 +148,47 @@ def load_asr(
             pass
         return rasr.tolist()
     return aasr.astype(float).tolist()
+
+
+def pca(df: pd.DataFrame):
+    pca2 = PCA(n_components=2)
+
+    RM_COLS = [
+        "IPV4_SRC_ADDR",
+        "L4_SRC_PORT",
+        "IPV4_DST_ADDR",
+        "L4_DST_PORT",
+        "Label",
+        "Attack",
+    ]
+
+    if "Dataset" in df.columns:
+        df = df.drop("Dataset", axis=1)
+
+    label_map = dict(
+        zip(
+            df["Attack"].unique(),
+            range(len(df["Attack"].unique())),
+        )
+    )
+    df["class"] = df["Attack"].apply(lambda x: label_map[x])
+
+    # select the columns to compose the Dataset object
+    X = df.drop(columns=RM_COLS)
+
+    # convert classes to numerical values
+    X = pd.get_dummies(X)
+
+    # normalize the data
+    scaler = MinMaxScaler()
+    scaler.fit(X)
+    X[X.columns] = scaler.transform(X)
+
+    principalComponents = pca2.fit_transform(X)
+
+    principalDf = pd.DataFrame(data=principalComponents, columns=["pc1", "pc2"])
+
+    return pd.concat([principalDf, df[["class"]]], axis=1)
 
 
 # Multirun analysis
