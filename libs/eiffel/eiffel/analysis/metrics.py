@@ -1,5 +1,6 @@
 """Utilities to process Eiffel metrics."""
 
+import logging
 import re
 from pathlib import Path
 from typing import Any, cast
@@ -11,6 +12,8 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 
 from eiffel.core.results import Results
+
+logger = logging.getLogger(__name__)
 
 # Result analysis
 # ---------------
@@ -150,62 +153,20 @@ def load_asr(
     return aasr.astype(float).tolist()
 
 
-def pca(df: pd.DataFrame):
-    pca2 = PCA(n_components=2)
-
-    RM_COLS = [
-        "IPV4_SRC_ADDR",
-        "L4_SRC_PORT",
-        "IPV4_DST_ADDR",
-        "L4_DST_PORT",
-        "Label",
-        "Attack",
-    ]
-
-    if "Dataset" in df.columns:
-        df = df.drop("Dataset", axis=1)
-
-    label_map = dict(
-        zip(
-            df["Attack"].unique(),
-            range(len(df["Attack"].unique())),
-        )
-    )
-    df["class"] = df["Attack"].apply(lambda x: label_map[x])
-
-    # select the columns to compose the Dataset object
-    X = df.drop(columns=RM_COLS)
-
-    # convert classes to numerical values
-    X = pd.get_dummies(X)
-
-    # normalize the data
-    scaler = MinMaxScaler()
-    scaler.fit(X)
-    X[X.columns] = scaler.transform(X)
-
-    principalComponents = pca2.fit_transform(X)
-
-    principalDf = pd.DataFrame(data=principalComponents, columns=["pc1", "pc2"])
-
-    return pd.concat([principalDf, df[["class"]]], axis=1)
-
-
 # Multirun analysis
 # -----------------
 
 
 def choices(path: str) -> dict[str, list[str]]:
     """Return the available choices for each condition."""
-    p = Path(path)
-    if not p.is_dir():
+    if not Path(path).is_dir():
         raise ValueError(f"{path} is not a directory.")
+
+    dirs = [d for d in Path(path).iterdir() if d.is_dir()]
 
     choices: dict[str, list[str]] = {}
 
-    for d in p.iterdir():
-        if not d.is_dir():
-            continue
+    for d in dirs:
         options = {
             k.strip("+"): v for k, v in [p.split("=") for p in d.name.split(",")]
         }
@@ -215,6 +176,12 @@ def choices(path: str) -> dict[str, list[str]]:
             if v not in choices[k]:
                 choices[k].append(v)
 
+    n_combinations = int(np.prod([len(v) for v in choices.values()]))
+    if (n_dirs := len(dirs)) < n_combinations:
+        logger.warning(
+            f"Not all theoritical combinations are covered: {n_combinations} possibles,"
+            f" {n_dirs} found."
+        )
     return choices
 
 
