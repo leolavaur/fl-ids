@@ -146,6 +146,7 @@
             ];  
 
             shellHook = ''
+              unset LD_LIBRARY_PATH
               export PATH=${self}/bin:$PATH
               export PYTHONPATH=${
                 lib.strings.concatStringsSep ":"
