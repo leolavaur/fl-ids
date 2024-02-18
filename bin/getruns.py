@@ -1,10 +1,8 @@
 import argparse
-import functools
-import itertools
 import json
-import operator
 import re
 from datetime import datetime
+from getpass import getpass
 
 import numpy as np
 import pandas as pd
@@ -45,14 +43,19 @@ def get_posts(url, channel_id, token, after=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-u", "--url", type=str)
-    parser.add_argument("-n", "--username", type=str)
+    parser.add_argument("-t", "--target-url", type=str, required=True, dest="url")
+    parser.add_argument("-u", "--username", type=str, required=True)
+    parser.add_argument("-c", "--channel", type=str, required=True)
     parser.add_argument("-p", "--password", type=str)
-    parser.add_argument("-c", "--channel", type=str)
     parser.add_argument("-a", "--after", type=str)
     args = parser.parse_args()
 
-    token = auth(args.url, args.username, args.password)
+    if args.password is None:
+        password = getpass(prompt=f"Mattermost password for {args.username}: ")
+    else:
+        password = args.password
+
+    token = auth(args.url, args.username, password)
 
     ret = json.loads(get_posts(args.url, args.channel, token, after=args.after))
 
@@ -93,11 +96,14 @@ def main():
 
         results.append(df)
 
-    times = list(itertools.chain(*[df["Time"] for df in results]))
+    runs = pd.concat(results)
+    completed = runs[runs["Status"].str.contains("COMPLETED")]
+    times = completed["Time"]
+    unique = completed["Overrides"].unique()
+
     print("Total runs:", len(times))
     print("Total time (hours):", np.sum(times) / 3600)
     print("Average time (seconds):", np.mean(times))
-    unique = functools.reduce(operator.or_, [set(df["Overrides"]) for df in results])
     print("Unique runs:", len(unique))
     pass
 
