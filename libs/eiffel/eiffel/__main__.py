@@ -94,7 +94,7 @@ if __name__ == "__main__":
         # Running in a debugger.
         # Paste here the command that you want to debug.
         cmd = (
-            "eiffel --config-dir exps/assessment/similarity/conf"
+            "eiffel --config-dir exps/assessment/similarity-1/conf"
             " +datasets=nfv2/sampled/cicids +distribution=5-5 +epochs=100/10x10"
             " +scenario=continuous-100 +target=untargeted batch_size=512"
             " partitioner=kmeans_drop_2 seed=421"

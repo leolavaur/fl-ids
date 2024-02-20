@@ -15,7 +15,7 @@ hydra:
   mode: MULTIRUN
   sweeper:
     params:
-      partitioner: glob(iid_*)
+      partitioner: glob(kmeans_*)
       +datasets: nfv2/sampled/cicids
       batch_size: 512
       +epochs: 100/10x10
