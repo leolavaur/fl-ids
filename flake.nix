@@ -67,6 +67,7 @@
       expList = [
         "demo"
         "pca"
+        "assessment"
       ];
 
       
@@ -81,6 +82,27 @@
           preferWheels = true;
           python = pkgs.${pythonVer};
           overrides = pkgs.poetry2nix.defaultPoetryOverrides.extend (self: super: {
+            # tensorflow = super.tensorflow.overrideAttrs (old: with pkgs;{
+            #   propagatedBuildInputs = (old.buildInputs or [ ]) ++ [ 
+            #     cudaPackages.cudatoolkit
+            #     cudaPackages.cudnn
+            #   ];
+            #   buildInputs = (old.buildInputs or [ ]) ++ [ 
+            #     cudaPackages.cudatoolkit
+            #     cudaPackages.cudnn
+            #   ];
+            #   nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ 
+            #     addOpenGLRunpath
+            #   ];
+            #   postFixup = ''
+            #     find $out -type f \( -name '*.so' -or -name '*.so.*' \) | while read lib; do
+            #       addOpenGLRunpath "$lib"
+
+            #       patchelf --set-rpath "${cudatoolkit}/lib:${cudatoolkit.lib}/lib:${cudaPackages.cudnn}/lib:${cudaPackages.nccl}/lib:$(patchelf --print-rpath "$lib")" "$lib"
+            #     done
+            #   '';
+            #   # XLA_FLAGS = "--xla_gpu_cuda_data_dir=${pkgs.cudaPackages.cudatoolkit}";
+            # });
             tensorflow-io-gcs-filesystem = super.tensorflow-io-gcs-filesystem.overrideAttrs (old: {
               buildInputs = old.buildInputs ++ [ pkgs.libtensorflow ];
             });
@@ -97,7 +119,11 @@
                 rm $out/lib/python3.10/site-packages/opencensus/__pycache__/__init__.cpython-310.pyc
               '';
             });
-          });
+            # threadpoolctl = super.threadpoolctl.overrideAttrs (old: {
+            #   buildInputs = (old.buildInputs or [ ]) ++ [ super.stdenv.cc.libc ];
+            # });
+            
+          });          
         } // (if pkgs.stdenv.isDarwin then {
           pyproject = "${self}/libs/eiffel/macos/pyproject.toml";
           poetrylock = "${self}/libs/eiffel/macos/poetry.lock";
@@ -139,29 +165,46 @@
             packages = [
               # this environment
               eiffel
+              # (eiffel.env.overrideAttrs (old: {
+              #   shellHook = with pkgs; ''
+              #     export LD_LIBRARY_PATH=${
+              #       lib.strings.concatStringsSep ":" [
+              #         "${cudaPackages.cudatoolkit}/lib"
+              #         "${cudaPackages.cudatoolkit.lib}/lib"
+              #         "${cudaPackages.cudnn}/lib"
+              #         "${cudaPackages.cudatoolkit}/nvvm/libdevice/"
+              #       ]
+              #     }:$LD_LIBRARY_PATH
+              #     export XLA_FLAGS=--xla_gpu_cuda_data_dir=${cudaPackages.cudatoolkit}
+              #   '';
+              # }))
 
               # tools
               poetry
               getopt # for remoterun.sh
+
+              bintools # ld and friends
             ];  
 
-            shellHook = ''
-              unset LD_LIBRARY_PATH
+            shellHook = let 
+              cuda = cudaPackages.cudatoolkit.overrideAttrs (old: {
+                postInstall = ''
+                  ln -s $out/lib64/stubs/libcuda.so $out/lib64/stubs/libcuda.so.1
+                '';
+              });
+            in ''
               export PATH=${self}/bin:$PATH
-              export PYTHONPATH=${
-                lib.strings.concatStringsSep ":"
-                  (map (p: "$(realpath ./exps/${p}/src)") expList)
-              }:$(realpath ./libs/eiffel/)
+              export PYTHONPATH=$( realpath ./exps):$(realpath ./libs/eiffel/)
               export EIFFEL_PYTHON_PATH=${eiffel}/bin/python
             '' + (if stdenv.isLinux then ''
               export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [
-                "${cudaPackages.cudatoolkit}/lib"
-                "${cudaPackages.cudatoolkit.lib}/lib"
-                "${cudaPackages.cudnn}/lib"
-                "${pkgs.cudaPackages.cudatoolkit}/nvvm/libdevice/"
-              ]}:$LD_LIBRARY_PATH
+                  "${cuda}/lib/stubs"
+                  "${cudaPackages.cudatoolkit.lib}/lib"
+                  "${cudaPackages.cudnn}/lib"
+                  "${cudaPackages.cudatoolkit}/nvvm/libdevice/"
+                ] }
               
-              export XLA_FLAGS=--xla_gpu_cuda_data_dir=${pkgs.cudaPackages.cudatoolkit}
+              export XLA_FLAGS=--xla_gpu_cuda_data_dir=${cudaPackages.cudatoolkit}
             '' else "");
           };
 

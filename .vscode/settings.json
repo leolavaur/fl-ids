@@ -12,8 +12,9 @@
         "-i"
     ],
     "python.analysis.stubPath": "",
+    "black-formatter.importStrategy": "fromEnvironment",
     "black-formatter.args": [
-        "--experimental-string-processing"
+        "--preview"
     ],
     "ruff.path": ["ruff"],
     "[python]": {

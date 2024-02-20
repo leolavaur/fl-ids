@@ -9,9 +9,11 @@ from functools import partial, reduce
 from types import NoneType
 from typing import Any, Callable, Type
 
+import numpy as np
 import psutil
 import ray
 import tensorflow as tf
+from flwr.common import ndarrays_to_parameters
 from flwr.server import Server, ServerConfig
 from flwr.server.strategy import FedAvg, Strategy
 from flwr.simulation import start_simulation
@@ -28,7 +30,6 @@ from eiffel.utils import set_seed
 from eiffel.utils.hydra import instantiate_or_return
 from eiffel.utils.time import timeit
 from eiffel.utils.typing import ConfigDict, MetricsDict
-from eiffel.utils.time import timeit
 
 from .client import mk_client, mk_client_init_fn
 from .pool import Pool
@@ -146,7 +147,7 @@ class Experiment:
             of attacks.
         """
         self.seed = seed
-        set_seed(seed)
+        # set_seed(seed)
 
         self.server = server
         self.n_rounds = num_rounds
@@ -182,7 +183,8 @@ class Experiment:
                         partitioner=instantiate_or_return(partitioner, partial),
                         dataset=instantiate_or_return(dataset, Dataset),
                         attack=attack,
-                        model_fn=instantiate_or_return(model_fn, Model),
+                        model_fn=instantiate_or_return(model_fn, partial),
+                        seed=self.seed,
                     )
                 else:
                     pool = Pool(
@@ -190,6 +192,7 @@ class Experiment:
                         model_fn=instantiate_or_return(model_fn, partial),
                         partitioner=instantiate_or_return(partitioner, partial),
                         attack=attack,
+                        seed=self.seed,
                         **{str(k): v for k, v in pool.items()},
                     )
             elif not isinstance(pool, Pool):
@@ -208,22 +211,24 @@ class Experiment:
                 min_fit_clients=self.n_clients,
                 min_evaluate_clients=self.n_clients,
                 min_available_clients=self.n_clients,
-                on_fit_config_fn=mk_config_fn(
-                    {
-                        "batch_size": batch_size,
-                        "num_epochs": num_epochs,
-                    }
-                ),
+                on_fit_config_fn=mk_config_fn({
+                    "batch_size": batch_size,
+                    "num_epochs": num_epochs,
+                }),
                 evaluate_metrics_aggregation_fn=aggregate_metrics_fn,
                 fit_metrics_aggregation_fn=aggregate_metrics_fn,
                 on_evaluate_config_fn=mk_config_fn(
                     {"batch_size": batch_size}, stats_when=self.n_rounds
                 ),
+                initial_parameters=get_random_weights(model_fn, datasets[0].X.shape[1]),
             )
         else:
             self.strategy = strategy
 
-        assert isinstance(self.strategy, Strategy)
+        assert isinstance(self.strategy, Strategy), (
+            "Invalid strategy type: "
+            f"{type(self.strategy)}. Expected a flwr.server.Strategy object."
+        )
 
     def run(self, **ray_kwargs) -> None:
         """Run the experiment."""
@@ -267,6 +272,13 @@ class Experiment:
     def data_stats(self) -> dict[str, dict[str, int]]:
         """Return the data statistics for each pool."""
         return {p.pool_id: p.shards_stats for p in self.pools}
+
+
+def get_random_weights(model_config: DictConfig, n_features: int) -> list[np.ndarray]:
+    """Get random weights for a model."""
+    model_fn = instantiate_or_return(model_config, partial)
+    model: Model = model_fn(n_features)
+    return ndarrays_to_parameters(model.get_weights())
 
 
 def mk_config_fn(

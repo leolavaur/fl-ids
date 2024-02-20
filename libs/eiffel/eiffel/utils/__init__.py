@@ -1,7 +1,7 @@
 """Eiffel utilities."""
 
-from tensorflow import keras
 import tensorflow as tf
+from tensorflow import keras
 
 
 def set_seed(seed: int) -> None:
@@ -14,5 +14,8 @@ def set_seed(seed: int) -> None:
     seed : int
         The seed to use for random number generation.
     """
+    assert isinstance(seed, int), "Seed must be an integer."
+
+    tf.random.set_seed(seed)
     keras.utils.set_random_seed(seed)
     tf.config.experimental.enable_op_determinism()

@@ -1,6 +1,5 @@
 """Client pool API for Eiffel."""
 
-
 import random
 from typing import Callable, Optional
 
@@ -36,11 +35,11 @@ class Pool:
         are tuples of the training and test datasets.
     """
 
-    pool_id: str
-    attack: PoisonIns | None
-    shards: dict[EiffelCID, tuple[Dataset, Dataset]]
-    holders: dict[EiffelCID, ActorHandle]
-    model_fn: Callable[..., tf.keras.Model]
+    # pool_id: str
+    # attack: PoisonIns | None
+    # shards: dict[EiffelCID, tuple[Dataset, Dataset]]
+    # holders: dict[EiffelCID, ActorHandle]
+    # model_fn: Callable[..., tf.keras.Model]
 
     @timeit
     def __init__(
@@ -48,13 +47,14 @@ class Pool:
         dataset: Dataset | DictConfig,
         model_fn: Callable[..., tf.keras.Model],
         n_benign: int,
+        *,
         n_malicious: int = 0,
         attack: PoisonIns | dict | None = None,
-        pool_id: str = None,
+        pool_id: str | None = None,
         test_ratio: float = 0.2,
         common_test: bool = True,
-        partitioner: Partitioner = None,
-        seed: Optional[int] = None,
+        partitioner: Partitioner | Callable | None = None,
+        seed: int,
     ) -> None:
         """Initialize the pool.
 
@@ -119,7 +119,10 @@ class Pool:
             for cid in malicious_cids:
                 _train_shard = _train_shards.pop()
                 _train_shard.poison(
-                    p_task.fraction, p_task.operation, self.attack.target, self.seed
+                    p_task.fraction,
+                    p_task.operation,
+                    target_classes=self.attack.target,
+                    seed=self.seed,
                 )
                 self.shards[cid] = (_train_shard, _test_shards.pop())
 

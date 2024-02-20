@@ -81,8 +81,9 @@ class EiffelClient(NumPyClient):
         cid: EiffelCID,
         data_holder: DatasetHandle,
         model: keras.Model,
+        *,
         verbose: VerbLevel = VerbLevel.SILENT,
-        seed: Optional[int] = None,
+        seed: int,
         poison_ins: Optional[PoisonIns] = None,
         eval_fit: bool = True,
     ) -> None:
@@ -94,6 +95,7 @@ class EiffelClient(NumPyClient):
         self.seed = seed
         self.poison_ins = poison_ins
         self.eval_fit = eval_fit
+        set_seed(seed)
 
     def get_parameters(self, config: Config) -> list[NDArray]:
         """Return the current parameters.
@@ -156,13 +158,11 @@ class EiffelClient(NumPyClient):
         if self.eval_fit:
             test_loss, _, metrics = self.evaluate(self.model.get_weights(), config)
             ret.update(metrics)
-            ret["fit"] = json.dumps(
-                {
-                    "test_loss": test_loss,
-                    "fit_accuracy": hist.history["accuracy"][-1],
-                    "fit_loss": hist.history["loss"][-1],
-                }
-            )
+            ret["fit"] = json.dumps({
+                "test_loss": test_loss,
+                "fit_accuracy": hist.history["accuracy"][-1],
+                "fit_loss": hist.history["loss"][-1],
+            })
 
         return (self.model.get_weights(), len(train_set), ret)
 
@@ -207,7 +207,8 @@ class EiffelClient(NumPyClient):
         # Do not shuffle the test set for inference, otherwise we cannot compare y_pred
         # with y_true.
         inferences: NDArray = self.model.predict(
-            test_set.to_sequence(batch_size, target=1), verbose=self.verbose
+            test_set.to_sequence(batch_size, target=1, seed=self.seed),
+            verbose=self.verbose,
         )
 
         y_pred = np.around(inferences).astype(int).reshape(-1)
@@ -224,7 +225,9 @@ class EiffelClient(NumPyClient):
 
             # compute the detection rate and miss rate
             try:
-                tn, _, fn, tp = confusion_matrix(y_true_attack, y_pred_attack).ravel()
+                tn, _, fn, tp = confusion_matrix(
+                    y_true_attack, y_pred_attack, labels=(0, 1)
+                ).ravel()
                 return_data[label] = {
                     "recall": tp / (tp + fn),
                     "missrate": fn / (tp + fn),

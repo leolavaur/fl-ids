@@ -5,7 +5,6 @@ framework. It provides a unified interface for loading datasets, regardless of t
 format.
 """
 
-
 import math
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
@@ -37,9 +36,10 @@ class BatchLoader(Sequence):
         self,
         batch_size: int,
         X: pd.DataFrame,
+        *,
+        seed: int,
         target: pd.DataFrame | pd.Series | None = None,
         shuffle: bool = False,
-        seed: int | None = None,
     ):
         """Initialise the BatchLoader."""
         self.batch_size = batch_size
@@ -49,8 +49,7 @@ class BatchLoader(Sequence):
 
         if shuffle:
             indices = np.arange(len(X))
-            if seed is not None:
-                np.random.seed(seed)
+            np.random.seed(seed)
             np.random.shuffle(indices)
 
             self.X = X.iloc[indices]
@@ -123,7 +122,17 @@ class Dataset:
             self.X.equals(other.X) and self.y.equals(other.y) and self.m.equals(other.m)
         )
 
-    def __getitem__(self, key: int | slice | list) -> "Dataset":
+    def __add__(self, other: "Dataset") -> "Dataset":
+        """Concatenate two datasets."""
+        return self.__class__(
+            pd.concat([self.X, other.X], axis=0),
+            pd.concat([self.y, other.y], axis=0),
+            pd.concat([self.m, other.m], axis=0),
+        )
+
+    def __getitem__(
+        self, key: int | slice | list | pd.Series | np.ndarray
+    ) -> "Dataset":
         """Return the given slice of X, y and m.
 
         Parameters
@@ -136,14 +145,21 @@ class Dataset:
         Dataset
             Dataset containing the given slice.
         """
-        assert isinstance(key, int) or isinstance(key, slice) or isinstance(key, list)
+        assert (
+            isinstance(key, int)
+            or isinstance(key, slice)
+            or isinstance(key, list)
+            or isinstance(key, pd.Series)
+            or isinstance(key, np.ndarray)
+        ), f"Invalid key type '{type(key)}' for Dataset.__getitem__"
         return self.__class__(self.X[key], self.y[key], self.m[key])
 
     def to_sequence(
         self,
         batch_size: int,
         target: int | None = None,
-        seed: int | None = None,
+        *,
+        seed: int,
         shuffle: bool = False,
     ) -> BatchLoader:
         """Convert the dataset to a BatchLoader object.
@@ -165,7 +181,11 @@ class Dataset:
             return BatchLoader(batch_size, self.X, seed=seed, shuffle=shuffle)
         if 0 <= target <= 2:
             return BatchLoader(
-                batch_size, self.X, self.to_tuple()[target], seed=seed, shuffle=shuffle
+                batch_size,
+                self.X,
+                target=self.to_tuple()[target],
+                seed=seed,
+                shuffle=shuffle,
             )
         raise IndexError("If not None, parameter `target` must be in [0, 2]")
 
@@ -182,10 +202,18 @@ class Dataset:
     def split(
         self,
         at: float,
-        seed: int | None = None,
+        seed: int,
         stratify: Optional[pd.Series] = None,
+        drop: bool = True,
     ) -> Tuple["Dataset", "Dataset"]:
         """Split the dataset into a training and a test set.
+
+        This function uses `train_test_split` from scikit-learn to split the dataset
+        into two parts, using the given ratio. If `stratify` is not None, it will be
+        used to stratify the split (ie. the proportion of the classes will be
+        preserved). Note that using stratify requires all classes to contain at least 2
+        samples. If a class contains only one sample, it will be droped, unless `drop`
+        is set to False, in which case an exception will be raised.
 
         Parameters
         ----------
@@ -194,7 +222,7 @@ class Dataset:
             contain `at`% of the samples, the second one will contain the remaining.
         seed : int, optional
             Seed for the random number generator, by default None.
-        strat_series : pd.Series, optional
+        stratify : pd.Series, optional
             Series to use for stratification, by default None.
 
         Returns
@@ -202,6 +230,16 @@ class Dataset:
         Tuple[Dataset, Dataset]
             Tuple of the training and test sets.
         """
+        if stratify is not None and any(c < 2 for c in stratify.value_counts().values):
+            if not drop:
+                raise ValueError(
+                    "Stratification requires all classes to contain at least 2 samples."
+                )
+            drop_classes = stratify.value_counts()[stratify.value_counts() < 2].index
+            idx_to_drop = stratify[stratify.isin(drop_classes)].index
+            self.drop(idx_to_drop)
+            stratify = stratify.drop(idx_to_drop)
+
         X_train, X_test, y_train, y_test, m_train, m_test = train_test_split(
             *self.to_tuple(),
             train_size=at,
@@ -222,18 +260,17 @@ class Dataset:
             **deepcopy(self.__dict__),
         )
 
-    def shuffle(self, seed: int | None = None):
+    def shuffle(self, seed: int):
         """Shuffle the dataset."""
         indices = np.arange(len(self.X))
-        if seed is not None:
-            np.random.seed(seed)
+        np.random.seed(seed)
         np.random.shuffle(indices)
 
         self.X = self.X.iloc[indices]
         self.y = self.y.iloc[indices]
         self.m = self.m.iloc[indices]
 
-    def drop(self, indices: list[int]):
+    def drop(self, indices: list[int] | pd.Index):
         """Drop the given indices from the dataset."""
         self.X = self.X.drop(indices)
         self.y = self.y.drop(indices)
@@ -243,8 +280,9 @@ class Dataset:
         self,
         ratio: float,
         op: PoisonOp,
+        *,
+        seed: int,
         target_classes: Optional[List[str]] = None,
-        seed: Optional[int] = None,
     ) -> int:
         """Increase or decrease the proportion of poisoned samples in the dataset.
 

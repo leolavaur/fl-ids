@@ -1,4 +1,5 @@
 """Dataset partitioners."""
+
 import math
 from abc import ABCMeta, abstractmethod
 from typing import Optional
@@ -14,12 +15,13 @@ class Partitioner(metaclass=ABCMeta):
     n_partitions: int
     partitions: list[Dataset]
 
-    def __init__(self, n_partitions: int, seed: Optional[int]) -> None:
+    def __init__(self, *, n_partitions: int, seed: int) -> None:
         """Initialize the partitioner."""
         self.n_partitions = n_partitions
         self.partitions = []
-        if seed is not None:
-            np.random.seed(seed)
+        self.seed = seed
+
+        np.random.seed(self.seed)
 
     def __len__(self) -> int:
         """Return the number of partitions."""
@@ -41,6 +43,10 @@ class Partitioner(metaclass=ABCMeta):
         """Load and partition the dataset."""
         self.dataset = dataset
         self._partition(dataset)
+        assert len(self.partitions) == self.n_partitions, (
+            "Partitioner did not produce the expected number of partitions. "
+            f"Expected {self.n_partitions}, got {len(self.partitions)}"
+        )
 
     def all(self) -> list[Dataset]:
         """Return all the partitions."""
@@ -84,8 +90,8 @@ class IIDPartitioner(Partitioner):
 
     def __init__(
         self,
-        class_column: str,
         *args,
+        class_column: str,
         df_key: str = "m",
         **kwargs,
     ) -> None:
@@ -107,17 +113,19 @@ class IIDPartitioner(Partitioner):
             )
 
         self.partitions = []
-
+        n = self.n_partitions
         for _ in range(self.n_partitions):
-            if self.n_partitions == 1:
+            if n == 1:
                 self.partitions.append(dataset)
                 break
 
-            ratio = 1 / self.n_partitions
-            self.n_partitions -= 1
+            ratio = 1 / n
+            n -= 1
 
             d, rest = dataset.split(
-                at=ratio, stratify=getattr(dataset, self.df_key)[self.class_column]
+                at=ratio,
+                stratify=getattr(dataset, self.df_key)[self.class_column],
+                seed=self.seed,
             )
 
             self.partitions.append(d)
@@ -139,6 +147,7 @@ class NIIDClassPartitioner(Partitioner):
         preserved_classes: list[str],
         *args,
         n_drop: int = 1,
+        n_keep: int = 0,
         df_key: str = "m",
         **kwargs,
     ) -> None:
@@ -146,6 +155,7 @@ class NIIDClassPartitioner(Partitioner):
         self.class_column = class_column
         self.preserved_classes = preserved_classes
         self.n_drop = n_drop
+        self.n_keep = n_keep
         self.df_key = df_key
         super().__init__(*args, **kwargs)
 
@@ -191,13 +201,16 @@ class NIIDClassPartitioner(Partitioner):
 
         available_classes = getattr(dataset, self.df_key)[self.class_column].unique()
 
-        if not self.preserved_classes or any(
-            c not in available_classes for c in self.preserved_classes
-        ):
-            raise KeyError(
-                "Dataset does not contain all the class values in"
-                f" {self.preserved_classes}"
-            )
+        # Deprecated: this check is not necessary, as the partitioner will only drop
+        # classes that are present in the dataset anyway.
+        #
+        # if self.preserved_classes and any(
+        #     c not in available_classes for c in self.preserved_classes
+        # ):
+        #     raise KeyError(
+        #         "Dataset does not contain all the class values in"
+        #         f" {self.preserved_classes}"
+        #     )
 
         if self.n_drop > (len(available_classes) - len(self.preserved_classes)):
             raise ValueError(
@@ -206,18 +219,43 @@ class NIIDClassPartitioner(Partitioner):
                 "classes are available."
             )
 
+        if self.n_drop > 0 and self.n_keep > 0:
+            raise ValueError(
+                f"Cannot use `n_drop` and `n_keep` at the same time ({self.n_drop=},"
+                f" {self.n_keep=})."
+            )
+
         dropable = [c for c in available_classes if c not in self.preserved_classes]
 
         self.partitions = []
         pt = IIDPartitioner(
-            self.class_column,
-            self.n_partitions,
+            class_column=self.class_column,
+            n_partitions=self.n_partitions,
             df_key=self.df_key,
+            seed=self.seed,
         )
         pt.load(dataset)
         parts = pt.all()
-        for p in parts:
-            drop = np.random.choice(dropable, self.n_drop, replace=False)
-            mask = getattr(p, self.df_key)[self.class_column].isin(drop)
-            p.drop(mask[mask].index)  # select only the rows in mask that are True
-            self.partitions.append(p)
+
+        if self.n_drop > 0:
+            for p in parts:
+                drop = np.random.choice(dropable, self.n_drop, replace=False)
+                mask = getattr(p, self.df_key)[self.class_column].isin(drop)
+                p.drop(mask[mask].index)  # select only the rows in mask that are True
+                self.partitions.append(p)
+
+        elif self.n_keep > 0:
+            for p in parts:
+                keep = np.random.choice(
+                    dropable,
+                    self.n_keep,
+                    replace=False,
+                )
+                mask = getattr(p, self.df_key)[self.class_column].isin(keep)
+                p.drop(mask[~mask].index)
+                self.partitions.append(p)
+
+        else:
+            # When both `n_drop` and `n_keep` are 0, the partitioner behaves like an
+            # IIDPartitioner.
+            self.partitions = parts

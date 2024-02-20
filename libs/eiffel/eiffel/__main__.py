@@ -9,14 +9,15 @@ from pathlib import Path
 from typing import Any
 
 import hydra
+import tensorflow as tf
 from flwr.common.logger import logger as flwr_logger
 from flwr.simulation.ray_transport.utils import enable_tf_gpu_growth
-from flwr.common.logger import logger as flwr_logger
 from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from omegaconf.errors import InterpolationToMissingValueError, MissingMandatoryValue
 
 from eiffel.core.experiment import Experiment
+from eiffel.utils import set_seed
 
 
 def collect_missing(cfg: Any, missing=[]) -> list:
@@ -42,8 +43,8 @@ def collect_missing(cfg: Any, missing=[]) -> list:
 @hydra.main(version_base="1.3", config_path="conf", config_name="eiffel")
 def main(cfg: DictConfig):
     """Entrypoint for the Eiffel CLI."""
-
     log = logging.getLogger(__name__)
+    set_seed(cfg.seed)
 
     loggers = [logging.getLogger(name) for name in logging.root.manager.loggerDict]
     for logger in loggers:
@@ -68,11 +69,13 @@ def main(cfg: DictConfig):
         + textwrap.indent(OmegaConf.to_yaml(cfg, resolve=True), "\t")
     )
 
+    log.info(f"{len(tf.config.list_physical_devices('GPU'))} GPUs available.")
+
     # _convert_ is required for nested instantiations
     # see:
     # - https://github.com/facebookresearch/hydra/issues/2591#issuecomment-1518170214
     # - https://github.com/facebookresearch/hydra/issues/1719
-    ex = instantiate(cfg.experiment, _convert_="object")
+    ex: Experiment = instantiate(cfg.experiment, _convert_="object")
     Path("./stats.json").write_text(json.dumps(ex.data_stats(), indent=4))
     ex.run()
     res = ex.results
@@ -83,6 +86,24 @@ def main(cfg: DictConfig):
 
 
 if __name__ == "__main__":
-    flwr_logger.setLevel(logging.INFO)
+    import sys
 
-    main()
+    gettrace = getattr(sys, "gettrace", None)
+
+    if gettrace is not None and gettrace():
+        # Running in a debugger.
+        # Paste here the command that you want to debug.
+        cmd = (
+            "eiffel --config-dir exps/assessment/similarity/conf"
+            " +datasets=nfv2/sampled/cicids +distribution=5-5 +epochs=100/10x10"
+            " +scenario=continuous-100 +target=untargeted batch_size=512"
+            " partitioner=kmeans_drop_2 seed=421"
+        )
+        sys.argv = cmd.split(" ")
+
+    flwr_logger.setLevel(logging.INFO)
+    try:
+        main()
+    except Exception as e:
+        logging.getLogger(__name__).exception(e)
+        raise

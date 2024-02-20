@@ -45,6 +45,7 @@ References
       approach. arXiv preprint arxiv:2209.00721 (2022). https://arxiv.org/abs/2209.00721
 """
 
+import logging
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -58,6 +59,8 @@ from sklearn.preprocessing import MinMaxScaler
 from eiffel.datasets import DEFAULT_SEARCH_PATH, Dataset
 
 from .poisoning import PoisonOp
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_SEARCH_PATH = DEFAULT_SEARCH_PATH / "nfv2"
 
@@ -86,8 +89,9 @@ class NFV2Dataset(Dataset):
         self: Dataset,
         ratio: float,
         op: PoisonOp,
+        *,
+        seed: int,
         target_classes: Optional[List[str]] = None,
-        seed: Optional[int] = None,
     ) -> int:
         """Poison a dataset by apply a function to a given number of samples.
 
@@ -110,6 +114,11 @@ class NFV2Dataset(Dataset):
         int
             The number of samples that have been modified.
         """
+        if seed is None:
+            logger.warn(
+                "No seed provided for poisoning. Results will not be reproducible."
+            )
+
         d = self.copy()
 
         assert target_classes is None or (
@@ -179,8 +188,9 @@ class NFV2Dataset(Dataset):
 
 def load_data(
     path: str,
+    *,
+    seed: int,
     search_path: str | Path | None = None,
-    seed: Optional[int] = None,
     shuffle: bool = True,
     **kwargs,
 ) -> NFV2Dataset:
@@ -264,7 +274,7 @@ def load_data(
     return NFV2Dataset(X, y, m, **kwargs)
 
 
-def mk_nfv2_mockset(size: int, iid: bool, seed=None) -> NFV2Dataset:
+def mk_nfv2_mockset(size: int, iid: bool, seed: int) -> NFV2Dataset:
     """Create a mock NF-V2 dataset."""
     with tempfile.TemporaryDirectory() as tmpdir:
         data_path = f"{tmpdir}/nfv2.csv"

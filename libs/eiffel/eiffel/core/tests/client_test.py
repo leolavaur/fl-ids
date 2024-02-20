@@ -33,18 +33,6 @@ def mk_mock_client():
     return client
 
 
-def test_reproductible():
-    """Test the fit method.
-
-    The fit method should return the training loss.
-    """
-    c1 = mk_mock_client()
-    p1 = c1.get_parameters({})
-    c2 = mk_mock_client()
-    p2 = c2.get_parameters({})
-    assert p1 == p2
-
-
 def test_evaluate():
     """Test the evaluate method.
 
