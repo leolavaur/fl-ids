@@ -9,9 +9,13 @@
       url = "github:nix-community/poetry2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    eiffel = {
+      path = "./libs/eiffel";
+    }
   };
 
-  outputs = { self, nixpkgs, p2nflake, ... }:
+  outputs = { nixpkgs, p2nflake, eiffel, ... }:
     let
 
       poetryOverlay = (final: prev:
@@ -76,9 +80,9 @@
       devShells = forAllSystems (pkgs:
         let
 
-        eiffel = pkgs.poetry2nix.mkPoetryEnv ({
-          projectDir = "${self}/libs/eiffel";
-          editablePackageSources = { eiffel = "${self}/libs/eiffel/"; };
+        eiffelEnv = pkgs.poetry2nix.mkPoetryEnv ({
+          projectDir = "${eiffel}";
+          editablePackageSources = { eiffel = "${eiffel}/"; };
           preferWheels = true;
           python = pkgs.${pythonVer};
           overrides = pkgs.poetry2nix.defaultPoetryOverrides.extend (self: super: {
@@ -125,8 +129,8 @@
             
           });          
         } // (if pkgs.stdenv.isDarwin then {
-          pyproject = "${self}/libs/eiffel/macos/pyproject.toml";
-          poetrylock = "${self}/libs/eiffel/macos/poetry.lock";
+          pyproject = "${eiffel}/macos/pyproject.toml";
+          poetrylock = "${eiffel}/macos/poetry.lock";
         } else {}));
 
         #   env = pkgs.buildEnv  {
@@ -193,8 +197,7 @@
                 '';
               });
             in ''
-              export PATH=${self}/bin:$PATH
-              export PYTHONPATH=$( realpath ./exps):$(realpath ./libs/eiffel/)
+              export PYTHONPATH=$(realpath ./libs/eiffel/)
               export EIFFEL_PYTHON_PATH=${eiffel}/bin/python
             '' + (if stdenv.isLinux then ''
               export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [
