@@ -1,5 +1,5 @@
 let
-  eiffel-flake = builtins.getFlake "github:phdcybersec/eiffel/4da0efe0bd501089b3f3355e46946d98fa10741c";
+  eiffel-flake = builtins.getFlake "github:phdcybersec/eiffel/b3865bd6be76d684cd3b020b94d67578a2bf247d";
   system = builtins.currentSystem;
   pkgs = import eiffel-flake.inputs.nixpkgs { 
     inherit system;

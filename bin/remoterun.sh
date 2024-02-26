@@ -61,8 +61,6 @@ main() {
         exit 1
     fi
 
-    EXPERIMENT=$(realpath "$EXPERIMENT")
-
     # Check that the experiment directory contains a valid experiment.
     if [ ! -f "$EXPERIMENT/config.yaml" ]; then
         echo "Experiment directory '$EXPERIMENT' does not contain a valid 'config.yaml'."
@@ -91,39 +89,39 @@ main() {
         # push the current changes to git
         echo "Pushing current changes to the $PUBLISHBRANCH branch..."
         git add .
-        git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." || { echo "Could not commit changes. Aborting."; exit 1; }
+        git commit --allow-empty -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." || { echo "Could not commit changes. Aborting."; exit 1; }
         COMMIT=$(git rev-parse HEAD)
         git push --force origin "$COMMIT:$PUBLISHBRANCH" || { echo "Could not push changes. Aborting."; exit 1; }
         git reset --soft HEAD~1 || { echo "Could not reset changes. Aborting."; exit 1; }
 
         # copy the experiment to the remote host
         echo "Copying experiment '$EXPERIMENT' to '$TARGET'..."
-        rsync -az --progress --exclude='.git' --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        rsync -azC --progress --exclude='.git' --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
 
         # run the experiment on the remote host
         echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
         ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
 cd ~/Workspace/phdcybersec/fl-ids
-tmux new-session -d -s "auto-remoterun" "nix develop -c $COMMAND || read && exit" || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
+tmux new-session -d -s "auto-remoterun" "nix-shell --run '$COMMAND' || read && exit" || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
 EOF
     else
-
-        # switch to a new branch, create it if it doesn't exist
+        # push the current changes to git
         echo "Pushing current changes to the $PUBLISHBRANCH branch..."
-        git commit -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'." >/dev/null 2>&1 || { echo "Could not commit changes. Aborting."; exit 1; }
+        git add .
+        git commit --allow-empty -am ":rocket: Auto commit before running experiment '$EXPERIMENT' on '$TARGET'."  >/dev/null 2>&1 || { echo "Could not commit changes. Aborting."; exit 1; }
         COMMIT=$(git rev-parse HEAD)
         git push --force origin "$COMMIT:$PUBLISHBRANCH" >/dev/null 2>&1 || { echo "Could not push changes. Aborting."; exit 1; }
         git reset --soft HEAD~1 >/dev/null 2>&1 || { echo "Could not reset changes. Aborting."; exit 1; }
-
+        
         # switch to a new branch, create it if it doesn't exist
         echo "Copying experiment '$EXPERIMENT' to '$TARGET'..."
-        rsync -az --exclude='.git' --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" >/dev/null 2>&1 || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        rsync -azC --exclude='.git' --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" >/dev/null 2>&1 || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
 
         # run the experiment on the remote host
         echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
         ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
 cd ~/Workspace/phdcybersec/fl-ids
-tmux new-session -d -s "auto-remoterun" "nix develop -c $COMMAND || read && exit" >/dev/null 2>&1 || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
+tmux new-session -d -s "auto-remoterun" "nix-shell --run '$COMMAND' || read && exit" >/dev/null 2>&1 || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
 EOF
     fi
 
