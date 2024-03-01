@@ -1,5 +1,5 @@
 let
-  rev = "6c3a1e7c25780d21033ba20d29e4921fc34508db";
+  rev = "3e7c23b71d9d6dacd100f6d69cc4a6e8538f4396";
   eiffel-flake = builtins.getFlake "github:phdcybersec/eiffel/${rev}";
   system = builtins.currentSystem;
   pkgs = import eiffel-flake.inputs.nixpkgs { 
@@ -33,6 +33,6 @@ with pkgs; mkShell {
     
     export XLA_FLAGS=--xla_gpu_cuda_data_dir=${cudaPackages.cudatoolkit}
   '' else "") + (if builtins.pathExists ../eiffel/eiffel then ''
-    export PYTHONPATH="$(realpath ../eiffel/eiffel):$PYTHONPATH";
+    export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
   '' else "");
 }
