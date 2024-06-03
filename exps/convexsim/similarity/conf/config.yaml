@@ -5,7 +5,7 @@ experiment:
     attacker_target: ${experiment.attacks[0].target}
     n_attackers: ${experiment.pools[0].n_malicious}
   strategy:
-    _target_: assessment.similarity.module.SaveFedAvg
+    _target_: exps.assessment.similarity.module.SaveFedAvg
 
 attack: null
 

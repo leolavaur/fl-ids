@@ -189,7 +189,7 @@ class SaveFedAvg(FedAvg):
                 }),
             ])
 
-        models.to_pickle(f"models_r{server_round}.pkl")
+        # models.to_pickle(f"models_r{server_round}.pkl")
         grads.to_pickle(f"grads_r{server_round}.pkl")
 
         params, config = super().aggregate_fit(server_round, results, failures)
