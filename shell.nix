@@ -9,6 +9,7 @@ let
   eiffel = eiffel-flake.packages.${system}.eiffel-env;
 in
 with pkgs; mkShell {
+  
   buildInputs = [
     # Eiffel and Python dependencies
     eiffel
@@ -21,6 +22,7 @@ with pkgs; mkShell {
     bintools
     coreutils
   ];
+
   shellHook = ''
     export VSCODE_PYTHON_PATH=${eiffel}/bin/python
   '' + (if stdenv.isLinux then ''
