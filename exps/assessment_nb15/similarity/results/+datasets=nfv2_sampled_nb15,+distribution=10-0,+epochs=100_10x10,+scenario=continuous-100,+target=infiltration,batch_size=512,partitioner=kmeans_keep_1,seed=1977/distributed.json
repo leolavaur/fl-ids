@@ -1,0 +1,4722 @@
+{
+    "qture6_benign_6": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_0": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_4": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_8": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_2": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_3": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_1": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_5": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_9": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    },
+    "qture6_benign_7": {
+        "1": {
+            "Exploits": {
+                "recall": 0.3483271375464684,
+                "missrate": 0.6516728624535316
+            },
+            "Backdoor": {
+                "recall": 0.9885714285714285,
+                "missrate": 0.011428571428571429
+            },
+            "Generic": {
+                "recall": 0.8804034582132565,
+                "missrate": 0.11959654178674352
+            },
+            "DoS": {
+                "recall": 0.6475409836065574,
+                "missrate": 0.3524590163934426
+            },
+            "Fuzzers": {
+                "recall": 0.8826017979904812,
+                "missrate": 0.11739820200951877
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.76277,
+                "precision": 0.11227662756829096,
+                "recall": 0.7092242665340627,
+                "f1": 0.1938629876308278,
+                "missrate": 0.2907757334659373,
+                "fallout": 0.23498614265769238,
+                "loss": 0.28523337841033936
+            }
+        },
+        "2": {
+            "Exploits": {
+                "recall": 0.458364312267658,
+                "missrate": 0.541635687732342
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9012968299711815,
+                "missrate": 0.09870317002881844
+            },
+            "DoS": {
+                "recall": 0.6618852459016393,
+                "missrate": 0.33811475409836067
+            },
+            "Fuzzers": {
+                "recall": 0.8831306187202538,
+                "missrate": 0.11686938127974617
+            },
+            "Analysis": {
+                "recall": 0.9015544041450777,
+                "missrate": 0.09844559585492228
+            },
+            "Reconnaissance": {
+                "recall": 0.9962859795728877,
+                "missrate": 0.003714020427112349
+            },
+            "Worms": {
+                "recall": 0.9090909090909091,
+                "missrate": 0.09090909090909091
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.828035,
+                "precision": 0.15715512530252165,
+                "recall": 0.7507458975634013,
+                "f1": 0.25990402616685676,
+                "missrate": 0.2492541024365987,
+                "fallout": 0.16872616641313634,
+                "loss": 0.28708547353744507
+            }
+        },
+        "3": {
+            "Exploits": {
+                "recall": 0.6048327137546469,
+                "missrate": 0.39516728624535313
+            },
+            "Backdoor": {
+                "recall": 0.9942857142857143,
+                "missrate": 0.005714285714285714
+            },
+            "Generic": {
+                "recall": 0.9329971181556196,
+                "missrate": 0.0670028818443804
+            },
+            "DoS": {
+                "recall": 0.8340163934426229,
+                "missrate": 0.16598360655737704
+            },
+            "Fuzzers": {
+                "recall": 0.9338974087784241,
+                "missrate": 0.06610259122157588
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.796945,
+                "precision": 0.14543277082199238,
+                "recall": 0.8303083043262058,
+                "f1": 0.24751246085715875,
+                "missrate": 0.16969169567379414,
+                "fallout": 0.2044531038362958,
+                "loss": 0.37708398699760437
+            }
+        },
+        "4": {
+            "Exploits": {
+                "recall": 0.6784386617100372,
+                "missrate": 0.3215613382899628
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9387608069164265,
+                "missrate": 0.061239193083573486
+            },
+            "DoS": {
+                "recall": 0.8647540983606558,
+                "missrate": 0.13524590163934427
+            },
+            "Fuzzers": {
+                "recall": 0.9413008989952406,
+                "missrate": 0.058699101004759384
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9981429897864438,
+                "missrate": 0.0018570102135561746
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.81325,
+                "precision": 0.1603069362017804,
+                "recall": 0.85964694181999,
+                "f1": 0.2702227432590856,
+                "missrate": 0.14035305818000995,
+                "fallout": 0.18869428410677447,
+                "loss": 0.3888554573059082
+            }
+        },
+        "5": {
+            "Exploits": {
+                "recall": 0.7892193308550186,
+                "missrate": 0.21078066914498142
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9474063400576369,
+                "missrate": 0.05259365994236311
+            },
+            "DoS": {
+                "recall": 0.9036885245901639,
+                "missrate": 0.09631147540983606
+            },
+            "Fuzzers": {
+                "recall": 0.9592808038075092,
+                "missrate": 0.040719196192490745
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.824725,
+                "precision": 0.1751064495176694,
+                "recall": 0.9048980606663352,
+                "f1": 0.29343115715639045,
+                "missrate": 0.09510193933366484,
+                "fallout": 0.17863468711579736,
+                "loss": 0.3791673481464386
+            }
+        },
+        "6": {
+            "Exploits": {
+                "recall": 0.8185873605947955,
+                "missrate": 0.18141263940520447
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9582132564841499,
+                "missrate": 0.04178674351585014
+            },
+            "DoS": {
+                "recall": 0.9180327868852459,
+                "missrate": 0.08196721311475409
+            },
+            "Fuzzers": {
+                "recall": 0.9846641988365944,
+                "missrate": 0.015335801163405606
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.831775,
+                "precision": 0.1836023432286131,
+                "recall": 0.9234211834908006,
+                "f1": 0.30630296282550873,
+                "missrate": 0.0765788165091994,
+                "fallout": 0.17206547333763988,
+                "loss": 0.3744470179080963
+            }
+        },
+        "7": {
+            "Exploits": {
+                "recall": 0.8327137546468402,
+                "missrate": 0.16728624535315986
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.973342939481268,
+                "missrate": 0.026657060518731988
+            },
+            "DoS": {
+                "recall": 0.9241803278688525,
+                "missrate": 0.07581967213114754
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.84794,
+                "precision": 0.20083458163920392,
+                "recall": 0.9333664843361512,
+                "f1": 0.3305450383023686,
+                "missrate": 0.06663351566384883,
+                "fallout": 0.15563983412865448,
+                "loss": 0.39148953557014465
+            }
+        },
+        "8": {
+            "Exploits": {
+                "recall": 0.8353159851301115,
+                "missrate": 0.16468401486988848
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9740634005763689,
+                "missrate": 0.025936599423631124
+            },
+            "DoS": {
+                "recall": 0.9262295081967213,
+                "missrate": 0.07377049180327869
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.845845,
+                "precision": 0.19875201607572512,
+                "recall": 0.9344853306812531,
+                "f1": 0.32778807369453833,
+                "missrate": 0.06551466931874689,
+                "fallout": 0.15786951176311237,
+                "loss": 0.40503355860710144
+            }
+        },
+        "9": {
+            "Exploits": {
+                "recall": 0.8453531598513011,
+                "missrate": 0.1546468401486989
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9769452449567724,
+                "missrate": 0.023054755043227664
+            },
+            "DoS": {
+                "recall": 0.9344262295081968,
+                "missrate": 0.06557377049180328
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.843855,
+                "precision": 0.19723680430410823,
+                "recall": 0.938836399801094,
+                "f1": 0.3259879567478903,
+                "missrate": 0.061163600198906015,
+                "fallout": 0.16012523703348683,
+                "loss": 0.43543344736099243
+            }
+        },
+        "10": {
+            "Exploits": {
+                "recall": 0.8576208178438661,
+                "missrate": 0.14237918215613382
+            },
+            "Backdoor": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Generic": {
+                "recall": 0.9819884726224783,
+                "missrate": 0.018011527377521614
+            },
+            "DoS": {
+                "recall": 0.9385245901639344,
+                "missrate": 0.06147540983606557
+            },
+            "Fuzzers": {
+                "recall": 0.9941829719725013,
+                "missrate": 0.005817028027498678
+            },
+            "Analysis": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Reconnaissance": {
+                "recall": 0.9990714948932219,
+                "missrate": 0.0009285051067780873
+            },
+            "Worms": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "Shellcode": {
+                "recall": 1.0,
+                "missrate": 0.0
+            },
+            "global": {
+                "accuracy": 0.83368,
+                "precision": 0.18793308255790933,
+                "recall": 0.944057682744903,
+                "f1": 0.3134648724510856,
+                "missrate": 0.05594231725509697,
+                "fallout": 0.17094542499322762,
+                "loss": 0.4711281359195709
+            }
+        }
+    }
+}
