@@ -1,5 +1,5 @@
 let
-  rev = "3e7c23b71d9d6dacd100f6d69cc4a6e8538f4396";
+  rev = "6d875e54171209e1db98a75b6a82faeb3ce5310e";
   eiffel-flake = builtins.getFlake "github:phdcybersec/eiffel/${rev}";
   system = builtins.currentSystem;
   pkgs = import eiffel-flake.inputs.nixpkgs { 

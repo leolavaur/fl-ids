@@ -96,7 +96,7 @@ main() {
 
         # copy the experiment to the remote host
         echo "Copying experiment '$EXPERIMENT' to '$TARGET'..."
-        rsync -azC --progress --exclude='.git' --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        rsync -azC --progress --exclude='.git' --exclude="*.pkl" --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
 
         # run the experiment on the remote host
         echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
@@ -115,7 +115,7 @@ EOF
         
         # switch to a new branch, create it if it doesn't exist
         echo "Copying experiment '$EXPERIMENT' to '$TARGET'..."
-        rsync -azC --exclude='.git' --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" >/dev/null 2>&1 || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        rsync -azC --exclude='.git' --exclude="*.pkl" --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" >/dev/null 2>&1 || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
 
         # run the experiment on the remote host
         echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
