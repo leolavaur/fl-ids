@@ -1,5 +1,5 @@
 let
-  rev = "0eeb75d6c8642cc8b9bcc0f9138337264483a15c";
+  rev = "0fdddf5a588780a95337481a3d2228aaf7f8cfec";
   eiffel-flake = builtins.getFlake "github:phdcybersec/eiffel/${rev}";
   system = builtins.currentSystem;
   pkgs = import eiffel-flake.inputs.nixpkgs { 
@@ -8,34 +8,36 @@ let
   };
   eiffel = eiffel-flake.packages.${system}.eiffel-env;
 in
-with pkgs; mkShell {
+if 
+  pkgs.stdenv.isLinux 
+then
+  (eiffel-flake.devShells.default.overrideAttrs (oldAttrs: {
+    shellHook = oldAttrs.shellHook + (if builtins.pathExists ../eiffel/eiffel then ''
+      export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
+    '' else "");
+  }))
+else
+  with pkgs; 
+  mkShell {
   
-  buildInputs = [
-    # Eiffel and Python dependencies
-    eiffel
-    
-    # LaTeX for matplotlib pgf backend
-    texlive.combined.scheme-full
+    buildInputs = [
+      # Eiffel and Python dependencies
+      (python3.withPackages (ps: with ps; [
+        numpy
+        pandas
+        scipy
+        scikit-learn
+        matplotlib
+        seaborn
+        ipython
+      ]))
+      
+      # LaTeX for matplotlib pgf backend
+      texliveFull
 
-    # Shell environment
-    getopt
-    bintools
-    coreutils
-  ];
-
-  shellHook = ''
-    export VSCODE_PYTHON_PATH=${eiffel}/bin/python
-  '' + (if stdenv.isLinux then ''
-    export LD_LIBRARY_PATH=${ lib.strings.concatStringsSep ":" [
-        "${cudaPackages.cudatoolkit}/lib"
-        "${cudaPackages.cudatoolkit.lib}/lib"
-        "${cudaPackages.cudnn}/lib"
-        "${cudaPackages.cudatoolkit}/nvvm/libdevice/"
-      ] }
-    export CUDA_PATH=${cudaPackages.cudatoolkit}
-    
-    export XLA_FLAGS=--xla_gpu_cuda_data_dir=${cudaPackages.cudatoolkit}
-  '' else "") + (if builtins.pathExists ../eiffel/eiffel then ''
-    export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
-  '' else "");
-}
+      # Shell environment
+      getopt
+      bintools
+      coreutils
+    ];
+  }
