@@ -165,13 +165,13 @@ hydra:
     - path: eiffel.conf
       schema: pkg
       provider: main
-    - path: /home/leo/Workspace/phdcybersec/fl-ids/exps/assessment-nb15/late/conf
+    - path: /home/leo/Workspace/phdcybersec/fl-ids/exps/assessment_nb15/late/conf
       schema: file
       provider: command-line
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /home/leo/Workspace/phdcybersec/fl-ids/multirun/2024-04-25/15-58-59/+datasets=nfv2_sampled_nb15,+distribution=5-5,+epochs=100_1x100,+scenario=late-3,+target=untargeted,batch_size=128,partitioner=iid,seed=5555
+    output_dir: /home/leo/Workspace/phdcybersec/fl-ids/multirun/2024-06-25/17-32-25/+datasets=nfv2_sampled_nb15,+distribution=5-5,+epochs=100_1x100,+scenario=late-3,+target=untargeted,batch_size=128,partitioner=iid,seed=5555
     choices:
       callbacks: mattermost
       scenario: late-3

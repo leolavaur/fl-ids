@@ -13,8 +13,7 @@ hydra:
       partitioner: iid
       +datasets: nfv2/sampled/nb15
       batch_size: 32,128,512
-      #+epochs: 100/1x100,100/4x25,100/10x10
-      +epochs: 100/1x100
+      +epochs: 100/1x100,100/4x25,100/10x10
       +distribution: 5-5
       +target: untargeted
       +scenario: late-3
