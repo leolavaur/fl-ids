@@ -1,5 +1,5 @@
 let
-  rev = "0fdddf5a588780a95337481a3d2228aaf7f8cfec";
+  rev = "d7dbb474307fd82763fe2c3f74b7edeaf8338dd3";
   eiffel-flake = builtins.getFlake "github:phdcybersec/eiffel/${rev}";
   system = builtins.currentSystem;
   pkgs = import eiffel-flake.inputs.nixpkgs { 
@@ -11,7 +11,7 @@ in
 if 
   pkgs.stdenv.isLinux 
 then
-  (eiffel-flake.devShells.default.overrideAttrs (oldAttrs: {
+  (eiffel-flake.devShells.${system}.default.overrideAttrs (oldAttrs: {
     shellHook = oldAttrs.shellHook + (if builtins.pathExists ../eiffel/eiffel then ''
       export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
     '' else "");
@@ -40,8 +40,4 @@ else
       bintools
       coreutils
     ];
-
-    shellHook = (if builtins.pathExists ../eiffel/eiffel then ''
-      export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
-    '' else "");
   }
