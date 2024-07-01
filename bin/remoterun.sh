@@ -112,13 +112,15 @@ main() {
 
         # copy the experiment to the remote host
         echo "Copying experiment '$EXPERIMENT' to '$TARGET'..."
-        rsync -zCr --delete --progress --exclude='.git' --exclude="*.pkl" --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        # rsync -zCrptgo --delete --delete-exclude --progress --exclude '.git' --exclude "outputs" --exclude "multirun" --exclude "*.pkl" --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        rsync -zCrptgo --delete --progress --exclude '.git' --exclude ".direnv" --exclude "outputs" --exclude "multirun" --exclude "*.pkl" --partial "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
 
         # run the experiment on the remote host
         echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
-        ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
+        ssh "$TARGET" bash <<EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
+set -x
 cd ~/Workspace/phdcybersec/fl-ids
-tmux new-session -d -s "auto-remoterun" "nix develop $FLAKE --command $COMMAND || read && exit" || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
+tmux new-session -d -s "auto-remoterun" "nix develop $FLAKE --command $COMMAND  || read && exit" || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
 EOF
     else
         # push the current changes to git
@@ -131,13 +133,14 @@ EOF
         
         # switch to a new branch, create it if it doesn't exist
         echo "Copying experiment '$EXPERIMENT' to '$TARGET'..."
-        rsync -zCr --delete --exclude='.git' --exclude="*.pkl" --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" >/dev/null 2>&1 || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        # rsync -zCrptgo --delete --delete-exclude --exclude '.git' --exclude "outputs" --exclude "multirun" --exclude "*.pkl" --partial --inplace "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" >/dev/null 2>&1 || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
+        rsync -zCrptgo --delete --exclude '.git' --exclude ".direnv" --exclude "outputs" --exclude "multirun" --exclude "*.pkl" --partial "$REPO/" "$TARGET:~/Workspace/phdcybersec/fl-ids" >/dev/null 2>&1 || { echo "Could not copy the experiment to the remote host. Aborting."; exit 1; }
 
         # run the experiment on the remote host
         echo "Running experiment '$EXPERIMENT' on '$TARGET'..."
-        ssh "$TARGET" bash << EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
+        ssh "$TARGET" bash <<EOF || { echo "Issue on remote host."; exit 1; } && echo "Experiment '$EXPERIMENT' running on '$TARGET', no apparent errors."
 cd ~/Workspace/phdcybersec/fl-ids
-tmux new-session -d -s "auto-remoterun" "nix develop $FLAKE --command $COMMAND || read && exit" || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
+tmux new-session -d -s "auto-remoterun" "nix develop $FLAKE --command $COMMAND  || read && exit" || { echo "Tmux session already running."; echo "Check it out with 'tmux attach -t auto-remoterun'."; exit 1; } 
 EOF
     fi
 
