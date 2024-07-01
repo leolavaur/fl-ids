@@ -19,7 +19,8 @@ hydra:
       +datasets: nfv2/sampled/nb15
       batch_size: 512
       +epochs: 100/10x10
-      +distribution: 10-0,9-1,5-5
-      +target: glob(*)
+#      +distribution: 10-0,9-1,5-5
+      +distribution: 5-5
+      +target: glob(*,exclude=untargeted)
       +scenario: continuous-100
       seed: 1138,421,1313,5555,6567,327,2187,1977,501,3263827

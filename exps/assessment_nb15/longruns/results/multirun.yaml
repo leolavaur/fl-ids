@@ -13,7 +13,7 @@ hydra:
       partitioner: iid
       +datasets: nfv2/sampled/nb15
       batch_size: 32,512
-      +epochs: 300/1x300,300/4x75,300/10x30
+      +epochs: 300/1x300
       +distribution: 5-5
       +target: untargeted
       +scenario: continuous-100
@@ -157,7 +157,7 @@ hydra:
     - path: eiffel.conf
       schema: pkg
       provider: main
-    - path: /home/leo/Workspace/phdcybersec/fl-ids/exps/assessment-nb15/longruns/conf
+    - path: /home/leo/Workspace/phdcybersec/fl-ids/exps/assessment_nb15/longruns/conf
       schema: file
       provider: command-line
     - path: ''
