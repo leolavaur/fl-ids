@@ -40,4 +40,8 @@ else
       bintools
       coreutils
     ];
+
+    shellHook = if builtins.pathExists ../eiffel/eiffel then ''
+      export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
+    '' else "";
   }
