@@ -30,6 +30,7 @@ else
         matplotlib
         seaborn
         ipython
+        requests
       ]))
       
       # LaTeX for matplotlib pgf backend
@@ -42,6 +43,6 @@ else
     ];
 
     shellHook = if builtins.pathExists ../eiffel/eiffel then ''
-      export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
+      export PYTHONPATH="$(realpath .):$(realpath ../eiffel/):$PYTHONPATH";
     '' else "";
   }
