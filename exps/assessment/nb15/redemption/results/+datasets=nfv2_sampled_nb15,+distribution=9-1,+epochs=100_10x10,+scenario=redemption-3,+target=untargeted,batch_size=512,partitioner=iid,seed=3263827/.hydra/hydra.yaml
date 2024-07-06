@@ -165,13 +165,13 @@ hydra:
     - path: eiffel.conf
       schema: pkg
       provider: main
-    - path: /home/leo/Workspace/phdcybersec/fl-ids/exps/assessment-nb15/redemption/conf
+    - path: /home/leo/Workspace/phdcybersec/fl-ids/exps/assessment/nb15/redemption/conf
       schema: file
       provider: command-line
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /home/leo/Workspace/phdcybersec/fl-ids/multirun/2024-04-29/15-58-27/+datasets=nfv2_sampled_nb15,+distribution=9-1,+epochs=100_10x10,+scenario=redemption-3,+target=untargeted,batch_size=512,partitioner=iid,seed=3263827
+    output_dir: /home/leo/Workspace/phdcybersec/fl-ids/multirun/2024-07-06/17-17-20/+datasets=nfv2_sampled_nb15,+distribution=9-1,+epochs=100_10x10,+scenario=redemption-3,+target=untargeted,batch_size=512,partitioner=iid,seed=3263827
     choices:
       callbacks: mattermost
       scenario: redemption-3

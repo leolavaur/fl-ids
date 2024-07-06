@@ -13,7 +13,7 @@ if
 then
   (eiffel-flake.devShells.${system}.default.overrideAttrs (oldAttrs: {
     shellHook = oldAttrs.shellHook + (if builtins.pathExists ../eiffel/eiffel then ''
-      export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH";
+      export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH"
     '' else "");
   }))
 else
@@ -29,8 +29,9 @@ else
         scikit-learn
         matplotlib
         seaborn
-        ipython
+        ipykernel
         requests
+        schema
       ]))
       
       # LaTeX for matplotlib pgf backend
@@ -42,7 +43,9 @@ else
       coreutils
     ];
 
-    shellHook = if builtins.pathExists ../eiffel/eiffel then ''
-      export PYTHONPATH="$(realpath .):$(realpath ../eiffel/):$PYTHONPATH";
-    '' else "";
+    shellHook = ''
+      export PYTHONPATH="$(realpath .):$PYTHONPATH"
+    '' + (if builtins.pathExists ../eiffel/eiffel then ''
+      export PYTHONPATH="$(realpath ../eiffel/):$PYTHONPATH"
+    '' else "");
   }
