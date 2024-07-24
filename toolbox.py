@@ -10,12 +10,11 @@ TEXTWIDTH = 6.30045  # in inches
 PAGEWIDTH = 6.30045 + 1.17638 + 0.1384  # in inches
 
 
-def init():
+def init(style: str = "cdb.mplstyle"):
     # Make the interactive backend as PDF
     register_backend("pdf", FigureCanvasPgf)
 
     # Set the default style
-    style = "cdb.mplstyle"
     if (s := Path().cwd() / style).exists():
         plt.style.use(s.as_posix())
     elif (s := Path().cwd().parent / style).exists():
