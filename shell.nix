@@ -32,7 +32,15 @@ else
         ipykernel
         requests
         schema
+        # # For Eiffel specifically
+        # keras
+        # omegaconf
+        # absl-py
+        # optree
+        # tensorflow
       ]))
+
+      poetry
       
       # LaTeX for matplotlib pgf backend
       texliveFull
